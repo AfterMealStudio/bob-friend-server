@@ -13,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table
-public class Card {
+public class Recruitment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    username: test
+    password: 1234
+    url: jdbc:mysql://localhost/minsung
