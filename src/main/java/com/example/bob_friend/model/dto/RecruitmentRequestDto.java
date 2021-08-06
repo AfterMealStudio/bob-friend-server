@@ -1,6 +1,6 @@
-package com.example.bob_friend.model.card.dto;
+package com.example.bob_friend.model.dto;
 
-import com.example.bob_friend.model.card.domain.Recruitment;
+import com.example.bob_friend.model.domain.Recruitment;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
