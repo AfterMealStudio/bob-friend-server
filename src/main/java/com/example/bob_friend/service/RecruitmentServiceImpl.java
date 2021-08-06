@@ -1,9 +1,9 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.card.domain.Recruitment;
-import com.example.bob_friend.model.card.dto.RecruitmentRequestDto;
-import com.example.bob_friend.model.card.dto.RecruitmentResponseDto;
-import com.example.bob_friend.model.card.exception.RecruitmentNotFoundException;
+import com.example.bob_friend.model.domain.Recruitment;
+import com.example.bob_friend.model.dto.RecruitmentRequestDto;
+import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class RecruitmentServiceImpl implements RecruitmentService{
+public class RecruitmentServiceImpl implements RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
 
     @Override
@@ -27,7 +27,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
     @Override
     public List<RecruitmentResponseDto> findAll() {
         return recruitmentRepository.findAll().stream()
-                .map(recruitment -> new RecruitmentResponseDto(recruitment))
+                .map(RecruitmentResponseDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -50,6 +50,7 @@ public class RecruitmentServiceImpl implements RecruitmentService{
                 .title(update.getTitle())
                 .content(update.getContent())
                 .build();
+
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
         return new RecruitmentResponseDto(savedRecruitment);
     }

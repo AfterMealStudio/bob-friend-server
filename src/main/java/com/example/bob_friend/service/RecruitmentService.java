@@ -1,7 +1,7 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.card.dto.RecruitmentRequestDto;
-import com.example.bob_friend.model.card.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.dto.RecruitmentRequestDto;
+import com.example.bob_friend.model.dto.RecruitmentResponseDto;
 
 import java.util.List;
 
