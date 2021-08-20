@@ -1,8 +1,8 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.domain.Recruitment;
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;

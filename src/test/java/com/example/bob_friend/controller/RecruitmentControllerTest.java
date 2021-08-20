@@ -1,6 +1,6 @@
 package com.example.bob_friend.controller;
 
-import com.example.bob_friend.model.domain.Recruitment;
+import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
 import com.example.bob_friend.service.RecruitmentService;
@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Import(RecruitmentController.class)
-@WebMvcTest
+@WebMvcTest(useDefaultFilters = false)
 class RecruitmentControllerTest {
 
     @Autowired
