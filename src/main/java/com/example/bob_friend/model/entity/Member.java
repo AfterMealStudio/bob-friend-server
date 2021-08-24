@@ -17,10 +17,13 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private long id;
+    @Column(name = "email")
     private String email;
-    @Column(unique = true)
+    @Column(name = "username", unique = true)
     private String username;
+    @Column(name = "password")
     private String password;
+    @Column(name = "activated")
     private boolean activated;
     @ManyToMany
     @JoinTable(

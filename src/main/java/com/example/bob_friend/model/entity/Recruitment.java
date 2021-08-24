@@ -13,18 +13,21 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table
+@Table(name = "recruitment")
 public class Recruitment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recruitment_id")
     private long id;
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "author")
     private Member author;
+    @Column(name = "members")
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Member> members;
+    @Column(name = "title")
     private String title;
+    @Column(name = "content")
     private String content;
 
     @Override
