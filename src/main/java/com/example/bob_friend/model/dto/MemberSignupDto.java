@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberDto {
+public class MemberSignupDto {
     @NotNull
     private String email;
     @NotNull

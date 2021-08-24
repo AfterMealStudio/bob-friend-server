@@ -1,20 +1,22 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.dto.MemberDto;
+import com.example.bob_friend.model.dto.MemberSignupDto;
+import com.example.bob_friend.model.dto.MemberResponseDto;
 import com.example.bob_friend.model.entity.Authority;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
 import com.example.bob_friend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -23,40 +25,57 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Member signup(MemberDto memberDto) {
+    public MemberResponseDto signup(MemberSignupDto memberSignupDto) {
         if (memberRepository
                 .findMemberWithAuthoritiesByUsername(
-                        memberDto.getUsername()
+                        memberSignupDto.getUsername()
                 )
                 .orElse(null) != null
-        ) throw new MemberDuplicatedException(memberDto.getUsername() + " is already exist");
+        ) throw new MemberDuplicatedException(memberSignupDto.getUsername() + " is already exist");
 
         Authority authority = Authority.builder()
                 .authorityName("ROLE_USER")
                 .build();
         Member member = Member.builder()
-                .email(memberDto.getEmail())
-                .username(memberDto.getUsername())
-                .password(passwordEncoder.encode(memberDto.getPassword()))
+                .email(memberSignupDto.getEmail())
+                .username(memberSignupDto.getUsername())
+                .password(passwordEncoder.encode(memberSignupDto.getPassword()))
                 .authorities(Collections.singleton(authority))
                 .activated(true)
                 .build();
-        return memberRepository.save(member);
+        return new MemberResponseDto(memberRepository.save(member));
     }
 
     @Transactional(readOnly = true)
-    public Optional<Member> getMemberWithAuthorities(String username) {
-        return memberRepository.findMemberWithAuthoritiesByUsername(username);
+    public MemberResponseDto getMemberWithAuthorities(String username) {
+        Member member = memberRepository.findMemberWithAuthoritiesByUsername(username).orElseThrow(() -> {
+            throw new UsernameNotFoundException(username);
+        });
+        return new MemberResponseDto(member);
     }
 
     @Transactional(readOnly = true)
-    public Optional<Member> getMyMemberWithAuthorities() {
-        return getCurrentUsername().flatMap(memberRepository::findMemberWithAuthoritiesByUsername);
+    public MemberResponseDto getMyMemberWithAuthorities() {
+        String currentUsername = getCurrentUsername();
+
+        Member member = memberRepository.findMemberWithAuthoritiesByUsername(currentUsername).orElseThrow(
+                () -> {
+                    throw new UsernameNotFoundException(currentUsername);
+                }
+        );
+        return new MemberResponseDto(member);
     }
 
-    public Optional<String> getCurrentUsername() {
+    public String getCurrentUsername() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) return Optional.empty();
+        if (authentication == null) {
+            throw new AuthenticationException("Authentication not found") {
+                @Override
+                public String getMessage() {
+                    return super.getMessage();
+                }
+            };
+        }
 
         String username = null;
         if (authentication.getPrincipal() instanceof UserDetails) {
@@ -66,6 +85,6 @@ public class MemberService {
             username = (String) authentication.getPrincipal();
         }
 
-        return Optional.ofNullable(username);
+        return username;
     }
 }

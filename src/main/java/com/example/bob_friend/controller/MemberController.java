@@ -1,6 +1,6 @@
 package com.example.bob_friend.controller;
 
-import com.example.bob_friend.model.dto.MemberDto;
+import com.example.bob_friend.model.dto.MemberSignupDto;
 import com.example.bob_friend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +16,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public ResponseEntity signup(@Valid @RequestBody MemberDto memberDto) {
-        return ResponseEntity.ok(memberService.signup(memberDto));
+    public ResponseEntity signup(@Valid @RequestBody MemberSignupDto memberSignupDto) {
+        return ResponseEntity.ok(memberService.signup(memberSignupDto));
     }
 
     @GetMapping("/user")
