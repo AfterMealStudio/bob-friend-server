@@ -18,9 +18,10 @@ public class RecruitmentServiceImpl implements RecruitmentService {
 
     @Override
     public RecruitmentResponseDto findById(Long recruitmentId) {
-        Recruitment byId = recruitmentRepository.findById(recruitmentId).orElseThrow(() -> {
-            throw new RecruitmentNotFoundException();
-        });
+        Recruitment byId = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> {
+                    throw new RecruitmentNotFoundException();
+                });
         return new RecruitmentResponseDto(byId);
     }
 
@@ -44,7 +45,8 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     }
 
     @Override
-    public RecruitmentResponseDto update(Long recruitmentId, RecruitmentRequestDto update) {
+    public RecruitmentResponseDto update(Long recruitmentId,
+                                         RecruitmentRequestDto update) {
         Recruitment recruitment = Recruitment.builder()
                 .id(recruitmentId)
                 .title(update.getTitle())

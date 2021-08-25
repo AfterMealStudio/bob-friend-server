@@ -3,6 +3,7 @@ package com.example.bob_friend.model.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -17,14 +18,27 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private long id;
+
     @Column(name = "email")
     private String email;
-    @Column(name = "username", unique = true)
+
+    @Column(name = "username")
     private String username;
+
     @Column(name = "password")
     private String password;
+
     @Column(name = "activated")
     private boolean activated;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void createAt() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     @ManyToMany
     @JoinTable(
             name = "member_authority",
