@@ -7,6 +7,7 @@ import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.MemberService;
 import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -26,14 +27,13 @@ public class RecruitmentController {
     }
 
     @GetMapping("/{recruitmentId}")
-    public ResponseEntity getRecruitment(@PathVariable Long recruitmentId) {
+    public ResponseEntity getRecruitment(@PathVariable Long recruitmentId) throws RecruitmentNotFoundException {
         RecruitmentResponseDto recruitmentResponseDto = recruitmentService.findById(recruitmentId);
         return ResponseEntity.ok(recruitmentResponseDto);
     }
 
     @PostMapping()
-    public ResponseEntity createRecruitment(RecruitmentRequestDto recruitmentRequestDto,
-                                            Authentication authentication) {
+    public ResponseEntity createRecruitment(RecruitmentRequestDto recruitmentRequestDto) {
         String currentUsername = memberService.getCurrentUsername();
         MemberResponseDto currentMember = memberService.getMemberWithAuthorities(currentUsername);
         recruitmentRequestDto.setAuthor(currentMember.convertToEntity());
@@ -54,8 +54,7 @@ public class RecruitmentController {
     }
 
     @ExceptionHandler(value = RecruitmentNotFoundException.class)
-    public ResponseEntity handleCardNotFound(RecruitmentNotFoundException exception) {
-        // excetion handling
-        return null;
+    public ResponseEntity handleRecruitmentNotFound(RecruitmentNotFoundException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

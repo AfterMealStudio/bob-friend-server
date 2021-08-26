@@ -3,8 +3,12 @@ spring:
     username: test
     password: 1234
     url: jdbc:mysql://localhost/bob
+#spring:
+#  datasource:
+#    username: minsung
+#    password: dhalstjd1
+#    url: jdbc:mysql://localhost/minsung
   jpa:
-#    generate-ddl: true
     hibernate:
       ddl-auto: create
     show-sql: true
