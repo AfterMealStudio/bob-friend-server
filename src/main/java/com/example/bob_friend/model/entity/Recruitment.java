@@ -27,7 +27,7 @@ public class Recruitment {
     @Column(name = "content")
     private String content;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "author")
     private Member author;
 
@@ -80,5 +80,17 @@ public class Recruitment {
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 '}';
+    }
+
+    public void setCurrentNumberOfPeople(Integer currentNumberOfPeople) {
+        this.currentNumberOfPeople = currentNumberOfPeople;
+    }
+
+    public void setFull(boolean full) {
+        this.full = full;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

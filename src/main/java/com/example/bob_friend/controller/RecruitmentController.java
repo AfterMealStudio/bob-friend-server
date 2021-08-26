@@ -53,6 +53,14 @@ public class RecruitmentController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/{recruitmentId}")
+    public ResponseEntity joinRecruitment(@PathVariable Long recruitmentId) {
+        String currentUsername = memberService.getCurrentUsername();
+        MemberResponseDto currentMember = memberService.getMemberWithAuthorities(currentUsername);
+        RecruitmentResponseDto join = recruitmentService.join(recruitmentId, currentMember.convertToEntity());
+        return ResponseEntity.ok(join);
+    }
+
     @ExceptionHandler(value = RecruitmentNotFoundException.class)
     public ResponseEntity handleRecruitmentNotFound(RecruitmentNotFoundException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);

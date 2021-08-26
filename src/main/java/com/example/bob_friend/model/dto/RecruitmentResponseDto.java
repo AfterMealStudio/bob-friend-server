@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -14,6 +16,7 @@ public class RecruitmentResponseDto {
     private String title;
     private String content;
     private MemberResponseDto author;
+    private List<MemberResponseDto> members;
     private Integer totalNumberOfPeople;
     private Integer currentNumberOfPeople;
     private Boolean full;
@@ -29,6 +32,7 @@ public class RecruitmentResponseDto {
         this.title = recruitment.getTitle();
         this.content = recruitment.getContent();
         this.author = new MemberResponseDto(recruitment.getAuthor());
+        this.members = recruitment.getMembers().stream().map(MemberResponseDto::new).collect(Collectors.toList());
         this.currentNumberOfPeople = recruitment.getCurrentNumberOfPeople();
         this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
         this.full = recruitment.isFull();

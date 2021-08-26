@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 
 @Data
 @NoArgsConstructor
@@ -40,12 +41,17 @@ public class RecruitmentRequestDto {
                 .title(this.title)
                 .content(this.content)
                 .author(this.author)
+                .members(new LinkedList<Member>())
+                .currentNumberOfPeople(1)
+                .totalNumberOfPeople(this.totalNumberOfPeople)
                 .restaurantName(this.restaurantName)
                 .restaurantAddress(this.restaurantAddress)
                 .latitude(this.latitude)
                 .longitude(this.longitude)
                 .startAt(this.startAt)
                 .endAt(this.endAt)
+                .active(true)
+                .full(false)
                 .build();
     }
 }
