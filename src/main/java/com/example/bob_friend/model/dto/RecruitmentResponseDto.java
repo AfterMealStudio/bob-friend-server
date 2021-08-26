@@ -31,7 +31,7 @@ public class RecruitmentResponseDto {
         this.author = recruitment.getAuthor();
         this.currentNumberOfPeople = recruitment.getCurrentNumberOfPeople();
         this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
-        this.full = recruitment.getFull();
+        this.full = recruitment.isFull();
         this.restaurantName = recruitment.getRestaurantName();
         this.latitude = recruitment.getLatitude();
         this.longitude = recruitment.getLongitude();

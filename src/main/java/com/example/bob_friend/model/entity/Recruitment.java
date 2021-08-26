@@ -21,6 +21,12 @@ public class Recruitment {
     @Column(name = "recruitment_id")
     private Long id;
 
+    @Column(name = "title")
+    private String title;
+
+    @Column(name = "content")
+    private String content;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "author")
     private Member author;
@@ -29,12 +35,6 @@ public class Recruitment {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Member> members;
 
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "content")
-    private String content;
-
     @Column(name = "total_number_of_people")
     private Integer totalNumberOfPeople;
 
@@ -42,10 +42,13 @@ public class Recruitment {
     private Integer currentNumberOfPeople;
 
     @Column(name = "full")
-    private Boolean full;
+    private boolean full;
 
     @Column(name = "restaurant_name")
     private String restaurantName;
+
+    @Column(name = "restaurant_address")
+    private String restaurantAddress;
 
     @Column(name = "latitude")
     private Double latitude;
@@ -61,6 +64,9 @@ public class Recruitment {
 
     @Column(name = "end_at")
     private LocalDateTime endAt;
+
+    @Column(name = "active")
+    private boolean active;
 
     @PrePersist
     public void createAt() {

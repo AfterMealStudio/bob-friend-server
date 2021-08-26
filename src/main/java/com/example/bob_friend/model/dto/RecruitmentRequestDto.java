@@ -16,6 +16,7 @@ public class RecruitmentRequestDto {
     private Member author;
     private Integer totalNumberOfPeople;
     private String restaurantName;
+    private String restaurantAddress;
     private Double latitude;
     private Double longitude;
     private LocalDateTime startAt;
@@ -27,6 +28,7 @@ public class RecruitmentRequestDto {
         this.author = recruitment.getAuthor();
         this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
         this.restaurantName = recruitment.getRestaurantName();
+        this.restaurantAddress = recruitment.getRestaurantAddress();
         this.latitude = recruitment.getLatitude();
         this.longitude = recruitment.getLongitude();
         this.startAt = recruitment.getStartAt();
@@ -39,6 +41,7 @@ public class RecruitmentRequestDto {
                 .content(this.content)
                 .author(this.author)
                 .restaurantName(this.restaurantName)
+                .restaurantAddress(this.restaurantAddress)
                 .latitude(this.latitude)
                 .longitude(this.longitude)
                 .startAt(this.startAt)
