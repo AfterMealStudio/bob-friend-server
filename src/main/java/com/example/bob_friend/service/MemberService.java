@@ -87,4 +87,18 @@ public class MemberService {
 
         return username;
     }
+
+    @Transactional
+    public void deleteByName(String username) {
+        memberRepository.deleteByUsername(username);
+    }
+
+    @Transactional
+    public void deleteById(Long memberId) {
+        memberRepository.deleteById(memberId);
+    }
+
+    public boolean isExistById(String username) {
+        return memberRepository.existsMemberByUsername(username);
+    }
 }

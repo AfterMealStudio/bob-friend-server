@@ -13,4 +13,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @EntityGraph(attributePaths = "authorities")
     Optional<Member> findMemberWithAuthoritiesByUsername(String username);
+
+    void deleteByUsername(String username);
+
+    boolean existsMemberByUsername(String username);
 }
