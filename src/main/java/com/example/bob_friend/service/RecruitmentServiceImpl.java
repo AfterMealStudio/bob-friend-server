@@ -20,7 +20,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     public RecruitmentResponseDto findById(Long recruitmentId) {
         Recruitment byId = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> {
-                    throw new RecruitmentNotFoundException();
+                    throw new RecruitmentNotFoundException(recruitmentId);
                 });
         return new RecruitmentResponseDto(byId);
     }

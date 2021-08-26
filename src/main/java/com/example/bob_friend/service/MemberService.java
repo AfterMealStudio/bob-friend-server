@@ -31,7 +31,7 @@ public class MemberService {
                         memberSignupDto.getUsername()
                 )
                 .orElse(null) != null
-        ) throw new MemberDuplicatedException(memberSignupDto.getUsername() + " is already exist");
+        ) throw new MemberDuplicatedException(memberSignupDto.getUsername());
 
         Authority authority = Authority.builder()
                 .authorityName("ROLE_USER")

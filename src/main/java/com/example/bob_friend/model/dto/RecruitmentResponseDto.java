@@ -13,7 +13,7 @@ public class RecruitmentResponseDto {
     private Long id;
     private String title;
     private String content;
-    private Member author;
+    private MemberResponseDto author;
     private Integer totalNumberOfPeople;
     private Integer currentNumberOfPeople;
     private Boolean full;
@@ -28,7 +28,7 @@ public class RecruitmentResponseDto {
         this.id = recruitment.getId();
         this.title = recruitment.getTitle();
         this.content = recruitment.getContent();
-        this.author = recruitment.getAuthor();
+        this.author = new MemberResponseDto(recruitment.getAuthor());
         this.currentNumberOfPeople = recruitment.getCurrentNumberOfPeople();
         this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
         this.full = recruitment.isFull();
