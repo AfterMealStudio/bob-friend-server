@@ -1,6 +1,5 @@
 package com.example.bob_friend.model.dto;
 
-import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +23,7 @@ public class RecruitmentResponseDto {
     private String restaurantAddress;
     private Double latitude;
     private Double longitude;
-    private LocalDateTime startAt;
+    private LocalDateTime appointmentTime;
     private LocalDateTime endAt;
     private LocalDateTime createdAt;
 
@@ -41,7 +40,7 @@ public class RecruitmentResponseDto {
         this.restaurantAddress = recruitment.getRestaurantAddress();
         this.latitude = recruitment.getLatitude();
         this.longitude = recruitment.getLongitude();
-        this.startAt = recruitment.getStartAt();
+        this.appointmentTime = recruitment.getAppointmentTime();
         this.endAt = recruitment.getEndAt();
         this.createdAt = recruitment.getCreatedAt();
     }

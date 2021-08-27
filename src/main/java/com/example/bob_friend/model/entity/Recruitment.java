@@ -59,11 +59,11 @@ public class Recruitment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "start_at")
-    private LocalDateTime startAt;
-
     @Column(name = "end_at")
     private LocalDateTime endAt;
+
+    @Column(name = "appointment_time")
+    private LocalDateTime appointmentTime;
 
     @Column(name = "active")
     private boolean active;

@@ -5,7 +5,6 @@ import com.example.bob_friend.model.entity.Recruitment;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 
@@ -20,7 +19,7 @@ public class RecruitmentRequestDto {
     private String restaurantAddress;
     private Double latitude;
     private Double longitude;
-    private LocalDateTime startAt;
+    private LocalDateTime appointmentTime;
     private LocalDateTime endAt;
 
     public RecruitmentRequestDto(Recruitment recruitment) {
@@ -32,7 +31,7 @@ public class RecruitmentRequestDto {
         this.restaurantAddress = recruitment.getRestaurantAddress();
         this.latitude = recruitment.getLatitude();
         this.longitude = recruitment.getLongitude();
-        this.startAt = recruitment.getStartAt();
+        this.appointmentTime = recruitment.getAppointmentTime();
         this.endAt = recruitment.getEndAt();
     }
 
@@ -48,7 +47,7 @@ public class RecruitmentRequestDto {
                 .restaurantAddress(this.restaurantAddress)
                 .latitude(this.latitude)
                 .longitude(this.longitude)
-                .startAt(this.startAt)
+                .appointmentTime(this.appointmentTime)
                 .endAt(this.endAt)
                 .active(true)
                 .full(false)
