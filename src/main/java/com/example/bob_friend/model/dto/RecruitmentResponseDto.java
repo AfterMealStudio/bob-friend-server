@@ -21,6 +21,7 @@ public class RecruitmentResponseDto {
     private Integer currentNumberOfPeople;
     private Boolean full;
     private String restaurantName;
+    private String restaurantAddress;
     private Double latitude;
     private Double longitude;
     private LocalDateTime startAt;
@@ -37,6 +38,7 @@ public class RecruitmentResponseDto {
         this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
         this.full = recruitment.isFull();
         this.restaurantName = recruitment.getRestaurantName();
+        this.restaurantAddress = recruitment.getRestaurantAddress();
         this.latitude = recruitment.getLatitude();
         this.longitude = recruitment.getLongitude();
         this.startAt = recruitment.getStartAt();
