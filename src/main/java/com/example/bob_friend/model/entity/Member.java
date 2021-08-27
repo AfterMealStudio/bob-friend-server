@@ -3,11 +3,11 @@ package com.example.bob_friend.model.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,6 +27,15 @@ public class Member {
 
     @Column(name = "password")
     private String password;
+
+    @Column(name = "sex")
+    private Sex sex;
+
+    @Column(name = "birth")
+    private LocalDate birth;
+
+    @Column(name = "report_count")
+    private Integer reportCount;
 
     @Column(name = "active")
     private boolean active;

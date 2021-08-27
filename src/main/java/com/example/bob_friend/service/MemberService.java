@@ -40,8 +40,11 @@ public class MemberService {
                 .email(memberSignupDto.getEmail())
                 .username(memberSignupDto.getUsername())
                 .password(passwordEncoder.encode(memberSignupDto.getPassword()))
+                .birth(memberSignupDto.getBirth())
+                .sex(memberSignupDto.getSex())
+                .reportCount(0)
                 .authorities(Collections.singleton(authority))
-                .activated(true)
+                .active(true)
                 .build();
         return new MemberResponseDto(memberRepository.save(member));
     }
