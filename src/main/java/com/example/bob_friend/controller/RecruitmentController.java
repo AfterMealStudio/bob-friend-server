@@ -9,7 +9,6 @@ import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +32,7 @@ public class RecruitmentController {
     }
 
     @PostMapping()
-    public ResponseEntity createRecruitment(RecruitmentRequestDto recruitmentRequestDto) {
+    public ResponseEntity createRecruitment(@RequestBody RecruitmentRequestDto recruitmentRequestDto) {
         String currentUsername = memberService.getCurrentUsername();
         MemberResponseDto currentMember = memberService.getMemberWithAuthorities(currentUsername);
         recruitmentRequestDto.setAuthor(currentMember.convertToEntity());
