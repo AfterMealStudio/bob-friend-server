@@ -67,53 +67,56 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     }
 
     @Override
-    public RecruitmentResponseDto join(Long recruitmentId, Member member) {
+    public RecruitmentResponseDto joinOrUnJoin(Long recruitmentId, Member member) {
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElseThrow(() -> {
             throw new RecruitmentNotFoundException(recruitmentId);
         });
-        if (isAlreadyJoin(recruitment,member)) throw new MemberDuplicatedException(member.getUsername());
-        return new RecruitmentResponseDto(addMemberToRecruitment(recruitment, member));
+        validateRecruitment(recruitment);
+
+        if (isAlreadyJoin(recruitment, member)) {
+            unJoin(recruitment, member);
+        } else {
+            join(recruitment, member);
+        }
+        return new RecruitmentResponseDto(join(recruitment, member));
     }
 
-    private Recruitment addMemberToRecruitment(Recruitment recruitment, Member member) {
-        if (isValidRecruitment(recruitment)) {
-            if (!member.isActivated()) {
-                throw new MemberNotActivatedException(member.getUsername());
-            }
-            recruitment.getMembers().add(member);
-            increaseCurrentNumberOfPeople(recruitment);
+    private Recruitment join(Recruitment recruitment, Member member) {
+        validateRecruitment(recruitment);
+        if (!member.isActive()) {
+            throw new MemberNotActivatedException(member.getUsername());
         }
+        recruitment.getMembers().add(member);
+        increaseCurrentNumberOfPeople(recruitment);
+
         return recruitmentRepository.save(recruitment);
     }
 
-    private void increaseCurrentNumberOfPeople(Recruitment recruitment) {
-        if (isValidRecruitment(recruitment)) {
-            recruitment.setCurrentNumberOfPeople(recruitment.getCurrentNumberOfPeople() + 1);
-        }
-    }
-    private void decreaseCurrentNumberOfPeople(Recruitment recruitment) {
-        recruitment.setCurrentNumberOfPeople(recruitment.getCurrentNumberOfPeople()-1);
+    public void unJoin(Recruitment recruitment, Member member) {
+        recruitment.getMembers().remove(member);
+        decreaseCurrentNumberOfPeople(recruitment);
+        recruitmentRepository.save(recruitment);
     }
 
-    private boolean isValidRecruitment(Recruitment recruitment) {
+    private void increaseCurrentNumberOfPeople(Recruitment recruitment) {
+        validateRecruitment(recruitment);
+        int currentNumberOfPeople = recruitment.getCurrentNumberOfPeople() + 1;
+        recruitment.setCurrentNumberOfPeople(currentNumberOfPeople);
+        if (currentNumberOfPeople >= recruitment.getTotalNumberOfPeople()) {
+            recruitment.setFull(true);
+        }
+    }
+
+    private void decreaseCurrentNumberOfPeople(Recruitment recruitment) {
+        recruitment.setCurrentNumberOfPeople(recruitment.getCurrentNumberOfPeople() - 1);
+    }
+
+    private void validateRecruitment(Recruitment recruitment) {
         if (recruitment.isFull()) throw new RecruitmentIsFullException(recruitment.getId());
         if (!recruitment.isActive()) throw new RecruitmentNotActiveException(recruitment.getId());
-        return true;
     }
 
     private boolean isAlreadyJoin(Recruitment recruitment, Member member) {
         return recruitment.getMembers().contains(member);
-    }
-
-    @Override
-    public void unJoin(Long recruitmentId, Member member) {
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElseThrow(() -> {
-            throw new RecruitmentNotFoundException(recruitmentId);
-        });
-        if (isAlreadyJoin(recruitment,member)) {
-            recruitment.getMembers().remove(member);
-            decreaseCurrentNumberOfPeople(recruitment);
-            recruitmentRepository.save(recruitment);
-        }
     }
 }

@@ -19,7 +19,6 @@ public interface RecruitmentService {
 
     RecruitmentResponseDto update(Long recruitmentId, RecruitmentRequestDto update);
 
-    RecruitmentResponseDto join(Long recruitmentId, Member member);
+    RecruitmentResponseDto joinOrUnJoin(Long recruitmentId, Member member);
 
-    void unJoin(Long recruitmentId, Member member);
 }

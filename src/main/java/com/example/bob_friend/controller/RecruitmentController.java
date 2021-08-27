@@ -56,7 +56,7 @@ public class RecruitmentController {
     public ResponseEntity joinRecruitment(@PathVariable Long recruitmentId) {
         String currentUsername = memberService.getCurrentUsername();
         MemberResponseDto currentMember = memberService.getMemberWithAuthorities(currentUsername);
-        RecruitmentResponseDto join = recruitmentService.join(recruitmentId, currentMember.convertToEntity());
+        RecruitmentResponseDto join = recruitmentService.joinOrUnJoin(recruitmentId, currentMember.convertToEntity());
         return ResponseEntity.ok(join);
     }
 
