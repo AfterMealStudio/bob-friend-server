@@ -28,8 +28,8 @@ public class Member {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "activated")
-    private boolean activated;
+    @Column(name = "active")
+    private boolean active;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

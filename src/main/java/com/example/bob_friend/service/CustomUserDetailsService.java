@@ -30,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private User createUser(String username, Member member) {
-        if (!member.isActivated()) {
+        if (!member.isActive()) {
             throw new MemberNotActivatedException(username);
         }
         List<GrantedAuthority> grantedAuthorityList = member.getAuthorities().stream()
