@@ -31,8 +31,8 @@ public class Recruitment {
     @JoinColumn(name = "author")
     private Member author;
 
-    @Column(name = "members")
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "recruitment_member")
+    @ManyToMany
     private List<Member> members;
 
     @Column(name = "total_number_of_people")

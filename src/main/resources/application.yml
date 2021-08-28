@@ -10,9 +10,11 @@ spring:
 #    url: jdbc:mysql://localhost/minsung
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
+
     show-sql: true
     defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.MariaDBDialect
   sql:
     init:
       mode: always
