@@ -36,7 +36,6 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     @Override
     public RecruitmentResponseDto add(RecruitmentRequestDto recruitmentRequestDto) {
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
-//        recruitment.getMembers().add(recruitment.getAuthor());
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
         return new RecruitmentResponseDto(savedRecruitment);
     }
@@ -74,14 +73,13 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         validateRecruitment(recruitment);
 
         if (isAlreadyJoin(recruitment, member)) {
-            unJoin(recruitment, member);
+            return new RecruitmentResponseDto(unJoin(recruitment, member));
         } else {
-            join(recruitment, member);
+            return new RecruitmentResponseDto(join(recruitment, member));
         }
-        return new RecruitmentResponseDto(join(recruitment, member));
     }
 
-    private Recruitment join(Recruitment recruitment, Member member) {
+    private Recruitment join(Recruitment recruitment, Member member) throws RecruitmentIsFullException, RecruitmentNotActiveException {
         validateRecruitment(recruitment);
         if (!member.isActive()) {
             throw new MemberNotActivatedException(member.getUsername());
@@ -92,10 +90,10 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         return recruitmentRepository.save(recruitment);
     }
 
-    public void unJoin(Recruitment recruitment, Member member) {
+    public Recruitment unJoin(Recruitment recruitment, Member member) {
         recruitment.getMembers().remove(member);
         decreaseCurrentNumberOfPeople(recruitment);
-        recruitmentRepository.save(recruitment);
+        return recruitmentRepository.save(recruitment);
     }
 
     private void increaseCurrentNumberOfPeople(Recruitment recruitment) {
@@ -112,7 +110,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     }
 
     private void validateRecruitment(Recruitment recruitment) {
-        if (recruitment.isFull()) throw new RecruitmentIsFullException(recruitment.getId());
+        if (recruitment.isFull()) throw new RecruitmentIsFullException();
         if (!recruitment.isActive()) throw new RecruitmentNotActiveException(recruitment.getId());
     }
 
