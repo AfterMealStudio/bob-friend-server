@@ -3,6 +3,7 @@ package com.example.bob_friend.controller;
 import com.example.bob_friend.model.dto.MemberResponseDto;
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.exception.RecruitmentIsFullException;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.MemberService;
 import com.example.bob_friend.service.RecruitmentService;
@@ -64,4 +65,10 @@ public class RecruitmentController {
     public ResponseEntity handleRecruitmentNotFound(RecruitmentNotFoundException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(value = RecruitmentIsFullException.class)
+    public ResponseEntity handleRecruitmentIsFull(RecruitmentIsFullException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.INSUFFICIENT_STORAGE);
+    }
+
 }
