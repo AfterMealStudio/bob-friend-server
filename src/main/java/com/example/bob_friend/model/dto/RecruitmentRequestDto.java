@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 @Data
@@ -20,7 +21,6 @@ public class RecruitmentRequestDto {
     private Double latitude;
     private Double longitude;
     private LocalDateTime appointmentTime;
-    private LocalDateTime endAt;
 
     public RecruitmentRequestDto(Recruitment recruitment) {
         this.title = recruitment.getTitle();
@@ -32,7 +32,6 @@ public class RecruitmentRequestDto {
         this.latitude = recruitment.getLatitude();
         this.longitude = recruitment.getLongitude();
         this.appointmentTime = recruitment.getAppointmentTime();
-        this.endAt = recruitment.getEndAt();
     }
 
     public Recruitment convertToDomain() {
@@ -48,7 +47,6 @@ public class RecruitmentRequestDto {
                 .latitude(this.latitude)
                 .longitude(this.longitude)
                 .appointmentTime(this.appointmentTime)
-                .endAt(this.endAt)
                 .active(true)
                 .full(false)
                 .build();

@@ -4,6 +4,7 @@ import com.example.bob_friend.model.entity.Recruitment;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,8 +25,7 @@ public class RecruitmentResponseDto {
     private Double latitude;
     private Double longitude;
     private LocalDateTime appointmentTime;
-    private LocalDateTime endAt;
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     public RecruitmentResponseDto(Recruitment recruitment) {
         this.id = recruitment.getId();
@@ -41,7 +41,6 @@ public class RecruitmentResponseDto {
         this.latitude = recruitment.getLatitude();
         this.longitude = recruitment.getLongitude();
         this.appointmentTime = recruitment.getAppointmentTime();
-        this.endAt = recruitment.getEndAt();
-        this.createdAt = recruitment.getCreatedAt();
+        this.createdAt = recruitment.getCreatedAt().toLocalDate();
     }
 }
