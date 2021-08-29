@@ -1,8 +1,10 @@
 package com.example.bob_friend.service;
 
+import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.entity.Sex;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -32,32 +37,48 @@ class RecruitmentServiceTest {
     @InjectMocks
     RecruitmentServiceImpl recruitmentService;
 
-    Recruitment recruitment1;
-    Recruitment recruitment2;
+    Recruitment testRecruitment;
+    Member testAuthor;
 
     @BeforeEach
     public void setup() {
-        recruitment1 = Recruitment.builder()
-                .id(1L)
-                .title("test 1")
-                .content("test 1")
+        testAuthor = Member.builder()
+                .id(1)
+                .email("testAuthor@test.com")
+                .username("testAuthor")
+                .password("testPassword")
+                .sex(Sex.FEMALE)
+                .birth(LocalDate.now())
                 .build();
-        recruitment2 = Recruitment.builder()
-                .id(2L)
-                .title("test 2")
-                .content("test 2")
+
+        testRecruitment = Recruitment.builder()
+                .id(1L)
+                .title("title")
+                .content("content")
+                .author(testAuthor)
+                .members(new ArrayList<>())
+                .currentNumberOfPeople(1)
+                .totalNumberOfPeople(4)
+                .full(false)
+                .restaurantName("testRestaurantName")
+                .restaurantAddress("testRestaurantAddress")
+                .latitude(0.0)
+                .longitude(0.0)
+                .createdAt(LocalDateTime.now())
+                .appointmentTime(LocalDateTime.now().plusHours(4))
+                .endAt(LocalDateTime.now().plusDays(1))
                 .build();
     }
 
     @Test
     public void findByIdSuccess() {
-        given(recruitmentRepository.findById(recruitment1.getId()))
-                .willReturn(Optional.ofNullable(recruitment1));
+        given(recruitmentRepository.findById(testRecruitment.getId()))
+                .willReturn(Optional.ofNullable(testRecruitment));
 
-        RecruitmentResponseDto byId = recruitmentService.findById(recruitment1.getId());
-        RecruitmentResponseDto dtoFromDomain = new RecruitmentResponseDto(recruitment1);
+        RecruitmentResponseDto byId = recruitmentService.findById(testRecruitment.getId());
+        RecruitmentResponseDto dtoFromEntity = new RecruitmentResponseDto(testRecruitment);
 
-        assertThat(byId, equalTo(dtoFromDomain));
+        assertThat(byId, equalTo(dtoFromEntity));
     }
 
     @Test
@@ -73,23 +94,25 @@ class RecruitmentServiceTest {
 
     @Test
     public void findAll() {
-        List<Recruitment> recruitmentList = Arrays.asList(recruitment1, recruitment2);
+        List<Recruitment> recruitmentList = Arrays.asList(testRecruitment);
         given(recruitmentRepository.findAll())
                 .willReturn(recruitmentList);
 
         List<RecruitmentResponseDto> responseDtoList = recruitmentService.findAll();
 
-        assertThat(responseDtoList, equalTo(recruitmentList.stream().map(r -> new RecruitmentResponseDto(r)).collect(Collectors.toList())));
-
+        assertThat(responseDtoList,
+                equalTo(recruitmentList.stream()
+                        .map(r -> new RecruitmentResponseDto(r))
+                        .collect(Collectors.toList())));
     }
 
     @Test
     public void add() {
         when(recruitmentRepository.save(any()))
-                .thenReturn(recruitment1);
+                .thenReturn(testRecruitment);
 
-        RecruitmentRequestDto requestDto = new RecruitmentRequestDto(recruitment1);
-        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(recruitment1);
+        RecruitmentRequestDto requestDto = new RecruitmentRequestDto(testRecruitment);
+        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(testRecruitment);
 
         RecruitmentResponseDto add = recruitmentService.add(requestDto);
 

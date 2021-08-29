@@ -5,6 +5,7 @@ import com.example.bob_friend.model.entity.Sex;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -40,5 +41,18 @@ public class MemberResponseDto {
                 .reportCount(this.reportCount)
                 .active(this.active)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MemberResponseDto that = (MemberResponseDto) o;
+        return active == that.active && id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(username, that.username) && Objects.equals(birth, that.birth) && sex == that.sex && Objects.equals(reportCount, that.reportCount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, username, birth, sex, reportCount, active);
     }
 }

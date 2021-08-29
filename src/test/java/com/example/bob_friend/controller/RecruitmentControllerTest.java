@@ -1,8 +1,12 @@
 package com.example.bob_friend.controller;
 
+import com.example.bob_friend.model.dto.MemberResponseDto;
+import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.service.MemberService;
 import com.example.bob_friend.service.RecruitmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +16,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -36,34 +44,60 @@ class RecruitmentControllerTest {
     @MockBean
     RecruitmentService recruitmentService;
 
-    Recruitment recruitment;
+    @MockBean
+    MemberService memberService;
+
+    Recruitment testRecruitment;
+    private Member testAuthor;
 
     @BeforeEach
     public void setup() {
-        // recruitment 객체를 하나 생성
-        recruitment = Recruitment.builder()
+        testAuthor = Member.builder()
+                .id(1)
+                .email("testAuthor@test.com")
+                .username("testAuthor")
+                .password("testPassword")
+                .sex(Sex.FEMALE)
+                .birth(LocalDate.now())
+                .build();
+
+        testRecruitment = Recruitment.builder()
                 .id(1L)
                 .title("title")
                 .content("content")
+                .author(testAuthor)
+                .members(new ArrayList<>())
+                .currentNumberOfPeople(1)
+                .totalNumberOfPeople(4)
+                .full(false)
+                .restaurantName("testRestaurantName")
+                .restaurantAddress("testRestaurantAddress")
+                .latitude(0.0)
+                .longitude(0.0)
+                .createdAt(LocalDateTime.now())
+                .appointmentTime(LocalDateTime.now().plusHours(4))
+                .endAt(LocalDateTime.now().plusDays(1))
                 .build();
+
+        given(memberService.getCurrentUsername()).willReturn(testAuthor.getUsername());
+        given(memberService.getMemberWithAuthorities(any())).willReturn(new MemberResponseDto(testAuthor));
     }
     @Test
     void getAllRecruitment() throws Exception {
         // 전체 recruitment를 list 형태로 받아옴
-        RecruitmentResponseDto responseDto1 = new RecruitmentResponseDto(Recruitment.builder().id(1L).title("response 1").content("response 1").build());
-        RecruitmentResponseDto responseDto2 = new RecruitmentResponseDto(Recruitment.builder().id(2L).title("response 2").content("response 2").build());
+        RecruitmentResponseDto responseDto1 = new RecruitmentResponseDto(testRecruitment);
 
         given(recruitmentService.findAll())
-                .willReturn(Arrays.asList(responseDto1,responseDto2));
+                .willReturn(Arrays.asList(responseDto1));
         mvc.perform(get("/recruitments"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1,responseDto2))))
+                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
                 .andDo(print());
     }
 
     @Test
     void getRecruitment() throws Exception {
-        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(recruitment);
+        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(testRecruitment);
         given(recruitmentService.findById(any()))
                 .willReturn(responseDto);
 
@@ -75,36 +109,41 @@ class RecruitmentControllerTest {
 
     @Test
     void createRecruitment() throws Exception {
-        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(recruitment);
+        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(testRecruitment);
+        RecruitmentRequestDto requestDto = new RecruitmentRequestDto(testRecruitment);
         given(recruitmentService.add(any()))
                 .willReturn(responseDto);
 
-        mvc.perform(post("/recruitments"))
+        mvc.perform(post("/recruitments").
+                        content(objectMapper.writeValueAsString(requestDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
                 .andDo(print());
     }
 
-    @Test
-    void updateRecruitment() throws Exception {
-        Recruitment update = Recruitment.builder()
-                .id(1L)
-                .title("update title")
-                .content("update content")
-                .build();
-        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(update);
-        RecruitmentRequestDto requestDto = new RecruitmentRequestDto(update);
-
-        given(recruitmentService.update(any(),any()))
-                .willReturn(responseDto);
-
-        mvc.perform(put("/recruitments/{id}",1)
-                        .content(objectMapper.writeValueAsString(requestDto))
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
-                .andDo(print());
-    }
+    //update 기능 보류
+//    @Test
+//    void updateRecruitment() throws Exception {
+//        Recruitment update = Recruitment.builder()
+//                .id(1L)
+//                .title("update title")
+//                .content("update content")
+//                .build();
+//        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(update);
+//        RecruitmentRequestDto requestDto = new RecruitmentRequestDto(update);
+//
+//        given(recruitmentService.update(any(),any()))
+//                .willReturn(responseDto);
+//
+//        mvc.perform(put("/recruitments/{id}",1)
+//                        .content(objectMapper.writeValueAsString(requestDto))
+//                )
+//                .andExpect(status().isOk())
+//                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
+//                .andDo(print());
+//    }
 
     @Test
     void deleteRecruitment() throws Exception {
