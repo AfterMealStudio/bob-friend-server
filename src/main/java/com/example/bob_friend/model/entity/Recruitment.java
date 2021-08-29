@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Builder
@@ -33,7 +33,7 @@ public class Recruitment {
 
     @JoinTable(name = "recruitment_member")
     @ManyToMany
-    private List<Member> members;
+    private Set<Member> members;
 
     @Column(name = "total_number_of_people")
     private Integer totalNumberOfPeople;

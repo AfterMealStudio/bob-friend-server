@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -54,4 +55,17 @@ public class Member {
             joinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")},
             inverseJoinColumns = @JoinColumn(name = "authority_name", referencedColumnName = "authority_name"))
     private Set<Authority> authorities;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return id == member.id && active == member.active && Objects.equals(email, member.email) && Objects.equals(username, member.username) && sex == member.sex && Objects.equals(birth, member.birth) && Objects.equals(reportCount, member.reportCount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, username, sex, birth, reportCount, active);
+    }
 }

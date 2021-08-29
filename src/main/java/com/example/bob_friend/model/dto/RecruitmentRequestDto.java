@@ -6,8 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.HashSet;
 
 @Data
 @NoArgsConstructor
@@ -39,7 +38,7 @@ public class RecruitmentRequestDto {
                 .title(this.title)
                 .content(this.content)
                 .author(this.author)
-                .members(new LinkedList<Member>())
+                .members(new HashSet<>())
                 .currentNumberOfPeople(1)
                 .totalNumberOfPeople(this.totalNumberOfPeople)
                 .restaurantName(this.restaurantName)
