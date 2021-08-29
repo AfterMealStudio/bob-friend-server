@@ -31,8 +31,10 @@ public class Recruitment {
     @JoinColumn(name = "author")
     private Member author;
 
-    @JoinTable(name = "recruitment_member")
     @ManyToMany
+    @JoinTable(name = "recruitment_member",
+            joinColumns = {@JoinColumn(name = "recruitment_id", referencedColumnName = "recruitment_id")},
+            inverseJoinColumns = @JoinColumn(name = "member_id", referencedColumnName = "member_id"))
     private Set<Member> members;
 
     @Column(name = "total_number_of_people")
@@ -80,6 +82,10 @@ public class Recruitment {
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 '}';
+    }
+
+    public void setAuthor(Member author) {
+        this.author = author;
     }
 
     public void setCurrentNumberOfPeople(Integer currentNumberOfPeople) {
