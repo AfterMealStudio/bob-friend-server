@@ -13,7 +13,6 @@ import java.util.HashSet;
 public class RecruitmentRequestDto {
     private String title;
     private String content;
-    private Member author;
     private Integer totalNumberOfPeople;
     private String restaurantName;
     private String restaurantAddress;
@@ -24,7 +23,6 @@ public class RecruitmentRequestDto {
     public RecruitmentRequestDto(Recruitment recruitment) {
         this.title = recruitment.getTitle();
         this.content = recruitment.getContent();
-        this.author = recruitment.getAuthor();
         this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
         this.restaurantName = recruitment.getRestaurantName();
         this.restaurantAddress = recruitment.getRestaurantAddress();
@@ -37,7 +35,6 @@ public class RecruitmentRequestDto {
         return Recruitment.builder()
                 .title(this.title)
                 .content(this.content)
-                .author(this.author)
                 .members(new HashSet<>())
                 .currentNumberOfPeople(1)
                 .totalNumberOfPeople(this.totalNumberOfPeople)

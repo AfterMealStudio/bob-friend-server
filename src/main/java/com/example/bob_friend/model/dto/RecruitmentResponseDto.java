@@ -3,12 +3,14 @@ package com.example.bob_friend.model.dto;
 import com.example.bob_friend.model.entity.Recruitment;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@ToString
 @Data
 @NoArgsConstructor
 public class RecruitmentResponseDto {
