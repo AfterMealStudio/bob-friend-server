@@ -1,12 +1,10 @@
 package com.example.bob_friend.controller;
 
-import com.example.bob_friend.model.dto.MemberResponseDto;
-import com.example.bob_friend.model.entity.Member;
-import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.entity.Member;
+import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
-import com.example.bob_friend.service.MemberService;
 import com.example.bob_friend.service.RecruitmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,8 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -44,9 +42,6 @@ class RecruitmentControllerTest {
     @MockBean
     RecruitmentService recruitmentService;
 
-    @MockBean
-    MemberService memberService;
-
     Recruitment testRecruitment;
     private Member testAuthor;
 
@@ -66,7 +61,7 @@ class RecruitmentControllerTest {
                 .title("title")
                 .content("content")
                 .author(testAuthor)
-                .members(new ArrayList<>())
+                .members(new HashSet<>())
                 .currentNumberOfPeople(1)
                 .totalNumberOfPeople(4)
                 .full(false)
@@ -79,8 +74,6 @@ class RecruitmentControllerTest {
                 .endAt(LocalDateTime.now().plusDays(1))
                 .build();
 
-        given(memberService.getCurrentUsername()).willReturn(testAuthor.getUsername());
-        given(memberService.getMemberWithAuthorities(any())).willReturn(new MemberResponseDto(testAuthor));
     }
     @Test
     void getAllRecruitment() throws Exception {

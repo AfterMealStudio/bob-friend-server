@@ -1,10 +1,14 @@
 package com.example.bob_friend.service;
 
+import com.example.bob_friend.model.dto.MemberResponseDto;
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
-import com.example.bob_friend.model.exception.*;
+import com.example.bob_friend.model.exception.MemberNotActivatedException;
+import com.example.bob_friend.model.exception.RecruitmentIsFullException;
+import com.example.bob_friend.model.exception.RecruitmentNotActiveException;
+import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class RecruitmentServiceImpl implements RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
-
+    private final MemberService memberService;
     @Override
     public RecruitmentResponseDto findById(Long recruitmentId) {
         Recruitment byId = recruitmentRepository.findById(recruitmentId)
@@ -35,7 +39,11 @@ public class RecruitmentServiceImpl implements RecruitmentService {
 
     @Override
     public RecruitmentResponseDto add(RecruitmentRequestDto recruitmentRequestDto) {
+        String currentUsername = memberService.getCurrentUsername();
+        MemberResponseDto currentMember = memberService.getMemberWithAuthorities(currentUsername);
+
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
+        recruitment.setAuthor(currentMember.convertToEntity());
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
         return new RecruitmentResponseDto(savedRecruitment);
     }
@@ -66,16 +74,20 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     }
 
     @Override
-    public RecruitmentResponseDto joinOrUnJoin(Long recruitmentId, Member member) {
+    public RecruitmentResponseDto joinOrUnJoin(Long recruitmentId) {
+        String currentUsername = memberService.getCurrentUsername();
+        MemberResponseDto memberDto = memberService.getMemberWithAuthorities(currentUsername);
+        Member currentMember = memberDto.convertToEntity();
+
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElseThrow(() -> {
             throw new RecruitmentNotFoundException(recruitmentId);
         });
         validateRecruitment(recruitment);
 
-        if (isAlreadyJoin(recruitment, member)) {
-            return new RecruitmentResponseDto(unJoin(recruitment, member));
+        if (isAlreadyJoin(recruitment, currentMember)) {
+            return new RecruitmentResponseDto(unJoin(recruitment, currentMember));
         } else {
-            return new RecruitmentResponseDto(join(recruitment, member));
+            return new RecruitmentResponseDto(join(recruitment, currentMember));
         }
     }
 

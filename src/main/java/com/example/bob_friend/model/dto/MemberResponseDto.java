@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@ToString
 @Getter
 @Setter
 @Builder
@@ -48,11 +49,11 @@ public class MemberResponseDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MemberResponseDto that = (MemberResponseDto) o;
-        return active == that.active && id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(username, that.username) && Objects.equals(birth, that.birth) && sex == that.sex && Objects.equals(reportCount, that.reportCount);
+        return id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(username, that.username) && Objects.equals(birth, that.birth) && sex == that.sex;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, username, birth, sex, reportCount, active);
+        return Objects.hash(id, email, username, birth, sex);
     }
 }
