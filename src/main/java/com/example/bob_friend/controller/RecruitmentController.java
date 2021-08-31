@@ -2,6 +2,8 @@ package com.example.bob_friend.controller;
 
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.exception.NotAMemberOfRecruitentException;
+import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentIsFullException;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.RecruitmentService;
@@ -17,6 +19,7 @@ import java.util.List;
 @RequestMapping("/recruitments")
 public class RecruitmentController {
     private final RecruitmentService recruitmentService;
+
     @GetMapping()
     public ResponseEntity getAllRecruitment() {
         List<RecruitmentResponseDto> responseDtoList = recruitmentService.findAll();
@@ -24,19 +27,23 @@ public class RecruitmentController {
     }
 
     @GetMapping("/{recruitmentId}")
-    public ResponseEntity getRecruitment(@PathVariable Long recruitmentId) throws RecruitmentNotFoundException {
+    public ResponseEntity getRecruitment(@PathVariable Long recruitmentId)
+            throws RecruitmentNotFoundException {
         RecruitmentResponseDto recruitmentResponseDto = recruitmentService.findById(recruitmentId);
         return ResponseEntity.ok(recruitmentResponseDto);
     }
 
     @PostMapping()
-    public ResponseEntity createRecruitment(@RequestBody RecruitmentRequestDto recruitmentRequestDto) {
+    public ResponseEntity createRecruitment(
+            @RequestBody RecruitmentRequestDto recruitmentRequestDto) {
         RecruitmentResponseDto createdRecruitment = recruitmentService.add(recruitmentRequestDto);
         return ResponseEntity.ok(createdRecruitment);
     }
 
     @PutMapping("/{recruitmentId}")
-    public ResponseEntity updateRecruitment(@PathVariable Long recruitmentId, RecruitmentRequestDto incomingChanges) {
+    public ResponseEntity updateRecruitment(
+            @PathVariable Long recruitmentId,
+            RecruitmentRequestDto incomingChanges) {
         RecruitmentResponseDto update = recruitmentService.update(recruitmentId, incomingChanges);
         return ResponseEntity.ok(update);
     }
@@ -48,9 +55,17 @@ public class RecruitmentController {
     }
 
     @PatchMapping("/{recruitmentId}")
-    public ResponseEntity joinRecruitment(@PathVariable Long recruitmentId) {
-        RecruitmentResponseDto join = recruitmentService.joinOrUnJoin(recruitmentId);
+    public ResponseEntity joinRecruitment(@PathVariable Long recruitmentId)
+            throws RecruitmentAlreadyJoined {
+        RecruitmentResponseDto join = recruitmentService.join(recruitmentId);
         return ResponseEntity.ok(join);
+    }
+
+    @PatchMapping("/{recruitmentId}/unjoin")
+    public ResponseEntity unJoinRecruitment(@PathVariable Long recruitmentId)
+            throws NotAMemberOfRecruitentException {
+        RecruitmentResponseDto unjoin = recruitmentService.unJoin(recruitmentId);
+        return ResponseEntity.ok(unjoin);
     }
 
     @ExceptionHandler(value = RecruitmentNotFoundException.class)
@@ -61,6 +76,11 @@ public class RecruitmentController {
     @ExceptionHandler(value = RecruitmentIsFullException.class)
     public ResponseEntity handleRecruitmentIsFull(RecruitmentIsFullException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.INSUFFICIENT_STORAGE);
+    }
+
+    @ExceptionHandler(value = RecruitmentIsFullException.class)
+    public ResponseEntity handleNotMember(NotAMemberOfRecruitentException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 }

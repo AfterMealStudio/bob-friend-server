@@ -6,6 +6,7 @@ import com.example.bob_friend.model.dto.RecruitmentResponseDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,8 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -128,7 +128,7 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    public void join() {
+    public void join() throws RecruitmentAlreadyJoined {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
@@ -146,9 +146,35 @@ class RecruitmentServiceTest {
                 .thenReturn(testRecruitment);
 
         RecruitmentResponseDto recruitmentResponseDto =
-                recruitmentService.joinOrUnJoin(testRecruitment.getId());
+                recruitmentService.join(testRecruitment.getId());
 
         assertTrue(recruitmentResponseDto.getMembers().contains(
+                new MemberResponseDto(testMember)));
+    }
+
+    @Test
+    public void unJoin() {
+        Member testMember = Member.builder()
+                .id(1)
+                .email("testMember@test.com")
+                .username("testMember")
+                .password("testPassword")
+                .sex(Sex.FEMALE)
+                .birth(LocalDate.now())
+                .active(true)
+                .build();
+        when(memberService.getCurrentUsername()).thenReturn(testMember.getUsername());
+        when(memberService.getMemberWithAuthorities(any())).thenReturn(new MemberResponseDto(testMember));
+        given(recruitmentRepository.findById(testRecruitment.getId()))
+                .willReturn(Optional.ofNullable(testRecruitment));
+        testRecruitment.getMembers().add(testMember);
+        when(recruitmentRepository.save(any()))
+                .thenReturn(testRecruitment);
+
+        RecruitmentResponseDto recruitmentResponseDto =
+                recruitmentService.unJoin(testRecruitment.getId());
+
+        assertFalse(recruitmentResponseDto.getMembers().contains(
                 new MemberResponseDto(testMember)));
     }
 }
