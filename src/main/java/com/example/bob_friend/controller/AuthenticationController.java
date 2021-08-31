@@ -31,7 +31,7 @@ public class AuthenticationController {
 
     @PostMapping("/signin")
     public ResponseEntity authorize(@Valid @RequestBody MemberLoginDto loginDto) throws AuthenticationException {
-        if (!memberService.isExistById(loginDto.getUsername())) {
+        if (!memberService.isExistByUsername(loginDto.getUsername())) {
             throw new UsernameNotFoundException(loginDto.getUsername() + " is not a member");
         }
         UsernamePasswordAuthenticationToken authenticationToken =

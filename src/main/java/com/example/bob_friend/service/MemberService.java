@@ -39,11 +39,13 @@ public class MemberService {
         Member member = Member.builder()
                 .email(memberSignupDto.getEmail())
                 .username(memberSignupDto.getUsername())
+                .nickname(memberSignupDto.getNickname())
                 .password(passwordEncoder.encode(memberSignupDto.getPassword()))
                 .birth(memberSignupDto.getBirth())
                 .sex(memberSignupDto.getSex())
                 .reportCount(0)
                 .authorities(Collections.singleton(authority))
+                .agree(memberSignupDto.isAgree())
                 .active(true)
                 .build();
         return new MemberResponseDto(memberRepository.save(member));
@@ -101,7 +103,15 @@ public class MemberService {
         memberRepository.deleteById(memberId);
     }
 
-    public boolean isExistById(String username) {
+    public boolean isExistByUsername(String username) {
         return memberRepository.existsMemberByUsername(username);
+    }
+
+    public boolean isExistByEmail(String email) {
+        return memberRepository.existsMemberByEmail(email);
+    }
+
+    public boolean isExistByNickname(String nickname) {
+        return memberRepository.existsMemberByNickname(nickname);
     }
 }

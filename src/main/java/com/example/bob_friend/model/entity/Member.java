@@ -26,6 +26,9 @@ public class Member {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "nickname")
+    private String nickname;
+
     @Column(name = "password")
     private String password;
 
@@ -37,6 +40,9 @@ public class Member {
 
     @Column(name = "report_count")
     private Integer reportCount;
+
+    @Column(name = "agree") // 광고성 메일 동의 여부
+    private boolean agree;
 
     @Column(name = "active")
     private boolean active;
