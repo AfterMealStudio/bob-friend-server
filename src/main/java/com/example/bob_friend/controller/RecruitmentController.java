@@ -40,13 +40,13 @@ public class RecruitmentController {
         return ResponseEntity.ok(createdRecruitment);
     }
 
-    @PutMapping("/{recruitmentId}")
-    public ResponseEntity updateRecruitment(
-            @PathVariable Long recruitmentId,
-            RecruitmentRequestDto incomingChanges) {
-        RecruitmentResponseDto update = recruitmentService.update(recruitmentId, incomingChanges);
-        return ResponseEntity.ok(update);
-    }
+//    @PutMapping("/{recruitmentId}")
+//    public ResponseEntity updateRecruitment(
+//            @PathVariable Long recruitmentId,
+//            RecruitmentRequestDto incomingChanges) {
+//        RecruitmentResponseDto update = recruitmentService.update(recruitmentId, incomingChanges);
+//        return ResponseEntity.ok(update);
+//    }
 
     @DeleteMapping("/{recruitmentId}")
     public ResponseEntity deleteRecruitment(@PathVariable Long recruitmentId) {
@@ -78,7 +78,7 @@ public class RecruitmentController {
         return new ResponseEntity(e.getMessage(), HttpStatus.INSUFFICIENT_STORAGE);
     }
 
-    @ExceptionHandler(value = RecruitmentIsFullException.class)
+    @ExceptionHandler(value = NotAMemberOfRecruitentException.class)
     public ResponseEntity handleNotMember(NotAMemberOfRecruitentException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }

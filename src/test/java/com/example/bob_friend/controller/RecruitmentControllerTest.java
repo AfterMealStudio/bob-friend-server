@@ -5,6 +5,7 @@ import com.example.bob_friend.model.dto.RecruitmentResponseDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.RecruitmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,6 +76,7 @@ class RecruitmentControllerTest {
                 .build();
 
     }
+
     @Test
     void getAllRecruitment() throws Exception {
         // 전체 recruitment를 list 형태로 받아옴
@@ -89,14 +91,26 @@ class RecruitmentControllerTest {
     }
 
     @Test
-    void getRecruitment() throws Exception {
+    void getRecruitmentSuccess() throws Exception {
         RecruitmentResponseDto responseDto = new RecruitmentResponseDto(testRecruitment);
         given(recruitmentService.findById(any()))
                 .willReturn(responseDto);
 
-        mvc.perform(get("/recruitments/{id}",1))
+        mvc.perform(get("/recruitments/{id}", 1))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
+                .andDo(print());
+    }
+
+    @Test
+    void getRecruitmentFail() throws Exception {
+        long recruitmentId = -1L;
+        given(recruitmentService.findById(recruitmentId))
+                .willThrow(RecruitmentNotFoundException.class);
+        mvc.perform(get("/recruitments/{id}", recruitmentId))
+                .andExpect(status().isNotFound())
+//                .andExpect(result -> assertThat(result.toString(),
+//                        equalTo("Recruitment (" + recruitmentId + ") is not found")))
                 .andDo(print());
     }
 
@@ -116,6 +130,12 @@ class RecruitmentControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    void deleteRecruitment() throws Exception {
+        mvc.perform(delete("/recruitments/{id}", 1))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
     //update 기능 보류
 //    @Test
 //    void updateRecruitment() throws Exception {
@@ -136,12 +156,6 @@ class RecruitmentControllerTest {
 //                .andExpect(status().isOk())
 //                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
 //                .andDo(print());
-//    }
 
-    @Test
-    void deleteRecruitment() throws Exception {
-        mvc.perform(delete("/recruitments/{id}", 1))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
+    //    }
 }

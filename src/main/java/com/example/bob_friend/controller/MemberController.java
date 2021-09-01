@@ -64,12 +64,12 @@ public class MemberController {
     }
 
     @ExceptionHandler(value = MemberDuplicatedException.class)
-    public ResponseEntity handleMemberDuplicated(MemberDuplicatedException e) {
+    public ResponseEntity handleMemberDuplicatedException(MemberDuplicatedException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = UsernameNotFoundException.class)
-    public ResponseEntity handleUsernameNotFound(UsernameNotFoundException e) {
+    public ResponseEntity handleUsernameNotFoundException(UsernameNotFoundException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 }
