@@ -83,4 +83,9 @@ public class RecruitmentController {
         return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = RecruitmentAlreadyJoined.class)
+    public ResponseEntity handleAlreadyJoinedException(RecruitmentAlreadyJoined e) {
+        return new ResponseEntity(e.getMessage(),HttpStatus.CONFLICT);
+    }
+
 }

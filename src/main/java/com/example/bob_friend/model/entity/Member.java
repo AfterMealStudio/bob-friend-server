@@ -55,11 +55,10 @@ public class Member {
         this.createdAt = LocalDateTime.now();
     }
 
-    @ManyToMany
-    @JoinTable(
-            name = "member_authority",
-            joinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")},
-            inverseJoinColumns = @JoinColumn(name = "authority_name", referencedColumnName = "authority_name"))
+
+    @ElementCollection
+    @JoinColumn(name = "authority")
+    @Enumerated(EnumType.STRING)
     private Set<Authority> authorities;
 
     @Override
