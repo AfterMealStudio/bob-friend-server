@@ -34,7 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new MemberNotActivatedException(username);
         }
         List<GrantedAuthority> grantedAuthorityList = member.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
+                .map(authority -> new SimpleGrantedAuthority(authority.name()))
                 .collect(Collectors.toList());
         return new User(member.getUsername(),
                 member.getPassword(),

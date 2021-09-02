@@ -31,7 +31,7 @@ public class Recruitment {
     @JoinColumn(name = "author")
     private Member author;
 
-    @ManyToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "recruitment_member",
             joinColumns = {@JoinColumn(name = "recruitment_id", referencedColumnName = "recruitment_id")},
             inverseJoinColumns = @JoinColumn(name = "member_id", referencedColumnName = "member_id"))

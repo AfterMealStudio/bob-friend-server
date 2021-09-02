@@ -33,9 +33,8 @@ public class MemberService {
                 .orElse(null) != null
         ) throw new MemberDuplicatedException(memberSignupDto.getUsername());
 
-        Authority authority = Authority.builder()
-                .authorityName("ROLE_USER")
-                .build();
+        Authority authority = Authority.ROLE_USER;
+
         Member member = Member.builder()
                 .email(memberSignupDto.getEmail())
                 .username(memberSignupDto.getUsername())
