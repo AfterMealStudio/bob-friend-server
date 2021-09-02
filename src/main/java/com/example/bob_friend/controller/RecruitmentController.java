@@ -4,11 +4,9 @@ import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
 import com.example.bob_friend.model.exception.NotAMemberOfRecruitentException;
 import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
-import com.example.bob_friend.model.exception.RecruitmentIsFullException;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,21 +64,6 @@ public class RecruitmentController {
             throws NotAMemberOfRecruitentException {
         RecruitmentResponseDto unjoin = recruitmentService.unJoin(recruitmentId);
         return ResponseEntity.ok(unjoin);
-    }
-
-    @ExceptionHandler(value = RecruitmentNotFoundException.class)
-    public ResponseEntity handleRecruitmentNotFound(RecruitmentNotFoundException e) {
-        return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(value = RecruitmentIsFullException.class)
-    public ResponseEntity handleRecruitmentIsFull(RecruitmentIsFullException e) {
-        return new ResponseEntity(e.getMessage(), HttpStatus.INSUFFICIENT_STORAGE);
-    }
-
-    @ExceptionHandler(value = NotAMemberOfRecruitentException.class)
-    public ResponseEntity handleNotMember(NotAMemberOfRecruitentException e) {
-        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 }

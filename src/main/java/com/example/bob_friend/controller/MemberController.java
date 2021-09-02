@@ -5,7 +5,6 @@ import com.example.bob_friend.model.exception.MemberDuplicatedException;
 import com.example.bob_friend.service.MemberService;
 import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -63,13 +62,4 @@ public class MemberController {
         return ResponseEntity.ok(recruitmentService.findAllJoinedRecruitments());
     }
 
-    @ExceptionHandler(value = MemberDuplicatedException.class)
-    public ResponseEntity handleMemberDuplicatedException(MemberDuplicatedException e) {
-        return new ResponseEntity(e.getMessage(), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(value = UsernameNotFoundException.class)
-    public ResponseEntity handleUsernameNotFoundException(UsernameNotFoundException e) {
-        return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
 }
