@@ -67,6 +67,10 @@ public class Recruitment {
     @Column(name = "appointment_time")
     private LocalDateTime appointmentTime;
 
+    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "recruitment_id")
+    private Set<Comment> comments;
+
     @Column(name = "active")
     private boolean active;
 

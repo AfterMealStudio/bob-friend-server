@@ -1,6 +1,9 @@
 package com.example.bob_friend.model.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -33,6 +36,7 @@ public class Member {
     private String password;
 
     @Column(name = "sex")
+    @Enumerated(EnumType.STRING)
     private Sex sex;
 
     @Column(name = "birth")
