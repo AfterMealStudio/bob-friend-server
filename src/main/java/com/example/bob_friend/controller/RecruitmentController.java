@@ -1,10 +1,14 @@
 package com.example.bob_friend.controller;
 
+import com.example.bob_friend.model.dto.CommentRequestDto;
+import com.example.bob_friend.model.dto.CommentResponseDto;
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.entity.Comment;
 import com.example.bob_friend.model.exception.NotAMemberOfRecruitentException;
 import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
+import com.example.bob_friend.service.RecruitmentCommentService;
 import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,8 @@ import java.util.List;
 @RequestMapping("/recruitments")
 public class RecruitmentController {
     private final RecruitmentService recruitmentService;
+    private final RecruitmentCommentService commentService;
+
 
     @GetMapping()
     public ResponseEntity getAllRecruitment() {
@@ -29,6 +35,20 @@ public class RecruitmentController {
             throws RecruitmentNotFoundException {
         RecruitmentResponseDto recruitmentResponseDto = recruitmentService.findById(recruitmentId);
         return ResponseEntity.ok(recruitmentResponseDto);
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity getMyRecruitment() {
+        List<RecruitmentResponseDto> myRecruitments =
+                recruitmentService.findMyRecruitments();
+        return ResponseEntity.ok(myRecruitments);
+    }
+
+    @GetMapping("/my/joined")
+    public ResponseEntity getMyJoinedRecruitment() {
+        List<RecruitmentResponseDto> allJoinedRecruitments =
+                recruitmentService.findAllJoinedRecruitments();
+        return ResponseEntity.ok(allJoinedRecruitments);
     }
 
     @PostMapping()
@@ -65,5 +85,22 @@ public class RecruitmentController {
         RecruitmentResponseDto unjoin = recruitmentService.unJoin(recruitmentId);
         return ResponseEntity.ok(unjoin);
     }
+
+    @GetMapping("/{recruitmentId}/comments")
+    public ResponseEntity getAllComments(@PathVariable Long recruitmentId) {
+        List<CommentResponseDto> allCommentByRecruitmentId = commentService
+                .getAllCommentByRecruitmentId(recruitmentId);
+        return ResponseEntity.ok(allCommentByRecruitmentId);
+    }
+
+    @PostMapping("/{recruitmentId}/comments")
+    public ResponseEntity createComment(@PathVariable Long recruitmentId,
+                                        @RequestBody CommentRequestDto commentRequestDto) {
+        CommentResponseDto comment =
+                commentService.createCommentToRecruitment(
+                        commentRequestDto, recruitmentId);
+        return ResponseEntity.ok(comment);
+    }
+
 
 }
