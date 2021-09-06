@@ -1,7 +1,7 @@
 package com.example.bob_friend.model.dto;
 
-import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
+import com.example.bob_friend.model.entity.Sex;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +18,7 @@ public class RecruitmentRequestDto {
     private String restaurantAddress;
     private Double latitude;
     private Double longitude;
+    private Sex sexRestriction;
     private LocalDateTime appointmentTime;
 
     public RecruitmentRequestDto(Recruitment recruitment) {
@@ -28,6 +29,7 @@ public class RecruitmentRequestDto {
         this.restaurantAddress = recruitment.getRestaurantAddress();
         this.latitude = recruitment.getLatitude();
         this.longitude = recruitment.getLongitude();
+        this.sexRestriction = recruitment.getSexRestriction();
         this.appointmentTime = recruitment.getAppointmentTime();
     }
 
@@ -42,6 +44,7 @@ public class RecruitmentRequestDto {
                 .restaurantAddress(this.restaurantAddress)
                 .latitude(this.latitude)
                 .longitude(this.longitude)
+                .sexRestriction(this.sexRestriction)
                 .appointmentTime(this.appointmentTime)
                 .active(true)
                 .full(false)

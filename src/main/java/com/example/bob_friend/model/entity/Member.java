@@ -36,7 +36,7 @@ public class Member {
     private String password;
 
     @Column(name = "sex")
-    @Convert(converter = SexConverter.class, attributeName = "sex")
+    @Convert(converter = SexConverter.class)
     private Sex sex;
 
     @Column(name = "birth")
@@ -79,16 +79,3 @@ public class Member {
     }
 }
 
-@Converter
-class SexConverter implements AttributeConverter<Sex,String> {
-
-    @Override
-    public String convertToDatabaseColumn(Sex attribute) {
-        return attribute.name().toUpperCase();
-    }
-
-    @Override
-    public Sex convertToEntityAttribute(String dbData) {
-        return Sex.valueOf(dbData.toUpperCase());
-    }
-}

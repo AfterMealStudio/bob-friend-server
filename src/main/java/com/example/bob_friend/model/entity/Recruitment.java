@@ -73,6 +73,10 @@ public class Recruitment {
     @Column(name = "active")
     private boolean active;
 
+    @Column(name = "sex_restriction")
+    @Convert(converter = SexConverter.class)
+    private Sex sexRestriction;
+
     @PrePersist
     public void createAt() {
         this.createdAt = LocalDateTime.now();
@@ -101,5 +105,13 @@ public class Recruitment {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Sex getSexRestriction() {
+        return sexRestriction;
+    }
+
+    public void setSexRestriction(Sex sexRestriction) {
+        this.sexRestriction = sexRestriction;
     }
 }
