@@ -9,6 +9,7 @@ import com.example.bob_friend.model.exception.*;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,13 +20,14 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
     private final MemberService memberService;
 
+    @Transactional
     @Override
     public RecruitmentResponseDto findById(Long recruitmentId) {
-        Recruitment byId = recruitmentRepository.findById(recruitmentId)
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> {
                     throw new RecruitmentNotFoundException(recruitmentId);
                 });
-        return new RecruitmentResponseDto(byId);
+        return new RecruitmentResponseDto(recruitment);
     }
 
     @Override
