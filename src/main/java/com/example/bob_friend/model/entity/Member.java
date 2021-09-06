@@ -36,7 +36,7 @@ public class Member {
     private String password;
 
     @Column(name = "sex")
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = SexConverter.class, attributeName = "sex")
     private Sex sex;
 
     @Column(name = "birth")
@@ -76,5 +76,19 @@ public class Member {
     @Override
     public int hashCode() {
         return Objects.hash(id, email, username, sex, birth, reportCount, active);
+    }
+}
+
+@Converter
+class SexConverter implements AttributeConverter<Sex,String> {
+
+    @Override
+    public String convertToDatabaseColumn(Sex attribute) {
+        return attribute.name().toUpperCase();
+    }
+
+    @Override
+    public Sex convertToEntityAttribute(String dbData) {
+        return Sex.valueOf(dbData.toUpperCase());
     }
 }
