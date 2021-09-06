@@ -21,6 +21,10 @@ public class Reply {
     @Column(name = "content")
     private String content;
 
+    @ManyToOne
+    @JoinColumn(name = "comment_id")
+    private Comment comment;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
