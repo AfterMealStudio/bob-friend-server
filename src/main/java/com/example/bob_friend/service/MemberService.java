@@ -1,7 +1,7 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.dto.MemberSignupDto;
 import com.example.bob_friend.model.dto.MemberResponseDto;
+import com.example.bob_friend.model.dto.MemberSignupDto;
 import com.example.bob_friend.model.entity.Authority;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
@@ -98,11 +98,11 @@ public class MemberService {
     @Transactional
     public Member getCurrentMember() {
         String currentUsername = getCurrentUsername();
-        Member currentMember = memberRepository.findMemberByUsername(currentUsername).orElseThrow(
-                () -> {
-                    throw new UsernameNotFoundException("user not found");
-                }
-        );
+        Member currentMember = memberRepository.findMemberByUsername(currentUsername)
+                .orElseThrow(() -> {
+                            throw new UsernameNotFoundException("user not found");
+                        }
+                );
         return currentMember;
     }
 
@@ -117,12 +117,12 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDto reportMember(String username) {
-        Member member = memberRepository.findMemberByUsername(username).orElseThrow(
-                () -> {
-                    throw new UsernameNotFoundException("user not found");
-                }
-        );
-        member.setReportCount(member.getReportCount()+1);
+        Member member = memberRepository.findMemberByUsername(username)
+                .orElseThrow(() -> {
+                            throw new UsernameNotFoundException("user not found");
+                        }
+                );
+        member.setReportCount(member.getReportCount() + 1);
         if (member.getReportCount() > 3) {
             member.setActive(false);
             member.setReportStart(LocalDate.now());
@@ -131,7 +131,6 @@ public class MemberService {
         return new MemberResponseDto((member));
     }
 
-    @Transactional
     public void saveMember(Member member) {
         memberRepository.save(member);
     }
