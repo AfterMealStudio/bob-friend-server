@@ -21,6 +21,7 @@ public class MemberResponseDto {
     private LocalDate birth;
     private Sex sex;
     private Integer reportCount;
+    private Integer accumulatedReports;
     private boolean active;
 
     public MemberResponseDto(Member member) {
@@ -31,6 +32,7 @@ public class MemberResponseDto {
         this.birth = member.getBirth();
         this.sex = member.getSex();
         this.reportCount = member.getReportCount();
+        this.accumulatedReports = member.getAccumulatedReports();
         this.active = member.isActive();
     }
 
@@ -43,6 +45,7 @@ public class MemberResponseDto {
                 .sex(this.sex)
                 .birth(this.birth)
                 .reportCount(this.reportCount)
+                .accumulatedReports(this.accumulatedReports)
                 .active(this.active)
                 .build();
     }

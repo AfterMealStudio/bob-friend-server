@@ -22,7 +22,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 @Service
 public class MemberService {
-    private final int REPORT_DAY = 3;
+    private final int REPORT_DAY = 7;
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -46,6 +46,7 @@ public class MemberService {
                 .birth(memberSignupDto.getBirth())
                 .sex(memberSignupDto.getSex())
                 .reportCount(0)
+                .accumulatedReports(0)
                 .authorities(Collections.singleton(authority))
                 .agree(memberSignupDto.isAgree())
                 .active(true)
@@ -111,7 +112,6 @@ public class MemberService {
         member.setActive(true);
         member.setReportStart(null);
         member.setReportEnd(null);
-        member.setReportCount(0);
         saveMember(member);
     }
 
@@ -124,9 +124,11 @@ public class MemberService {
                 );
         member.setReportCount(member.getReportCount() + 1);
         if (member.getReportCount() > 3) {
+            member.setReportCount(0);
             member.setActive(false);
+            member.increaseAccumulatedReports();
             member.setReportStart(LocalDate.now());
-            member.setReportEnd(LocalDate.now().plusDays(REPORT_DAY));
+            member.setReportEnd(LocalDate.now().plusDays((long) Math.pow(REPORT_DAY, (member.getAccumulatedReports()))));
         }
         return new MemberResponseDto((member));
     }

@@ -1,7 +1,7 @@
 package com.example.bob_friend.configuration;
 
 import com.example.bob_friend.interceptor.MemberValidateInterceptor;
-import com.example.bob_friend.interceptor.RecruitmentJoinInterceptor;
+import com.example.bob_friend.interceptor.SexRestrictionInterceptor;
 import com.example.bob_friend.service.MemberService;
 import com.example.bob_friend.service.RecruitmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +24,9 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public RecruitmentJoinInterceptor recruitmentJoinInterceptor(RecruitmentService recruitmentService,
-                                                                 MemberService memberService) {
-        return new RecruitmentJoinInterceptor(recruitmentService, memberService);
+    public SexRestrictionInterceptor recruitmentJoinInterceptor(RecruitmentService recruitmentService,
+                                                                MemberService memberService) {
+        return new SexRestrictionInterceptor(recruitmentService, memberService);
     }
 
     @Override

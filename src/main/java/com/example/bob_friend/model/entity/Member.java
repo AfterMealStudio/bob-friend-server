@@ -45,6 +45,9 @@ public class Member {
     @Column(name = "report_count")
     private Integer reportCount;
 
+    @Column(name = "accumulated_reports")
+    private Integer accumulatedReports;
+
     @Column(name = "agree") // 광고성 메일 동의 여부
     private boolean agree;
 
@@ -54,8 +57,10 @@ public class Member {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "report_start")
     private LocalDate reportStart;
 
+    @Column(name = "report_end")
     private LocalDate reportEnd;
 
     @PrePersist
@@ -97,6 +102,10 @@ public class Member {
 
     public void setReportEnd(LocalDate reportEnd) {
         this.reportEnd = reportEnd;
+    }
+
+    public void increaseAccumulatedReports() {
+        this.accumulatedReports+=1;
     }
 }
 
