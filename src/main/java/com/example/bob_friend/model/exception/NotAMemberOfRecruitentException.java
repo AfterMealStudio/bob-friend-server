@@ -2,9 +2,9 @@ package com.example.bob_friend.model.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class RecruitmentNotActiveException extends CustomException {
-    public RecruitmentNotActiveException(Long recruitmentId) {
-        super(recruitmentId + " is not active");
+public class NotAMemberOfRecruitentException extends CustomException {
+    public NotAMemberOfRecruitentException(String username) {
+        super(username + " is not a member");
     }
 
     @Override

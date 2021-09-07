@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class AuthenticationController {
 
     @PostMapping("/signin")
     public ResponseEntity authorize(@Valid @RequestBody MemberLoginDto loginDto) throws AuthenticationException {
-        if (!memberService.isExistById(loginDto.getUsername())) {
+        if (!memberService.isExistByUsername(loginDto.getUsername())) {
             throw new UsernameNotFoundException(loginDto.getUsername() + " is not a member");
         }
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -46,6 +47,12 @@ public class AuthenticationController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(AUTHENTICATION_HEADER, jwt);
         return new ResponseEntity(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity validateToken(HttpServletRequest request) {
+        String token = tokenProvider.resolveToken(request);
+        return ResponseEntity.ok(tokenProvider.validateToken(token));
     }
 
     @ExceptionHandler(value = UsernameNotFoundException.class)

@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@ToString
 @Getter
 @Setter
 @Builder
@@ -16,6 +17,7 @@ public class MemberResponseDto {
     private Long id;
     private String email;
     private String username;
+    private String nickname;
     private LocalDate birth;
     private Sex sex;
     private Integer reportCount;
@@ -25,6 +27,7 @@ public class MemberResponseDto {
         this.id = member.getId();
         this.email = member.getEmail();
         this.username = member.getUsername();
+        this.nickname = member.getNickname();
         this.birth = member.getBirth();
         this.sex = member.getSex();
         this.reportCount = member.getReportCount();
@@ -36,6 +39,7 @@ public class MemberResponseDto {
                 .id(this.id)
                 .email(this.email)
                 .username(this.username)
+                .nickname(this.nickname)
                 .sex(this.sex)
                 .birth(this.birth)
                 .reportCount(this.reportCount)
@@ -48,11 +52,11 @@ public class MemberResponseDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MemberResponseDto that = (MemberResponseDto) o;
-        return active == that.active && id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(username, that.username) && Objects.equals(birth, that.birth) && sex == that.sex && Objects.equals(reportCount, that.reportCount);
+        return id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(nickname, that.nickname) && Objects.equals(username, that.username) && Objects.equals(birth, that.birth) && sex == that.sex;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, username, birth, sex, reportCount, active);
+        return Objects.hash(id, email, username, nickname, birth, sex);
     }
 }

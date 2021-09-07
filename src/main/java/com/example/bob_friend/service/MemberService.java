@@ -1,7 +1,7 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.dto.MemberSignupDto;
 import com.example.bob_friend.model.dto.MemberResponseDto;
+import com.example.bob_friend.model.dto.MemberSignupDto;
 import com.example.bob_friend.model.entity.Authority;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
@@ -16,11 +16,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Collections;
 
 @RequiredArgsConstructor
 @Service
 public class MemberService {
+    private final int REPORT_DAY = 3;
+
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -33,17 +36,18 @@ public class MemberService {
                 .orElse(null) != null
         ) throw new MemberDuplicatedException(memberSignupDto.getUsername());
 
-        Authority authority = Authority.builder()
-                .authorityName("ROLE_USER")
-                .build();
+        Authority authority = Authority.ROLE_USER;
+
         Member member = Member.builder()
                 .email(memberSignupDto.getEmail())
                 .username(memberSignupDto.getUsername())
+                .nickname(memberSignupDto.getNickname())
                 .password(passwordEncoder.encode(memberSignupDto.getPassword()))
                 .birth(memberSignupDto.getBirth())
                 .sex(memberSignupDto.getSex())
                 .reportCount(0)
                 .authorities(Collections.singleton(authority))
+                .agree(memberSignupDto.isAgree())
                 .active(true)
                 .build();
         return new MemberResponseDto(memberRepository.save(member));
@@ -92,6 +96,46 @@ public class MemberService {
     }
 
     @Transactional
+    public Member getCurrentMember() {
+        String currentUsername = getCurrentUsername();
+        Member currentMember = memberRepository.findMemberByUsername(currentUsername)
+                .orElseThrow(() -> {
+                            throw new UsernameNotFoundException("user not found");
+                        }
+                );
+        return currentMember;
+    }
+
+    @Transactional
+    public void setMemberActive(Member member) {
+        member.setActive(true);
+        member.setReportStart(null);
+        member.setReportEnd(null);
+        member.setReportCount(0);
+        saveMember(member);
+    }
+
+    @Transactional
+    public MemberResponseDto reportMember(String username) {
+        Member member = memberRepository.findMemberByUsername(username)
+                .orElseThrow(() -> {
+                            throw new UsernameNotFoundException("user not found");
+                        }
+                );
+        member.setReportCount(member.getReportCount() + 1);
+        if (member.getReportCount() > 3) {
+            member.setActive(false);
+            member.setReportStart(LocalDate.now());
+            member.setReportEnd(LocalDate.now().plusDays(REPORT_DAY));
+        }
+        return new MemberResponseDto((member));
+    }
+
+    public void saveMember(Member member) {
+        memberRepository.save(member);
+    }
+
+    @Transactional
     public void deleteByName(String username) {
         memberRepository.deleteByUsername(username);
     }
@@ -101,7 +145,15 @@ public class MemberService {
         memberRepository.deleteById(memberId);
     }
 
-    public boolean isExistById(String username) {
+    public boolean isExistByUsername(String username) {
         return memberRepository.existsMemberByUsername(username);
+    }
+
+    public boolean isExistByEmail(String email) {
+        return memberRepository.existsMemberByEmail(email);
+    }
+
+    public boolean isExistByNickname(String nickname) {
+        return memberRepository.existsMemberByNickname(nickname);
     }
 }

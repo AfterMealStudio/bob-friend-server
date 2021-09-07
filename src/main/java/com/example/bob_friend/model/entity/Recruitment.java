@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Builder
@@ -31,9 +31,11 @@ public class Recruitment {
     @JoinColumn(name = "author")
     private Member author;
 
-    @JoinTable(name = "recruitment_member")
-    @ManyToMany
-    private List<Member> members;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "recruitment_member",
+            joinColumns = {@JoinColumn(name = "recruitment_id", referencedColumnName = "recruitment_id")},
+            inverseJoinColumns = @JoinColumn(name = "member_id", referencedColumnName = "member_id"))
+    private Set<Member> members;
 
     @Column(name = "total_number_of_people")
     private Integer totalNumberOfPeople;
@@ -65,8 +67,15 @@ public class Recruitment {
     @Column(name = "appointment_time")
     private LocalDateTime appointmentTime;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recruitment")
+    private Set<Comment> comments;
+
     @Column(name = "active")
     private boolean active;
+
+    @Column(name = "sex_restriction")
+    @Convert(converter = SexConverter.class)
+    private Sex sexRestriction;
 
     @PrePersist
     public void createAt() {
@@ -82,6 +91,10 @@ public class Recruitment {
                 '}';
     }
 
+    public void setAuthor(Member author) {
+        this.author = author;
+    }
+
     public void setCurrentNumberOfPeople(Integer currentNumberOfPeople) {
         this.currentNumberOfPeople = currentNumberOfPeople;
     }
@@ -92,5 +105,13 @@ public class Recruitment {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Sex getSexRestriction() {
+        return sexRestriction;
+    }
+
+    public void setSexRestriction(Sex sexRestriction) {
+        this.sexRestriction = sexRestriction;
     }
 }

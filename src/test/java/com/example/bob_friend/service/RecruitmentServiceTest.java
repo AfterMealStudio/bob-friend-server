@@ -1,10 +1,12 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.entity.Member;
-import com.example.bob_friend.model.entity.Recruitment;
+import com.example.bob_friend.model.dto.MemberResponseDto;
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.entity.Member;
+import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,24 +18,25 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RecruitmentServiceTest {
     @Mock
     RecruitmentRepository recruitmentRepository;
+    @Mock
+    MemberService memberService;
     @InjectMocks
     RecruitmentServiceImpl recruitmentService;
 
@@ -49,6 +52,7 @@ class RecruitmentServiceTest {
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .active(true)
                 .build();
 
         testRecruitment = Recruitment.builder()
@@ -56,7 +60,7 @@ class RecruitmentServiceTest {
                 .title("title")
                 .content("content")
                 .author(testAuthor)
-                .members(new ArrayList<>())
+                .members(new HashSet<>())
                 .currentNumberOfPeople(1)
                 .totalNumberOfPeople(4)
                 .full(false)
@@ -67,6 +71,7 @@ class RecruitmentServiceTest {
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
+                .active(true)
                 .build();
     }
 
@@ -108,6 +113,9 @@ class RecruitmentServiceTest {
 
     @Test
     public void add() {
+        when(memberService.getCurrentUsername()).thenReturn(testAuthor.getUsername());
+        when(memberService.getMemberWithAuthorities(any())).thenReturn(new MemberResponseDto(testAuthor));
+
         when(recruitmentRepository.save(any()))
                 .thenReturn(testRecruitment);
 
@@ -117,5 +125,56 @@ class RecruitmentServiceTest {
         RecruitmentResponseDto add = recruitmentService.add(requestDto);
 
         assertThat(add, equalTo(responseDto));
+    }
+
+    @Test
+    public void join() throws RecruitmentAlreadyJoined {
+        Member testMember = Member.builder()
+                .id(1)
+                .email("testMember@test.com")
+                .username("testMember")
+                .password("testPassword")
+                .sex(Sex.FEMALE)
+                .birth(LocalDate.now())
+                .active(true)
+                .build();
+        when(memberService.getCurrentUsername()).thenReturn(testMember.getUsername());
+        when(memberService.getMemberWithAuthorities(any())).thenReturn(new MemberResponseDto(testMember));
+        given(recruitmentRepository.findById(testRecruitment.getId()))
+                .willReturn(Optional.ofNullable(testRecruitment));
+        when(recruitmentRepository.save(any()))
+                .thenReturn(testRecruitment);
+
+        RecruitmentResponseDto recruitmentResponseDto =
+                recruitmentService.join(testRecruitment.getId());
+
+        assertTrue(recruitmentResponseDto.getMembers().contains(
+                new MemberResponseDto(testMember)));
+    }
+
+    @Test
+    public void unJoin() {
+        Member testMember = Member.builder()
+                .id(1)
+                .email("testMember@test.com")
+                .username("testMember")
+                .password("testPassword")
+                .sex(Sex.FEMALE)
+                .birth(LocalDate.now())
+                .active(true)
+                .build();
+        when(memberService.getCurrentUsername()).thenReturn(testMember.getUsername());
+        when(memberService.getMemberWithAuthorities(any())).thenReturn(new MemberResponseDto(testMember));
+        given(recruitmentRepository.findById(testRecruitment.getId()))
+                .willReturn(Optional.ofNullable(testRecruitment));
+        testRecruitment.getMembers().add(testMember);
+        when(recruitmentRepository.save(any()))
+                .thenReturn(testRecruitment);
+
+        RecruitmentResponseDto recruitmentResponseDto =
+                recruitmentService.unJoin(testRecruitment.getId());
+
+        assertFalse(recruitmentResponseDto.getMembers().contains(
+                new MemberResponseDto(testMember)));
     }
 }

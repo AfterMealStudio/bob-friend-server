@@ -1,10 +1,14 @@
 package com.example.bob_friend.model.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -25,10 +29,14 @@ public class Member {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "nickname")
+    private String nickname;
+
     @Column(name = "password")
     private String password;
 
     @Column(name = "sex")
+    @Convert(converter = SexConverter.class)
     private Sex sex;
 
     @Column(name = "birth")
@@ -37,21 +45,58 @@ public class Member {
     @Column(name = "report_count")
     private Integer reportCount;
 
+    @Column(name = "agree") // 광고성 메일 동의 여부
+    private boolean agree;
+
     @Column(name = "active")
     private boolean active;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    private LocalDate reportStart;
+
+    private LocalDate reportEnd;
+
     @PrePersist
     public void createAt() {
         this.createdAt = LocalDateTime.now();
     }
 
-    @ManyToMany
-    @JoinTable(
-            name = "member_authority",
-            joinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")},
-            inverseJoinColumns = @JoinColumn(name = "authority_name", referencedColumnName = "authority_name"))
+
+
+    @ElementCollection
+    @JoinColumn(name = "authority")
+    @Enumerated(EnumType.STRING)
     private Set<Authority> authorities;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return id == member.id && active == member.active && Objects.equals(email, member.email) && Objects.equals(username, member.username) && sex == member.sex && Objects.equals(birth, member.birth) && Objects.equals(reportCount, member.reportCount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, username, sex, birth, reportCount, active);
+    }
+
+    public void setReportCount(Integer reportCount) {
+        this.reportCount = reportCount;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setReportStart(LocalDate reportStart) {
+        this.reportStart = reportStart;
+    }
+
+    public void setReportEnd(LocalDate reportEnd) {
+        this.reportEnd = reportEnd;
+    }
 }
+

@@ -17,9 +17,11 @@ public class MemberSignupDto {
     private String email;
     @NotNull
     private String username;
+
+    private String nickname;
     @NotNull
     private String password;
     private Sex sex;
     private LocalDate birth;
-
+    private boolean agree;
 }

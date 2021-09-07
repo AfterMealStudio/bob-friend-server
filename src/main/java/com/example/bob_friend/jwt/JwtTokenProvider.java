@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider implements InitializingBean {
+    private String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORITY_KEY = "roles";
     private final String secret;
     private static final long tokenValidTime = 1000 * 60 * 60;
@@ -75,4 +77,8 @@ public class JwtTokenProvider implements InitializingBean {
             return false;
         }
     }
+    public String resolveToken(HttpServletRequest request) {
+        return request.getHeader(AUTHORIZATION_HEADER);
+    }
+
 }
