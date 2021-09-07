@@ -4,8 +4,6 @@ import com.example.bob_friend.model.dto.CommentRequestDto;
 import com.example.bob_friend.model.dto.CommentResponseDto;
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
-import com.example.bob_friend.model.entity.Comment;
-import com.example.bob_friend.model.exception.NotAMemberOfRecruitentException;
 import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.RecruitmentCommentService;
@@ -75,15 +73,8 @@ public class RecruitmentController {
     @PatchMapping("/{recruitmentId}")
     public ResponseEntity joinRecruitment(@PathVariable Long recruitmentId)
             throws RecruitmentAlreadyJoined {
-        RecruitmentResponseDto join = recruitmentService.join(recruitmentId);
+        RecruitmentResponseDto join = recruitmentService.joinOrUnjoin(recruitmentId);
         return ResponseEntity.ok(join);
-    }
-
-    @PatchMapping("/{recruitmentId}/unjoin")
-    public ResponseEntity unJoinRecruitment(@PathVariable Long recruitmentId)
-            throws NotAMemberOfRecruitentException {
-        RecruitmentResponseDto unjoin = recruitmentService.unJoin(recruitmentId);
-        return ResponseEntity.ok(unjoin);
     }
 
     @GetMapping("/{recruitmentId}/comments")
