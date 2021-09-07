@@ -1,5 +1,6 @@
 package com.example.bob_friend.configuration;
 
+import com.example.bob_friend.interceptor.MemberValidateInterceptor;
 import com.example.bob_friend.interceptor.RecruitmentJoinInterceptor;
 import com.example.bob_friend.service.MemberService;
 import com.example.bob_friend.service.RecruitmentService;
@@ -19,6 +20,11 @@ public class WebConfig implements WebMvcConfigurer {
     private MemberService memberService;
 
     @Bean
+    public MemberValidateInterceptor memberValidateInterceptor(MemberService memberService) {
+        return new MemberValidateInterceptor(memberService);
+    }
+
+    @Bean
     public RecruitmentJoinInterceptor recruitmentJoinInterceptor(RecruitmentService recruitmentService,
                                                                  MemberService memberService) {
         return new RecruitmentJoinInterceptor(recruitmentService, memberService);
@@ -26,6 +32,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(memberValidateInterceptor(memberService))
+                .addPathPatterns("/recruitments/**");
         registry.addInterceptor(recruitmentJoinInterceptor(recruitmentService, memberService))
                 .addPathPatterns("/recruitments/**");
     }

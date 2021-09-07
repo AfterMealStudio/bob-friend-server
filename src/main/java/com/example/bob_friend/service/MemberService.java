@@ -16,11 +16,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Collections;
 
 @RequiredArgsConstructor
 @Service
 public class MemberService {
+    private final int REPORT_DAY = 3;
+
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -90,6 +93,47 @@ public class MemberService {
         }
 
         return username;
+    }
+
+    @Transactional
+    public Member getCurrentMember() {
+        String currentUsername = getCurrentUsername();
+        Member currentMember = memberRepository.findMemberByUsername(currentUsername).orElseThrow(
+                () -> {
+                    throw new UsernameNotFoundException("user not found");
+                }
+        );
+        return currentMember;
+    }
+
+    @Transactional
+    public void setMemberActive(Member member) {
+        member.setActive(true);
+        member.setReportStart(null);
+        member.setReportEnd(null);
+        member.setReportCount(0);
+        saveMember(member);
+    }
+
+    @Transactional
+    public MemberResponseDto reportMember(String username) {
+        Member member = memberRepository.findMemberByUsername(username).orElseThrow(
+                () -> {
+                    throw new UsernameNotFoundException("user not found");
+                }
+        );
+        member.setReportCount(member.getReportCount()+1);
+        if (member.getReportCount() > 3) {
+            member.setActive(false);
+            member.setReportStart(LocalDate.now());
+            member.setReportEnd(LocalDate.now().plusDays(REPORT_DAY));
+        }
+        return new MemberResponseDto((member));
+    }
+
+    @Transactional
+    public void saveMember(Member member) {
+        memberRepository.save(member);
     }
 
     @Transactional

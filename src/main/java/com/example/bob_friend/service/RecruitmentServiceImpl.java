@@ -1,6 +1,5 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.dto.MemberResponseDto;
 import com.example.bob_friend.model.dto.RecruitmentRequestDto;
 import com.example.bob_friend.model.dto.RecruitmentResponseDto;
 import com.example.bob_friend.model.entity.Member;
@@ -39,7 +38,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
 
     @Override
     public RecruitmentResponseDto add(RecruitmentRequestDto recruitmentRequestDto) {
-        Member currentMember = getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
         recruitment.setAuthor(currentMember);
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
@@ -74,7 +73,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
 
     @Override
     public List<RecruitmentResponseDto> findAllJoinedRecruitments() {
-        Member author = getCurrentMember();
+        Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAll().stream()
                 .filter(recruitment ->
                         recruitment.getMembers().contains(author) ||
@@ -84,7 +83,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
 
     @Override
     public List<RecruitmentResponseDto> findMyRecruitments() {
-        Member author = getCurrentMember();
+        Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllByAuthor(author).stream()
                 .map(RecruitmentResponseDto::new)
                 .collect(Collectors.toList());
@@ -93,7 +92,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     @Override
     public RecruitmentResponseDto join(Long recruitmentId)
             throws RecruitmentAlreadyJoined {
-        Member currentMember = getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
 
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> {
@@ -114,7 +113,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     @Override
     public RecruitmentResponseDto unJoin(Long recruitmentId)
             throws NotAMemberOfRecruitentException {
-        Member currentMember = getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
 
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> {
@@ -135,14 +134,6 @@ public class RecruitmentServiceImpl implements RecruitmentService {
 
     }
 
-    private Member getCurrentMember() {
-        String currentUsername = memberService.getCurrentUsername();
-        MemberResponseDto memberDto = memberService
-                .getMemberWithAuthorities(currentUsername);
-        Member currentMember = memberDto.convertToEntity();
-        return currentMember;
-    }
-
     private Recruitment addMemberToRecruitment(
             Recruitment recruitment,
             Member member)
@@ -157,7 +148,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         return recruitmentRepository.save(recruitment);
     }
 
-    public Recruitment removeMemberFromRecruitment(Recruitment recruitment,
+    private Recruitment removeMemberFromRecruitment(Recruitment recruitment,
                                                    Member member) {
         recruitment.getMembers().remove(member);
         decreaseCurrentNumberOfPeople(recruitment);
@@ -190,7 +181,7 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     }
 
     private boolean isAuthor(Recruitment recruitment) {
-        Member currentMember = getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         return recruitment.getAuthor().equals(currentMember);
     }
 }

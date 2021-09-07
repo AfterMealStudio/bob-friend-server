@@ -54,10 +54,15 @@ public class Member {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    private LocalDate reportStart;
+
+    private LocalDate reportEnd;
+
     @PrePersist
     public void createAt() {
         this.createdAt = LocalDateTime.now();
     }
+
 
 
     @ElementCollection
@@ -76,6 +81,22 @@ public class Member {
     @Override
     public int hashCode() {
         return Objects.hash(id, email, username, sex, birth, reportCount, active);
+    }
+
+    public void setReportCount(Integer reportCount) {
+        this.reportCount = reportCount;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setReportStart(LocalDate reportStart) {
+        this.reportStart = reportStart;
+    }
+
+    public void setReportEnd(LocalDate reportEnd) {
+        this.reportEnd = reportEnd;
     }
 }
 

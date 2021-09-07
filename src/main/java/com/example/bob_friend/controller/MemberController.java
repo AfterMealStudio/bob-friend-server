@@ -52,14 +52,9 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/user/recruitments")
-    public ResponseEntity getMyRecruitments() {
-        return ResponseEntity.ok(recruitmentService.findMyRecruitments());
-    }
-
-    @GetMapping("/user/recruitments/joined")
-    public ResponseEntity getAllJoinedRecruitments() {
-        return ResponseEntity.ok(recruitmentService.findAllJoinedRecruitments());
+    @PatchMapping("user/{username}")
+    public ResponseEntity reportUser(@PathVariable String username) {
+        return ResponseEntity.ok(memberService.reportMember(username));
     }
 
 }

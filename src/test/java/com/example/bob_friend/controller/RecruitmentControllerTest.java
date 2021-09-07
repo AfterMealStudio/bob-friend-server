@@ -5,7 +5,6 @@ import com.example.bob_friend.model.dto.RecruitmentResponseDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
-import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.RecruitmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,17 +43,33 @@ class RecruitmentControllerTest {
     RecruitmentService recruitmentService;
 
     Recruitment testRecruitment;
-    private Member testAuthor;
+    Member testAuthor;
+    Member testMember;
 
     @BeforeEach
     public void setup() {
+        testMember = Member.builder()
+                .id(1)
+                .email("testMember@test.com")
+                .username("testMember")
+                .nickname("testMember")
+                .password("testPassword")
+                .sex(Sex.FEMALE)
+                .birth(LocalDate.now())
+                .agree(true)
+                .active(true)
+                .build();
+
         testAuthor = Member.builder()
                 .id(1)
                 .email("testAuthor@test.com")
                 .username("testAuthor")
+                .nickname("testAuthor")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .agree(true)
+                .active(true)
                 .build();
 
         testRecruitment = Recruitment.builder()
@@ -91,28 +106,33 @@ class RecruitmentControllerTest {
     }
 
     @Test
-    void getRecruitmentSuccess() throws Exception {
-        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(testRecruitment);
+    void getRecruitment() throws Exception {
+        RecruitmentResponseDto responseDto =
+                new RecruitmentResponseDto(testRecruitment);
         given(recruitmentService.findById(any()))
                 .willReturn(responseDto);
 
         mvc.perform(get("/recruitments/{id}", 1))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(responseDto)))
                 .andDo(print());
     }
 
-    @Test
-    void getRecruitmentFail() throws Exception {
-        long recruitmentId = -1L;
-        given(recruitmentService.findById(recruitmentId))
-                .willThrow(RecruitmentNotFoundException.class);
-        mvc.perform(get("/recruitments/{id}", recruitmentId))
-                .andExpect(status().isNotFound())
-//                .andExpect(result -> assertThat(result.toString(),
-//                        equalTo("Recruitment (" + recruitmentId + ") is not found")))
-                .andDo(print());
-    }
+    // 단위테스트에서는 controller의 동작만 확인하고, controllerAdvice의 동작은 통합테스트로 넘기기로 한다.
+//    @Test
+//    void getRecruitmentFail() throws Exception {
+//        long recruitmentId = -1L;
+////        given(recruitmentService.findById(recruitmentId))
+////                .willReturn(null);
+////        when(recruitmentService.findById(any())).thenThrow(new RecruitmentNotFoundException(recruitmentId));
+//        mvc.perform(get("/recruitments/{id}", 1))
+//                .andExpect(status().isNotFound())
+//                .andExpect(result -> assertTrue((result.getResolvedException()).getClass().isAssignableFrom(RecruitmentNotFoundException.class)
+//                ))
+//                .andDo(print());
+//    }
+
 
     @Test
     void createRecruitment() throws Exception {
@@ -136,6 +156,7 @@ class RecruitmentControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
+
     //update 기능 보류
 //    @Test
 //    void updateRecruitment() throws Exception {
