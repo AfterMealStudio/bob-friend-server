@@ -1,7 +1,6 @@
 package com.example.bob_friend.service;
 
 import com.example.bob_friend.model.entity.Member;
-import com.example.bob_friend.model.exception.MemberNotActivatedException;
 import com.example.bob_friend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

@@ -112,7 +112,7 @@ public class RecruitmentService {
             throws RecruitmentIsFullException, RecruitmentNotActiveException {
         validateRecruitment(recruitment);
         if (!member.isActive()) {
-            throw new MemberNotActivatedException(member.getUsername());
+            throw new MemberNotActiveException(member.getUsername());
         }
         recruitment.getMembers().add(member);
         increaseCurrentNumberOfPeople(recruitment);
