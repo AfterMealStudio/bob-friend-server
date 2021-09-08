@@ -99,11 +99,7 @@ public class MemberService {
     @Transactional
     public Member getCurrentMember() {
         String currentUsername = getCurrentUsername();
-        Member currentMember = memberRepository.findMemberByUsername(currentUsername)
-                .orElseThrow(() -> {
-                            throw new UsernameNotFoundException("user not found");
-                        }
-                );
+        Member currentMember = memberRepository.getMemberByUsername(currentUsername);
         return currentMember;
     }
 
