@@ -5,6 +5,7 @@ import com.example.bob_friend.model.dto.RecruitmentResponseDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.service.RecruitmentCommentService;
 import com.example.bob_friend.service.RecruitmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,8 @@ class RecruitmentControllerTest {
 
     @MockBean
     RecruitmentService recruitmentService;
+    @MockBean
+    RecruitmentCommentService recruitmentCommentService;
 
     Recruitment testRecruitment;
     Member testAuthor;
@@ -138,7 +141,7 @@ class RecruitmentControllerTest {
     void createRecruitment() throws Exception {
         RecruitmentResponseDto responseDto = new RecruitmentResponseDto(testRecruitment);
         RecruitmentRequestDto requestDto = new RecruitmentRequestDto(testRecruitment);
-        given(recruitmentService.add(any()))
+        given(recruitmentService.createRecruitment(any()))
                 .willReturn(responseDto);
 
         mvc.perform(post("/recruitments").
