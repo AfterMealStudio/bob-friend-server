@@ -52,7 +52,7 @@ public class RecruitmentController {
     @PostMapping()
     public ResponseEntity createRecruitment(
             @RequestBody RecruitmentRequestDto recruitmentRequestDto) {
-        RecruitmentResponseDto createdRecruitment = recruitmentService.add(recruitmentRequestDto);
+        RecruitmentResponseDto createdRecruitment = recruitmentService.createRecruitment(recruitmentRequestDto);
         return ResponseEntity.ok(createdRecruitment);
     }
 
