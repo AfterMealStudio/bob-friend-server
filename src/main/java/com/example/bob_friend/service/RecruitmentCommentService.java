@@ -30,14 +30,13 @@ public class RecruitmentCommentService {
 
     public CommentResponseDto createCommentToRecruitment(CommentRequestDto commentRequestDto, Long recruitmentId) {
         Comment comment = commentRequestDto.convertToEntity();
-        String currentUsername = memberService.getCurrentUsername();
-        MemberResponseDto member = memberService.getMemberWithAuthorities(currentUsername);
+        Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElseThrow(
                 () -> {
                     throw new RecruitmentNotFoundException(recruitmentId);
                 }
         );
-        comment.setAuthor(member.convertToEntity());
+        comment.setAuthor(currentMember);
         comment.setRecruitment(recruitment);
         return new CommentResponseDto(commentRepository.save(comment));
     }

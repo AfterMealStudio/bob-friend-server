@@ -9,6 +9,7 @@ import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.RecruitmentCommentService;
 import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,14 @@ public class RecruitmentController {
 
 
     @GetMapping()
-    public ResponseEntity getAllRecruitment() {
-        List<RecruitmentResponseDto> responseDtoList = recruitmentService.findAll();
+    public ResponseEntity getAllRecruitment(@RequestParam(value = "restaurantName", required = false) String restaurantName,
+                                            @RequestParam(value = "restaurantAddress", required = false) String restaurantAddress) {
+        List<RecruitmentResponseDto> responseDtoList = null;
+        if (restaurantName == null && restaurantAddress == null)
+            responseDtoList = recruitmentService.findAll();
+        else
+            responseDtoList = recruitmentService
+                    .findAllByRestaurantNameOrRestaurantAddress(restaurantName, restaurantAddress);
         return ResponseEntity.ok(responseDtoList);
     }
 

@@ -59,9 +59,10 @@ public class RecruitmentService {
         return new RecruitmentResponseDto(savedRecruitment);
     }
 
-    public List<RecruitmentResponseDto> findAllByRestaurantName(
-            String restaurantName) {
-        return recruitmentRepository.findAllByRestaurantName(restaurantName).stream()
+    public List<RecruitmentResponseDto> findAllByRestaurantNameOrRestaurantAddress(
+            String restaurantName,
+            String restaurantAddress) {
+        return recruitmentRepository.findAllByRestaurantNameOrRestaurantAddress(restaurantName,restaurantAddress).stream()
                 .map(RecruitmentResponseDto::new)
                 .collect(Collectors.toList());
     }
