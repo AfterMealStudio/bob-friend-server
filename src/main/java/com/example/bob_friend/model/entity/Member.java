@@ -88,6 +88,10 @@ public class Member {
         return Objects.hash(id, email, username, sex, birth, reportCount, active);
     }
 
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
+    }
+
     public void setReportCount(Integer reportCount) {
         this.reportCount = reportCount;
     }

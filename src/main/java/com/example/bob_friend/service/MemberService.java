@@ -30,27 +30,17 @@ public class MemberService {
     @Transactional
     public MemberResponseDto signup(MemberSignupDto memberSignupDto) {
         if (memberRepository
-                .findMemberWithAuthoritiesByUsername(
-                        memberSignupDto.getUsername()
-                )
-                .orElse(null) != null
-        ) throw new MemberDuplicatedException(memberSignupDto.getUsername());
+                .existsMemberByUsername(memberSignupDto.getUsername())
+        ) {
+            throw new MemberDuplicatedException(memberSignupDto.getUsername());
+        }
 
         Authority authority = Authority.ROLE_USER;
 
-        Member member = Member.builder()
-                .email(memberSignupDto.getEmail())
-                .username(memberSignupDto.getUsername())
-                .nickname(memberSignupDto.getNickname())
-                .password(passwordEncoder.encode(memberSignupDto.getPassword()))
-                .birth(memberSignupDto.getBirth())
-                .sex(memberSignupDto.getSex())
-                .reportCount(0)
-                .accumulatedReports(0)
-                .authorities(Collections.singleton(authority))
-                .agree(memberSignupDto.isAgree())
-                .active(true)
-                .build();
+        Member member = memberSignupDto
+                .convertToEntityWithPasswordEncoder(passwordEncoder);
+        member.setAuthorities(Collections.singleton(authority));
+
         return new MemberResponseDto(memberRepository.save(member));
     }
 
@@ -124,9 +114,17 @@ public class MemberService {
             member.setActive(false);
             member.increaseAccumulatedReports();
             member.setReportStart(LocalDate.now());
-            member.setReportEnd(LocalDate.now().plusDays((long) Math.pow(REPORT_DAY, (member.getAccumulatedReports()))));
+            LocalDate reportEnd = getReportEnd(member);
+            member.setReportEnd(reportEnd);
         }
         return new MemberResponseDto((member));
+    }
+
+    private LocalDate getReportEnd(Member member) {
+        return LocalDate.now()
+                .plusDays(
+                        (long) Math.pow(REPORT_DAY,
+                                (member.getAccumulatedReports())));
     }
 
     public void saveMember(Member member) {
