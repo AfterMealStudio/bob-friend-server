@@ -68,8 +68,6 @@ public class Member {
         this.createdAt = LocalDateTime.now();
     }
 
-
-
     @ElementCollection
     @JoinColumn(name = "authority")
     @Enumerated(EnumType.STRING)
@@ -92,24 +90,32 @@ public class Member {
         this.authorities = authorities;
     }
 
+    public void setActive() {
+        this.active = true;
+        this.reportStart = null;
+        this.reportEnd = null;
+    }
+
     public void setReportCount(Integer reportCount) {
         this.reportCount = reportCount;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void increaseReportCount() {
+        this.reportCount += 1;
+        if (this.reportCount > 3) {
+            this.reportCount = 0;
+            this.accumulatedReports += 1;
+            this.active = false;
+            this.reportStart = LocalDate.now();
+            this.reportEnd = calculateReportEnd();
+        }
     }
 
-    public void setReportStart(LocalDate reportStart) {
-        this.reportStart = reportStart;
-    }
-
-    public void setReportEnd(LocalDate reportEnd) {
-        this.reportEnd = reportEnd;
-    }
-
-    public void increaseAccumulatedReports() {
-        this.accumulatedReports+=1;
+    private LocalDate calculateReportEnd() {
+        return LocalDate.now()
+                .plusDays(
+                        (long) Math.pow(7,
+                                this.accumulatedReports));
     }
 }
 

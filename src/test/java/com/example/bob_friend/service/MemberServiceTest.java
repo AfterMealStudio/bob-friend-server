@@ -40,7 +40,6 @@ public class MemberServiceTest {
 
     @BeforeEach
     public void setUp() {
-
         testMember = Member.builder()
                 .id(0L)
                 .email("testEmail")

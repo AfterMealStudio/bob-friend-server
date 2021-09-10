@@ -20,15 +20,16 @@ public class MemberValidateInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
+
         Member currentMember = memberService.getCurrentMember();
         LocalDate reportEnd = currentMember.getReportEnd();
         if (reportEnd != null) {
             if (LocalDate.now().isAfter(reportEnd)) {
-                memberService.setMemberActive(currentMember);
+                currentMember.setActive();
             }
         }
 
-        if (!currentMember.isActive()){
+        if (!currentMember.isActive()) {
             throw new MemberNotActiveException(currentMember.getUsername());
         }
 
