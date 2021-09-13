@@ -21,6 +21,8 @@ public class MemberResponseDto {
     private LocalDate birth;
     private Sex sex;
     private Integer reportCount;
+    private Integer accumulatedReports;
+    private boolean agree;
     private boolean active;
 
     public MemberResponseDto(Member member) {
@@ -31,20 +33,9 @@ public class MemberResponseDto {
         this.birth = member.getBirth();
         this.sex = member.getSex();
         this.reportCount = member.getReportCount();
+        this.accumulatedReports = member.getAccumulatedReports();
+        this.agree = member.isAgree();
         this.active = member.isActive();
-    }
-
-    public Member convertToEntity() {
-        return Member.builder()
-                .id(this.id)
-                .email(this.email)
-                .username(this.username)
-                .nickname(this.nickname)
-                .sex(this.sex)
-                .birth(this.birth)
-                .reportCount(this.reportCount)
-                .active(this.active)
-                .build();
     }
 
     @Override

@@ -45,6 +45,9 @@ public class Member {
     @Column(name = "report_count")
     private Integer reportCount;
 
+    @Column(name = "accumulated_reports")
+    private Integer accumulatedReports;
+
     @Column(name = "agree") // 광고성 메일 동의 여부
     private boolean agree;
 
@@ -54,16 +57,16 @@ public class Member {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "report_start")
     private LocalDate reportStart;
 
+    @Column(name = "report_end")
     private LocalDate reportEnd;
 
     @PrePersist
     public void createAt() {
         this.createdAt = LocalDateTime.now();
     }
-
-
 
     @ElementCollection
     @JoinColumn(name = "authority")
@@ -83,20 +86,36 @@ public class Member {
         return Objects.hash(id, email, username, sex, birth, reportCount, active);
     }
 
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
+    }
+
+    public void setActive() {
+        this.active = true;
+        this.reportStart = null;
+        this.reportEnd = null;
+    }
+
     public void setReportCount(Integer reportCount) {
         this.reportCount = reportCount;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void increaseReportCount() {
+        this.reportCount += 1;
+        if (this.reportCount > 3) {
+            this.reportCount = 0;
+            this.accumulatedReports += 1;
+            this.active = false;
+            this.reportStart = LocalDate.now();
+            this.reportEnd = calculateReportEnd();
+        }
     }
 
-    public void setReportStart(LocalDate reportStart) {
-        this.reportStart = reportStart;
-    }
-
-    public void setReportEnd(LocalDate reportEnd) {
-        this.reportEnd = reportEnd;
+    private LocalDate calculateReportEnd() {
+        return LocalDate.now()
+                .plusDays(
+                        (long) Math.pow(7,
+                                this.accumulatedReports));
     }
 }
 

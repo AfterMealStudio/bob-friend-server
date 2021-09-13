@@ -1,5 +1,6 @@
 package com.example.bob_friend.model.entity;
 
+import com.example.bob_friend.model.exception.RecruitmentIsFullException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -95,8 +96,36 @@ public class Recruitment {
         this.author = author;
     }
 
-    public void setCurrentNumberOfPeople(Integer currentNumberOfPeople) {
-        this.currentNumberOfPeople = currentNumberOfPeople;
+    private void increaseCurrentNumberOfPeople() {
+        this.currentNumberOfPeople += 1;
+        if (currentNumberOfPeople >= totalNumberOfPeople)
+            setFull(true);
+    }
+
+    private void decreaseCurrentNumberOfPeople() {
+        this.currentNumberOfPeople -= 1;
+        if (currentNumberOfPeople < totalNumberOfPeople)
+            setFull(false);
+    }
+
+    public void addMember(Member member) {
+        if (this.author.equals(member)) // 작성자가 참여하려고 할 경우 종료
+            return;
+        if (currentNumberOfPeople < totalNumberOfPeople) {
+            this.members.add(member);
+            increaseCurrentNumberOfPeople();
+        } else {
+            throw new RecruitmentIsFullException(this.id);
+        }
+    }
+
+    public void removeMember(Member member) {
+        if (this.members.remove(member))
+            decreaseCurrentNumberOfPeople();
+    }
+
+    public boolean hasMember(Member member) {
+        return members.contains(member);
     }
 
     public void setFull(boolean full) {

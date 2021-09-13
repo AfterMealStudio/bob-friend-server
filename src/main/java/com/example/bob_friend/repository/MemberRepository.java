@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Member getMemberByEmail(String email);
 
+    Member getMemberByUsername(String username);
     Optional<Member> findMemberByUsername(String username);
 
     @EntityGraph(attributePaths = "authorities")
