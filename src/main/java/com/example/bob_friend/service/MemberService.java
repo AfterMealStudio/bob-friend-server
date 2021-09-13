@@ -4,6 +4,7 @@ import com.example.bob_friend.model.dto.MemberResponseDto;
 import com.example.bob_friend.model.dto.MemberSignupDto;
 import com.example.bob_friend.model.entity.Authority;
 import com.example.bob_friend.model.entity.Member;
+import com.example.bob_friend.model.exception.EmailDuplicatedException;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
 import com.example.bob_friend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +28,12 @@ public class MemberService {
     @Transactional
     public MemberResponseDto signup(MemberSignupDto memberSignupDto) {
         if (memberRepository
-                .existsMemberByUsername(memberSignupDto.getUsername())
-        ) {
+                .existsMemberByUsername(memberSignupDto.getUsername())) {
             throw new MemberDuplicatedException(memberSignupDto.getUsername());
+        }
+        if (memberRepository
+                .existsMemberByEmail(memberSignupDto.getEmail())) {
+            throw new EmailDuplicatedException(memberSignupDto.getEmail());
         }
 
         Authority authority = Authority.ROLE_USER;

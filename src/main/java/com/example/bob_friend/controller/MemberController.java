@@ -17,7 +17,6 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 public class MemberController {
     private final MemberService memberService;
-    private final RecruitmentService recruitmentService;
 
     @PostMapping("/signup")
     public ResponseEntity signup(@Valid @RequestBody MemberSignupDto memberSignupDto) throws MemberDuplicatedException {
@@ -30,7 +29,7 @@ public class MemberController {
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity checkNickname(@PathVariable String username) {
+    public ResponseEntity checkUsername(@PathVariable String username) {
         return ResponseEntity.ok(memberService.isExistByUsername(username));
     }
 
