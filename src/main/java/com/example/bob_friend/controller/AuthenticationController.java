@@ -3,6 +3,7 @@ package com.example.bob_friend.controller;
 import com.example.bob_friend.jwt.JwtTokenProvider;
 import com.example.bob_friend.model.dto.MemberLoginDto;
 import com.example.bob_friend.model.dto.TokenDto;
+import com.example.bob_friend.model.exception.MemberNotVerifiedException;
 import com.example.bob_friend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,12 +32,12 @@ public class AuthenticationController {
     private String AUTHENTICATION_HEADER;
 
     @PostMapping("/signin")
-    public ResponseEntity authorize(@Valid @RequestBody MemberLoginDto loginDto) throws AuthenticationException {
-        if (!memberService.isExistByUsername(loginDto.getUsername())) {
-            throw new UsernameNotFoundException(loginDto.getUsername() + " is not a member");
+    public ResponseEntity authorize(@Valid @RequestBody MemberLoginDto loginDto) throws AuthenticationException, MemberNotVerifiedException {
+        if (!memberService.isExistByEmail(loginDto.getEmail())) {
+            throw new UsernameNotFoundException(loginDto.getEmail() + " is not a member");
         }
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);
 
