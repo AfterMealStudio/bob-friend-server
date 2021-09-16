@@ -16,7 +16,6 @@ import java.util.Objects;
 public class MemberResponseDto {
     private Long id;
     private String email;
-    private String username;
     private String nickname;
     private LocalDate birth;
     private Sex sex;
@@ -28,7 +27,6 @@ public class MemberResponseDto {
     public MemberResponseDto(Member member) {
         this.id = member.getId();
         this.email = member.getEmail();
-        this.username = member.getUsername();
         this.nickname = member.getNickname();
         this.birth = member.getBirth();
         this.sex = member.getSex();
@@ -43,11 +41,11 @@ public class MemberResponseDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MemberResponseDto that = (MemberResponseDto) o;
-        return id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(nickname, that.nickname) && Objects.equals(username, that.username) && Objects.equals(birth, that.birth) && sex == that.sex;
+        return id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(nickname, that.nickname)  && Objects.equals(birth, that.birth) && sex == that.sex;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, username, nickname, birth, sex);
+        return Objects.hash(id, email, nickname, birth, sex);
     }
 }

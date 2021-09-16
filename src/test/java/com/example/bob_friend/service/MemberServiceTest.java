@@ -43,7 +43,7 @@ public class MemberServiceTest {
         testMember = Member.builder()
                 .id(0L)
                 .email("testEmail")
-                .username("testUsername")
+//                .username("testUsername")
                 .nickname("testUser")
                 .password(passwordEncoder.encode("1234"))
                 .birth(LocalDate.now())
@@ -57,23 +57,23 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("멤버 이름으로 가져오기")
+    @DisplayName("get_member_by_name")
     public void getMemberWithAuthoritiesTest() {
-        when(memberRepository.findMemberWithAuthoritiesByUsername(any()))
+        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
                 .thenReturn(Optional.ofNullable(testMember));
 
-        MemberResponseDto getMember = memberService.getMemberWithAuthorities(testMember.getUsername());
+        MemberResponseDto getMember = memberService.getMemberWithAuthorities(testMember.getEmail());
 
         assertThat(new MemberResponseDto(testMember), equalTo(getMember));
     }
 
     @Test
-    @DisplayName(value = "회원가입 성공")
+    @DisplayName(value = "signup_success")
     public void signup() {
         Member signupTest = Member.builder()
                 .id(1L)
                 .email("signupTestEmail")
-                .username("signupTestUsername")
+//                .username("signupTestUsername")
                 .nickname("signupTestUser")
                 .password(passwordEncoder.encode("1234"))
                 .birth(LocalDate.of(2020, 8, 9))
@@ -87,7 +87,7 @@ public class MemberServiceTest {
 
         MemberSignupDto memberSignupDto = MemberSignupDto.builder()
                 .email("signupTestEmail")
-                .username("signupTestUsername")
+//                .username("signupTestUsername")
                 .nickname("signupTestUser")
                 .password("1234")
                 .sex(Sex.FEMALE)
@@ -95,7 +95,7 @@ public class MemberServiceTest {
                 .agree(true)
                 .build();
 
-        when(memberRepository.existsMemberByUsername(any()))
+        when(memberRepository.existsMemberByEmail(any()))
                 .thenReturn(false);
         when(memberRepository.save(any()))
                 .thenReturn(signupTest);
@@ -107,11 +107,11 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName(value = "계정 중복으로 인한 회원가입 실패")
+    @DisplayName(value = "signup_fail_MemberDuplicated")
     public void signupFail() {
         MemberSignupDto memberSignupDto = MemberSignupDto.builder()
                 .email("signupTestEmail")
-                .username("signupTestUsername")
+//                .username("signupTestUsername")
                 .nickname("signupTestUser")
                 .password("1234")
                 .sex(Sex.FEMALE)
@@ -119,48 +119,36 @@ public class MemberServiceTest {
                 .agree(true)
                 .build();
 
-        when(memberRepository.existsMemberByUsername(any()))
+        when(memberRepository.existsMemberByEmail(any()))
                 .thenReturn(true);
 
         assertThrows(MemberDuplicatedException.class
                 , () -> memberService.signup(memberSignupDto));
     }
 
-//    @Test
-//    @WithUserDetails("testUsername")
-//    public void getCurrentUsernameTest() {
-//        String currentUsername = memberService.getCurrentUsername();
-//        assertThat(currentUsername,equalTo("testUsername"));
-//    }
-
-//    @Test
-//    public void getCurrentMemberTest() {
-//        when(memberRepository.getMemberByUsername())
-//    }
-
     @Test
-    @DisplayName(value = "멤버를 신고하면 신고가 1 증가")
+    @DisplayName(value = "reportMember")
     public void reportMemberTest() {
         testMember.setReportCount(0);
-        when(memberRepository.findMemberByUsername(any()))
+        when(memberRepository.findMemberByEmail(any()))
                 .thenReturn(Optional.ofNullable(testMember));
         MemberResponseDto memberResponseDto =
-                memberService.reportMember(testMember.getUsername());
+                memberService.reportMember(testMember.getEmail());
 
         assertThat(memberResponseDto.getReportCount(), equalTo(1));
     }
 
     @Test
-    @DisplayName(value = "신고횟수가 3회를 초과하면 정지시키고 누적을 1회 증가")
+    @DisplayName(value = "accumulate_report")
     public void reportMemberMoreThanThreeTest() {
         testMember.setReportCount(0);
-        when(memberRepository.findMemberByUsername(any()))
+        when(memberRepository.findMemberByEmail(any()))
                 .thenReturn(Optional.ofNullable(testMember));
         MemberResponseDto memberResponseDto = null;
 
         for (int i = 0; i < 4; i++) {
             memberResponseDto =
-                    memberService.reportMember(testMember.getUsername());
+                    memberService.reportMember(testMember.getEmail());
         }
 
         assertThat(memberResponseDto.getReportCount(), equalTo(0));

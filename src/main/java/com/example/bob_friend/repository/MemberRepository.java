@@ -9,15 +9,10 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Member getMemberByEmail(String email);
 
-    Member getMemberByUsername(String username);
-    Optional<Member> findMemberByUsername(String username);
+    Optional<Member> findMemberByEmail(String email);
 
     @EntityGraph(attributePaths = "authorities")
-    Optional<Member> findMemberWithAuthoritiesByUsername(String username);
-
-    void deleteByUsername(String username);
-
-    boolean existsMemberByUsername(String username);
+    Optional<Member> findMemberWithAuthoritiesByEmail(String email);
 
     boolean existsMemberByEmail(String email);
 

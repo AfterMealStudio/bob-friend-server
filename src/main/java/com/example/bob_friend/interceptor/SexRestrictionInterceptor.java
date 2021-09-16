@@ -38,7 +38,7 @@ public class SexRestrictionInterceptor implements HandlerInterceptor {
                 recruitmentService.findById(recruitmentId);
 
         if (!checkSexRestriction(recruitment, member)) {
-            throw new RestrictionFailedException(member.getUsername());
+            throw new RestrictionFailedException(member.getEmail());
         }
 
         return true;

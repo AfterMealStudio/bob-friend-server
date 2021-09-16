@@ -15,13 +15,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString
 public class MemberSignupDto {
-    @NotNull
+    @NotNull(message = "must not be null")
     private String email;
-    @NotNull
-    private String username;
 
     private String nickname;
-    @NotNull
+    @NotNull(message = "must not be null")
     private String password;
     private Sex sex;
     private LocalDate birth;
@@ -30,7 +28,6 @@ public class MemberSignupDto {
     public Member convertToEntityWithPasswordEncoder(PasswordEncoder passwordEncoder) {
         return Member.builder()
                 .email(this.email)
-                .username(this.username)
                 .nickname(this.nickname)
                 .password(passwordEncoder.encode(this.password))
                 .birth(this.birth)

@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
 @ToString
 public class MemberLoginDto {
 
-    @NotNull
-    private String username;
-    @NotNull
+    @NotNull(message = "must be not null")
+    private String email;
+    @NotNull(message = "must not be null")
     private String password;
 }

@@ -30,7 +30,7 @@ public class MemberValidateInterceptor implements HandlerInterceptor {
         }
 
         if (!currentMember.isActive()) {
-            throw new MemberNotActiveException(currentMember.getUsername());
+            throw new MemberNotActiveException(currentMember.getEmail());
         }
 
         return true;

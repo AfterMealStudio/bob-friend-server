@@ -27,9 +27,9 @@ public class MemberService {
     @Transactional
     public MemberResponseDto signup(MemberSignupDto memberSignupDto) {
         if (memberRepository
-                .existsMemberByUsername(memberSignupDto.getUsername())
+                .existsMemberByEmail(memberSignupDto.getEmail())
         ) {
-            throw new MemberDuplicatedException(memberSignupDto.getUsername());
+            throw new MemberDuplicatedException(memberSignupDto.getEmail());
         }
 
         Authority authority = Authority.ROLE_USER;
@@ -42,9 +42,9 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto getMemberWithAuthorities(String username) {
-        Member member = memberRepository.findMemberWithAuthoritiesByUsername(username).orElseThrow(() -> {
-            throw new UsernameNotFoundException(username);
+    public MemberResponseDto getMemberWithAuthorities(String email) {
+        Member member = memberRepository.findMemberWithAuthoritiesByEmail(email).orElseThrow(() -> {
+            throw new UsernameNotFoundException(email);
         });
         return new MemberResponseDto(member);
     }
@@ -53,7 +53,7 @@ public class MemberService {
     public MemberResponseDto getMyMemberWithAuthorities() {
         String currentUsername = getCurrentUsername();
 
-        Member member = memberRepository.findMemberWithAuthoritiesByUsername(currentUsername).orElseThrow(
+        Member member = memberRepository.findMemberWithAuthoritiesByEmail(currentUsername).orElseThrow(
                 () -> {
                     throw new UsernameNotFoundException(currentUsername);
                 }
@@ -86,13 +86,13 @@ public class MemberService {
     @Transactional
     public Member getCurrentMember() {
         String currentUsername = getCurrentUsername();
-        Member currentMember = memberRepository.getMemberByUsername(currentUsername);
+        Member currentMember = memberRepository.getMemberByEmail(currentUsername);
         return currentMember;
     }
 
     @Transactional
     public MemberResponseDto reportMember(String username) {
-        Member member = memberRepository.findMemberByUsername(username)
+        Member member = memberRepository.findMemberByEmail(username)
                 .orElseThrow(() -> {
                             throw new UsernameNotFoundException("user not found");
                         }
@@ -103,17 +103,8 @@ public class MemberService {
 
 
     @Transactional
-    public void deleteByName(String username) {
-        memberRepository.deleteByUsername(username);
-    }
-
-    @Transactional
     public void deleteById(Long memberId) {
         memberRepository.deleteById(memberId);
-    }
-
-    public boolean isExistByUsername(String username) {
-        return memberRepository.existsMemberByUsername(username);
     }
 
     public boolean isExistByEmail(String email) {

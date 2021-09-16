@@ -26,9 +26,6 @@ public class Member {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "username")
-    private String username;
-
     @Column(name = "nickname")
     private String nickname;
 
@@ -63,6 +60,9 @@ public class Member {
     @Column(name = "report_end")
     private LocalDate reportEnd;
 
+    @Column(name = "verified") // 이메일 인증 여부
+    private boolean verified;
+
     @PrePersist
     public void createAt() {
         this.createdAt = LocalDateTime.now();
@@ -78,12 +78,12 @@ public class Member {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
-        return id == member.id && active == member.active && Objects.equals(email, member.email) && Objects.equals(username, member.username) && sex == member.sex && Objects.equals(birth, member.birth) && Objects.equals(reportCount, member.reportCount);
+        return id == member.id && active == member.active && Objects.equals(email, member.email) && sex == member.sex && Objects.equals(birth, member.birth) && Objects.equals(reportCount, member.reportCount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, username, sex, birth, reportCount, active);
+        return Objects.hash(id, email, sex, birth, reportCount, active);
     }
 
     public void setAuthorities(Set<Authority> authorities) {
@@ -116,6 +116,14 @@ public class Member {
                 .plusDays(
                         (long) Math.pow(7,
                                 this.accumulatedReports));
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 }
 

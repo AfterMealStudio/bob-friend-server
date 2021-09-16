@@ -29,9 +29,9 @@ public class MemberController {
         return ResponseEntity.ok(memberService.isExistByEmail(email));
     }
 
-    @GetMapping("/username/{username}")
-    public ResponseEntity checkNickname(@PathVariable String username) {
-        return ResponseEntity.ok(memberService.isExistByUsername(username));
+    @GetMapping("/nickname/{nickname}")
+    public ResponseEntity checkNickname(@PathVariable String nickname) {
+        return ResponseEntity.ok(memberService.isExistByNickname(nickname));
     }
 
     @GetMapping("/user")

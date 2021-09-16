@@ -1,6 +1,7 @@
 package com.example.bob_friend.service;
 
 import com.example.bob_friend.model.entity.Member;
+import com.example.bob_friend.model.exception.MemberNotVerifiedException;
 import com.example.bob_friend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,9 +23,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        return memberRepository.findMemberWithAuthoritiesByUsername(username)
-                .map(member -> createUser(member))
+    public UserDetails loadUserByUsername(final String username) {
+        return memberRepository.findMemberWithAuthoritiesByEmail(username)
+                .map(member -> {
+                    if (!member.isVerified())
+                        throw new MemberNotVerifiedException(member.getEmail());
+                    return createUser(member);
+                })
                 .orElseThrow(() -> new UsernameNotFoundException(username + " not found"));
     }
 
@@ -32,7 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         List<GrantedAuthority> grantedAuthorityList = member.getAuthorities().stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.name()))
                 .collect(Collectors.toList());
-        return new User(member.getUsername(),
+        return new User(member.getEmail(),
                 member.getPassword(),
                 grantedAuthorityList);
     }

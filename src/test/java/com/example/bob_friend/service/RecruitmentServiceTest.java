@@ -48,7 +48,7 @@ class RecruitmentServiceTest {
         testAuthor = Member.builder()
                 .id(1)
                 .email("testAuthor@test.com")
-                .username("testAuthor")
+//                .username("testAuthor")
                 .nickname("testAuthor")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
@@ -78,7 +78,6 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    @DisplayName(value = "한 건 조회 성공")
     public void findByIdSuccess() {
         given(recruitmentRepository.findById(testRecruitment.getId()))
                 .willReturn(Optional.ofNullable(testRecruitment));
@@ -91,7 +90,6 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    @DisplayName(value = "한 건 조회 실패")
     public void findByIdFail() {
         given(recruitmentRepository.findById(0L))
                 .willReturn(Optional.empty());
@@ -103,7 +101,6 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    @DisplayName(value = "전체 조회")
     public void findAll() {
         List<Recruitment> recruitmentList = Arrays.asList(testRecruitment);
         given(recruitmentRepository.findAll())
@@ -118,7 +115,6 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    @DisplayName(value = "생성")
     public void create() {
         when(memberService.getCurrentMember()).thenReturn(testAuthor);
         when(recruitmentRepository.save(any()))
@@ -134,12 +130,11 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    @DisplayName(value = "참여")
     public void join() throws RecruitmentAlreadyJoined {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-                .username("testMember")
+//                .username("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
@@ -161,12 +156,11 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    @DisplayName(value = "참여 취소")
     public void unJoin() {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-                .username("testMember")
+//                .username("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
@@ -186,12 +180,11 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    @DisplayName(value = "참여한 모집 조회")
     public void findAllJoinedRecruitments() {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-                .username("testMember")
+//                .username("testMember")
                 .nickname("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
@@ -235,12 +228,11 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    @DisplayName(value = "참여 가능한 모집 조회")
     public void findAllAvailableRecruitments() {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-                .username("testMember")
+//                .username("testMember")
                 .nickname("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
@@ -284,12 +276,11 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    @DisplayName(value = "내가 생성한 모집 조회")
     public void findMyRecruitments() {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-                .username("testMember")
+//                .username("testMember")
                 .nickname("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
