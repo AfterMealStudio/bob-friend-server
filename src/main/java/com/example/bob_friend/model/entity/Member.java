@@ -78,12 +78,12 @@ public class Member {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
-        return id == member.id && active == member.active && Objects.equals(email, member.email) && sex == member.sex && Objects.equals(birth, member.birth) && Objects.equals(reportCount, member.reportCount);
+        return id == member.id && Objects.equals(email, member.email) && sex == member.sex && Objects.equals(birth, member.birth);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, sex, birth, reportCount, active);
+        return Objects.hash(id, email, sex, birth);
     }
 
     public void setAuthorities(Set<Authority> authorities) {

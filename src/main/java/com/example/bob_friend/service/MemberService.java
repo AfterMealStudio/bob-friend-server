@@ -23,9 +23,10 @@ import java.util.Collections;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Transactional
-    public MemberResponseDto signup(MemberSignupDto memberSignupDto) {
+    public MemberResponseDto  signup(MemberSignupDto memberSignupDto) {
         if (memberRepository
                 .existsMemberByEmail(memberSignupDto.getEmail())
         ) {
@@ -37,8 +38,14 @@ public class MemberService {
         Member member = memberSignupDto
                 .convertToEntityWithPasswordEncoder(passwordEncoder);
         member.setAuthorities(Collections.singleton(authority));
+        Member save = memberRepository.save(member);
+        emailService.sendMail(save.getEmail(),save.getEmail(),
 
-        return new MemberResponseDto(memberRepository.save(member));
+                "http://localhost:8080/api/?" + "email="+
+                        save.getEmail()+"&code="+
+                        save.hashCode()
+                );
+        return new MemberResponseDto(save);
     }
 
     @Transactional(readOnly = true)
@@ -101,6 +108,15 @@ public class MemberService {
         return new MemberResponseDto((member));
     }
 
+    @Transactional
+    public void checkMemberWithCode(String email, String code) {
+        Member member = memberRepository.getMemberByEmail(email);
+        System.out.println(code);
+        System.out.println(member.hashCode());
+        if (Integer.parseInt(code)==(member.hashCode())) {
+            member.setVerified(true);
+        }
+    }
 
     @Transactional
     public void deleteById(Long memberId) {

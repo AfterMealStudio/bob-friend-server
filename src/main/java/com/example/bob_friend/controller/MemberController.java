@@ -1,7 +1,9 @@
 package com.example.bob_friend.controller;
 
+import com.example.bob_friend.model.dto.MemberResponseDto;
 import com.example.bob_friend.model.dto.MemberSignupDto;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
+import com.example.bob_friend.service.EmailService;
 import com.example.bob_friend.service.MemberService;
 import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -17,7 +20,12 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 public class MemberController {
     private final MemberService memberService;
-    private final RecruitmentService recruitmentService;
+
+    @GetMapping("")
+    public ResponseEntity verifyEmail(@RequestParam String email, @RequestParam String code) {
+        memberService.checkMemberWithCode(email, code);
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/signup")
     public ResponseEntity signup(@Valid @RequestBody MemberSignupDto memberSignupDto) throws MemberDuplicatedException {
