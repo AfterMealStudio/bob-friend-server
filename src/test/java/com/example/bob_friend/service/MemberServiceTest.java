@@ -23,6 +23,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -57,7 +58,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("get_member_by_name")
+    @DisplayName("get_member_by_email")
     public void getMemberWithAuthoritiesTest() {
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
                 .thenReturn(Optional.ofNullable(testMember));
@@ -125,7 +126,15 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName(value = "reportMember")
+    @DisplayName(value = "check_member_whit_code")
+    public void checkMemberWithCodeTest() {
+        when(memberRepository.getMemberByEmail(any())).thenReturn(testMember);
+        memberService.checkMemberWithCode(testMember.getEmail(), String.valueOf(testMember.hashCode()));
+        assertTrue(testMember.isVerified());
+    }
+
+    @Test
+    @DisplayName(value = "report_member")
     public void reportMemberTest() {
         testMember.setReportCount(0);
         when(memberRepository.findMemberByEmail(any()))
@@ -137,7 +146,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName(value = "accumulate_report")
+    @DisplayName(value = "report_accumulated")
     public void reportMemberMoreThanThreeTest() {
         testMember.setReportCount(0);
         when(memberRepository.findMemberByEmail(any()))
