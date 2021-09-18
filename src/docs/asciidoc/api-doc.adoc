@@ -9,7 +9,7 @@
 :sectanchors:
 
 [[api]]
-== Recruitment Api
+== Recruitment
 === 생성
 request::
 include::{snippets}/create-recruitment/http-request.adoc[]
@@ -34,4 +34,39 @@ response::
 include::{snippets}/get-all-recruitments/http-response.adoc[]
 === 삭제
 
-== test
+== Member
+=== 회원가입
+request::
+include::{snippets}/member/signup/http-request.adoc[]
+response::
+include::{snippets}/member/signup/http-response.adoc[]
+
+=== 유저정보 조회(본인)
+request::
+include::{snippets}/member/getMyUserInfo/http-request.adoc[]
+response::
+include::{snippets}/member/getMyUserInfo/http-response.adoc[]
+
+=== 유저정보 조회(타인)
+IMPORTANT: 관리자권한 필요
+
+request::
+include::{snippets}/member/getUserInfo/http-request.adoc[]
+response::
+include::{snippets}/member/getUserInfo/http-response.adoc[]
+
+=== 이메일 중복 체크
+NOTE: 중복된 이메일이 존재할 경우 true
+
+request::
+include::{snippets}/member/check-email/http-request.adoc[]
+response::
+include::{snippets}/member/check-email/http-response.adoc[]
+
+=== 닉네임 중복 체크
+NOTE: 중복된 이메일이 존재할 경우 true
+
+request::
+include::{snippets}/member/check-nickname/http-request.adoc[]
+response::
+include::{snippets}/member/check-nickname/http-response.adoc[]

@@ -105,7 +105,6 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitment() throws Exception {
-        // 전체 recruitment를 list 형태로 받아옴
         RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
 
         given(recruitmentService.findAll())
