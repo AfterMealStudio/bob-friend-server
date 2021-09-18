@@ -1,15 +1,11 @@
 package com.example.bob_friend.controller;
 
-import com.example.bob_friend.model.dto.CommentRequestDto;
-import com.example.bob_friend.model.dto.CommentResponseDto;
-import com.example.bob_friend.model.dto.RecruitmentRequestDto;
-import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.dto.*;
 import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.RecruitmentCommentService;
 import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +22,7 @@ public class RecruitmentController {
     @GetMapping()
     public ResponseEntity getAllRecruitment(@RequestParam(value = "restaurantName", required = false) String restaurantName,
                                             @RequestParam(value = "restaurantAddress", required = false) String restaurantAddress) {
-        List<RecruitmentResponseDto> responseDtoList = null;
+        List<RecruitmentDto.Response> responseDtoList = null;
         if (restaurantName == null && restaurantAddress == null)
             responseDtoList = recruitmentService.findAll();
         else
@@ -38,28 +34,28 @@ public class RecruitmentController {
     @GetMapping("/{recruitmentId}")
     public ResponseEntity getRecruitment(@PathVariable Long recruitmentId)
             throws RecruitmentNotFoundException {
-        RecruitmentResponseDto recruitmentResponseDto = recruitmentService.findById(recruitmentId);
+        RecruitmentDto.Response recruitmentResponseDto = recruitmentService.findById(recruitmentId);
         return ResponseEntity.ok(recruitmentResponseDto);
     }
 
     @GetMapping("/my")
     public ResponseEntity getMyRecruitment() {
-        List<RecruitmentResponseDto> myRecruitments =
+        List<RecruitmentDto.Response> myRecruitments =
                 recruitmentService.findMyRecruitments();
         return ResponseEntity.ok(myRecruitments);
     }
 
     @GetMapping("/my/joined")
     public ResponseEntity getMyJoinedRecruitment() {
-        List<RecruitmentResponseDto> allJoinedRecruitments =
+        List<RecruitmentDto.Response> allJoinedRecruitments =
                 recruitmentService.findAllJoinedRecruitments();
         return ResponseEntity.ok(allJoinedRecruitments);
     }
 
     @PostMapping()
     public ResponseEntity createRecruitment(
-            @RequestBody RecruitmentRequestDto recruitmentRequestDto) {
-        RecruitmentResponseDto createdRecruitment = recruitmentService.createRecruitment(recruitmentRequestDto);
+            @RequestBody RecruitmentDto.Request recruitmentRequestDto) {
+        RecruitmentDto.Response createdRecruitment = recruitmentService.createRecruitment(recruitmentRequestDto);
         return ResponseEntity.ok(createdRecruitment);
     }
 
@@ -80,21 +76,21 @@ public class RecruitmentController {
     @PatchMapping("/{recruitmentId}")
     public ResponseEntity joinRecruitment(@PathVariable Long recruitmentId)
             throws RecruitmentAlreadyJoined {
-        RecruitmentResponseDto join = recruitmentService.joinOrUnjoin(recruitmentId);
+        RecruitmentDto.Response join = recruitmentService.joinOrUnjoin(recruitmentId);
         return ResponseEntity.ok(join);
     }
 
     @GetMapping("/{recruitmentId}/comments")
     public ResponseEntity getAllComments(@PathVariable Long recruitmentId) {
-        List<CommentResponseDto> allCommentByRecruitmentId = commentService
+        List<CommentDto.Response> allCommentByRecruitmentId = commentService
                 .getAllCommentByRecruitmentId(recruitmentId);
         return ResponseEntity.ok(allCommentByRecruitmentId);
     }
 
     @PostMapping("/{recruitmentId}/comments")
     public ResponseEntity createComment(@PathVariable Long recruitmentId,
-                                        @RequestBody CommentRequestDto commentRequestDto) {
-        CommentResponseDto comment =
+                                        @RequestBody CommentDto.Request commentRequestDto) {
+        CommentDto.Response comment =
                 commentService.createCommentToRecruitment(
                         commentRequestDto, recruitmentId);
         return ResponseEntity.ok(comment);

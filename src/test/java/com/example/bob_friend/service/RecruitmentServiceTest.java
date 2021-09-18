@@ -1,7 +1,6 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.dto.RecruitmentRequestDto;
-import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
@@ -9,7 +8,6 @@ import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,7 +46,6 @@ class RecruitmentServiceTest {
         testAuthor = Member.builder()
                 .id(1)
                 .email("testAuthor@test.com")
-//                .username("testAuthor")
                 .nickname("testAuthor")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
@@ -82,9 +79,9 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findById(testRecruitment.getId()))
                 .willReturn(Optional.ofNullable(testRecruitment));
 
-        RecruitmentResponseDto byId = recruitmentService.findById(testRecruitment.getId());
+        RecruitmentDto.Response byId = recruitmentService.findById(testRecruitment.getId());
 
-        RecruitmentResponseDto dtoFromEntity = new RecruitmentResponseDto(testRecruitment);
+        RecruitmentDto.Response dtoFromEntity = new RecruitmentDto.Response(testRecruitment);
 
         assertThat(byId, equalTo(dtoFromEntity));
     }
@@ -106,11 +103,11 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findAll())
                 .willReturn(recruitmentList);
 
-        List<RecruitmentResponseDto> responseDtoList = recruitmentService.findAll();
+        List<RecruitmentDto.Response> responseDtoList = recruitmentService.findAll();
 
         assertThat(responseDtoList,
                 equalTo(recruitmentList.stream()
-                        .map(r -> new RecruitmentResponseDto(r))
+                        .map(r -> new RecruitmentDto.Response(r))
                         .collect(Collectors.toList())));
     }
 
@@ -120,11 +117,11 @@ class RecruitmentServiceTest {
         when(recruitmentRepository.save(any()))
                 .thenReturn(testRecruitment);
         when(recruitmentRepository.findById(any())).thenReturn(Optional.ofNullable(testRecruitment));
-        RecruitmentRequestDto requestDto = new RecruitmentRequestDto(testRecruitment);
+        RecruitmentDto.Request requestDto = new RecruitmentDto.Request(testRecruitment);
 
-        RecruitmentResponseDto add = recruitmentService.createRecruitment(requestDto);
+        RecruitmentDto.Response add = recruitmentService.createRecruitment(requestDto);
 
-        RecruitmentResponseDto byId = recruitmentService.findById(testRecruitment.getId());
+        RecruitmentDto.Response byId = recruitmentService.findById(testRecruitment.getId());
 
         assertThat(add, equalTo(byId));
     }
@@ -134,7 +131,6 @@ class RecruitmentServiceTest {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-//                .username("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
@@ -148,7 +144,7 @@ class RecruitmentServiceTest {
 //        when(recruitmentRepository.save(any())) joinOrUnjoin 메소드는 영속상태의 엔티티를 이용하므로
 //                .thenReturn(testRecruitment);   변경감지가 일어나 save 할 필요 없다.
 
-        RecruitmentResponseDto recruitmentResponseDto =
+        RecruitmentDto.Response recruitmentResponseDto =
                 recruitmentService.joinOrUnjoin(testRecruitment.getId());
 
         assertTrue(recruitmentResponseDto.getMembers().contains(
@@ -160,7 +156,6 @@ class RecruitmentServiceTest {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-//                .username("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
@@ -172,7 +167,7 @@ class RecruitmentServiceTest {
                 .willReturn(Optional.ofNullable(testRecruitment));
         testRecruitment.getMembers().add(testMember);
 
-        RecruitmentResponseDto recruitmentResponseDto =
+        RecruitmentDto.Response recruitmentResponseDto =
                 recruitmentService.joinOrUnjoin(testRecruitment.getId());
 
         assertFalse(recruitmentResponseDto.getMembers().contains(
@@ -184,7 +179,6 @@ class RecruitmentServiceTest {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-//                .username("testMember")
                 .nickname("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
@@ -215,7 +209,7 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findAll())
                 .willReturn(recruitmentList);
 
-        List<RecruitmentResponseDto> responseDtoList =
+        List<RecruitmentDto.Response> responseDtoList =
                 recruitmentService.findAllJoinedRecruitments();
 
         assertThat(responseDtoList,
@@ -223,7 +217,7 @@ class RecruitmentServiceTest {
                         .filter(r ->
                                 r.hasMember(testMember) ||
                                         r.getAuthor().equals(testMember))
-                        .map(r -> new RecruitmentResponseDto(r))
+                        .map(r -> new RecruitmentDto.Response(r))
                         .collect(Collectors.toList())));
     }
 
@@ -232,7 +226,6 @@ class RecruitmentServiceTest {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-//                .username("testMember")
                 .nickname("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
@@ -263,7 +256,7 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findAll())
                 .willReturn(recruitmentList);
 
-        List<RecruitmentResponseDto> responseDtoList =
+        List<RecruitmentDto.Response> responseDtoList =
                 recruitmentService.findAllAvailableRecruitments();
 
         assertThat(responseDtoList,
@@ -271,7 +264,7 @@ class RecruitmentServiceTest {
                         .filter(r ->
                                 !r.hasMember(testMember) &&
                                         !r.getAuthor().equals(testMember))
-                        .map(r -> new RecruitmentResponseDto(r))
+                        .map(r -> new RecruitmentDto.Response(r))
                         .collect(Collectors.toList())));
     }
 
@@ -280,7 +273,6 @@ class RecruitmentServiceTest {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-//                .username("testMember")
                 .nickname("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
@@ -311,12 +303,12 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findAllByAuthor(any()))
                 .willReturn(recruitmentList);
 
-        List<RecruitmentResponseDto> responseDtoList =
+        List<RecruitmentDto.Response> responseDtoList =
                 recruitmentService.findMyRecruitments();
 
         assertThat(responseDtoList,
                 equalTo(recruitmentList.stream()
-                        .map(r -> new RecruitmentResponseDto(r))
+                        .map(r -> new RecruitmentDto.Response(r))
                         .collect(Collectors.toList())));
     }
 

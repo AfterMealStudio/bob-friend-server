@@ -1,7 +1,7 @@
 package com.example.bob_friend.interceptor;
 
-import com.example.bob_friend.model.dto.MemberResponseDto;
-import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.dto.MemberDto;
+import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.Sex;
 import com.example.bob_friend.model.exception.RestrictionFailedException;
 import com.example.bob_friend.service.MemberService;
@@ -33,8 +33,8 @@ public class SexRestrictionInterceptor implements HandlerInterceptor {
 
         Long recruitmentId = Long.parseLong(pathMatcher.extractPathWithinPattern(pattern, requestURI));
 
-        MemberResponseDto member = memberService.getMyMemberWithAuthorities();
-        RecruitmentResponseDto recruitment =
+        MemberDto.Response member = memberService.getMyMemberWithAuthorities();
+        RecruitmentDto.Response recruitment =
                 recruitmentService.findById(recruitmentId);
 
         if (!checkSexRestriction(recruitment, member)) {
@@ -44,8 +44,8 @@ public class SexRestrictionInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    public boolean checkSexRestriction(RecruitmentResponseDto recruitment,
-                                       MemberResponseDto member) {
+    public boolean checkSexRestriction(RecruitmentDto.Response recruitment,
+                                       MemberDto.Response member) {
         String restriction = recruitment.getSexRestriction().name();
         if (restriction.equals(Sex.NONE) || restriction.equals(member.getSex().name())) {
             return true;

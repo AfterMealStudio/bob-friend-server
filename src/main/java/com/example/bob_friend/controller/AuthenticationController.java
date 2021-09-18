@@ -1,7 +1,7 @@
 package com.example.bob_friend.controller;
 
 import com.example.bob_friend.jwt.JwtTokenProvider;
-import com.example.bob_friend.model.dto.MemberLoginDto;
+import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.TokenDto;
 import com.example.bob_friend.model.exception.MemberNotVerifiedException;
 import com.example.bob_friend.service.MemberService;
@@ -32,7 +32,7 @@ public class AuthenticationController {
     private String AUTHENTICATION_HEADER;
 
     @PostMapping("/signin")
-    public ResponseEntity authorize(@Valid @RequestBody MemberLoginDto loginDto) throws AuthenticationException, MemberNotVerifiedException {
+    public ResponseEntity authorize(@Valid @RequestBody MemberDto.Login loginDto) throws AuthenticationException, MemberNotVerifiedException {
         if (!memberService.isExistByEmail(loginDto.getEmail())) {
             throw new UsernameNotFoundException(loginDto.getEmail() + " is not a member");
         }

@@ -1,7 +1,6 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.dto.MemberResponseDto;
-import com.example.bob_friend.model.dto.MemberSignupDto;
+import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.entity.Authority;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Sex;
@@ -34,6 +33,8 @@ public class MemberServiceTest {
     MemberRepository memberRepository;
     @Mock
     PasswordEncoder passwordEncoder;
+    @Mock
+    EmailService emailService;
     @InjectMocks
     MemberService memberService;
     Member testMember;
@@ -43,7 +44,6 @@ public class MemberServiceTest {
         testMember = Member.builder()
                 .id(0L)
                 .email("testEmail")
-//                .username("testUsername")
                 .nickname("testUser")
                 .password(passwordEncoder.encode("1234"))
                 .birth(LocalDate.now())
@@ -62,9 +62,9 @@ public class MemberServiceTest {
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
                 .thenReturn(Optional.ofNullable(testMember));
 
-        MemberResponseDto getMember = memberService.getMemberWithAuthorities(testMember.getEmail());
+        MemberDto.Response getMember = memberService.getMemberWithAuthorities(testMember.getEmail());
 
-        assertThat(new MemberResponseDto(testMember), equalTo(getMember));
+        assertThat(new MemberDto.Response(testMember), equalTo(getMember));
     }
 
     @Test
@@ -73,7 +73,6 @@ public class MemberServiceTest {
         Member signupTest = Member.builder()
                 .id(1L)
                 .email("signupTestEmail")
-//                .username("signupTestUsername")
                 .nickname("signupTestUser")
                 .password(passwordEncoder.encode("1234"))
                 .birth(LocalDate.of(2020, 8, 9))
@@ -85,9 +84,8 @@ public class MemberServiceTest {
                 .active(true)
                 .build();
 
-        MemberSignupDto memberSignupDto = MemberSignupDto.builder()
+        MemberDto.Signup memberSignupDto = MemberDto.Signup.builder()
                 .email("signupTestEmail")
-//                .username("signupTestUsername")
                 .nickname("signupTestUser")
                 .password("1234")
                 .sex(Sex.FEMALE)
@@ -99,9 +97,10 @@ public class MemberServiceTest {
                 .thenReturn(false);
         when(memberRepository.save(any()))
                 .thenReturn(signupTest);
-
-        MemberResponseDto responseDto = memberService.signup(memberSignupDto);
-        MemberResponseDto memberResponseDto = new MemberResponseDto(signupTest);
+        when(emailService.makeMailText(any()))
+                .thenReturn("http://localhost:8080/api/?email=qww1552@naver.com&code=-150140394");
+        MemberDto.Response responseDto = memberService.signup(memberSignupDto);
+        MemberDto.Response memberResponseDto = new MemberDto.Response(signupTest);
 
         assertThat(responseDto, equalTo(memberResponseDto));
     }
@@ -109,9 +108,8 @@ public class MemberServiceTest {
     @Test
     @DisplayName(value = "signup_fail_MemberDuplicated")
     public void signupFail() {
-        MemberSignupDto memberSignupDto = MemberSignupDto.builder()
+        MemberDto.Signup memberSignupDto = MemberDto.Signup.builder()
                 .email("signupTestEmail")
-//                .username("signupTestUsername")
                 .nickname("signupTestUser")
                 .password("1234")
                 .sex(Sex.FEMALE)
@@ -132,7 +130,7 @@ public class MemberServiceTest {
         testMember.setReportCount(0);
         when(memberRepository.findMemberByEmail(any()))
                 .thenReturn(Optional.ofNullable(testMember));
-        MemberResponseDto memberResponseDto =
+        MemberDto.Response memberResponseDto =
                 memberService.reportMember(testMember.getEmail());
 
         assertThat(memberResponseDto.getReportCount(), equalTo(1));
@@ -144,7 +142,7 @@ public class MemberServiceTest {
         testMember.setReportCount(0);
         when(memberRepository.findMemberByEmail(any()))
                 .thenReturn(Optional.ofNullable(testMember));
-        MemberResponseDto memberResponseDto = null;
+        MemberDto.Response memberResponseDto = null;
 
         for (int i = 0; i < 4; i++) {
             memberResponseDto =

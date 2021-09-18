@@ -1,7 +1,6 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.dto.MemberResponseDto;
-import com.example.bob_friend.model.dto.MemberSignupDto;
+import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.entity.Authority;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
@@ -26,7 +25,7 @@ public class MemberService {
     private final EmailService emailService;
 
     @Transactional
-    public MemberResponseDto signup(MemberSignupDto memberSignupDto) {
+    public MemberDto.Response signup(MemberDto.Signup memberSignupDto) {
         if (memberRepository
                 .existsMemberByEmail(memberSignupDto.getEmail())) {
             throw new MemberDuplicatedException(memberSignupDto.getEmail());
@@ -42,19 +41,19 @@ public class MemberService {
         emailService.sendMail(save.getEmail(), save.getEmail(),
                 emailService.makeMailText(member));
 
-        return new MemberResponseDto(save);
+        return new MemberDto.Response(save);
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto getMemberWithAuthorities(String email) {
+    public MemberDto.Response getMemberWithAuthorities(String email) {
         Member member = memberRepository.findMemberWithAuthoritiesByEmail(email).orElseThrow(() -> {
             throw new UsernameNotFoundException(email);
         });
-        return new MemberResponseDto(member);
+        return new MemberDto.Response(member);
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto getMyMemberWithAuthorities() {
+    public MemberDto.Response getMyMemberWithAuthorities() {
         String currentUsername = getCurrentUsername();
 
         Member member = memberRepository.findMemberWithAuthoritiesByEmail(currentUsername).orElseThrow(
@@ -62,7 +61,7 @@ public class MemberService {
                     throw new UsernameNotFoundException(currentUsername);
                 }
         );
-        return new MemberResponseDto(member);
+        return new MemberDto.Response(member);
     }
 
     public String getCurrentUsername() {
@@ -95,21 +94,19 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponseDto reportMember(String username) {
+    public MemberDto.Response reportMember(String username) {
         Member member = memberRepository.findMemberByEmail(username)
                 .orElseThrow(() -> {
                             throw new UsernameNotFoundException("user not found");
                         }
                 );
         member.increaseReportCount();
-        return new MemberResponseDto((member));
+        return new MemberDto.Response((member));
     }
 
     @Transactional
     public void checkMemberWithCode(String email, String code) {
         Member member = memberRepository.getMemberByEmail(email);
-        System.out.println(code);
-        System.out.println(member.hashCode());
         if (Integer.parseInt(code) == (member.hashCode())) {
             member.setVerified(true);
         }

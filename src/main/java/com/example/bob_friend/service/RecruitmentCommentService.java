@@ -1,8 +1,6 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.dto.CommentRequestDto;
-import com.example.bob_friend.model.dto.CommentResponseDto;
-import com.example.bob_friend.model.dto.MemberResponseDto;
+import com.example.bob_friend.model.dto.CommentDto;
 import com.example.bob_friend.model.entity.Comment;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
@@ -22,13 +20,13 @@ public class RecruitmentCommentService {
     private final RecruitmentRepository recruitmentRepository;
     private final MemberService memberService;
 
-    public List<CommentResponseDto> getAllCommentByRecruitmentId(Long recruitmentId) {
+    public List<CommentDto.Response> getAllCommentByRecruitmentId(Long recruitmentId) {
         return commentRepository.findAllByRecruitmentId(recruitmentId).stream()
-                .map(CommentResponseDto::new)
+                .map(CommentDto.Response::new)
                 .collect(Collectors.toList());
     }
 
-    public CommentResponseDto createCommentToRecruitment(CommentRequestDto commentRequestDto, Long recruitmentId) {
+    public CommentDto.Response createCommentToRecruitment(CommentDto.Request commentRequestDto, Long recruitmentId) {
         Comment comment = commentRequestDto.convertToEntity();
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId).orElseThrow(
@@ -38,7 +36,7 @@ public class RecruitmentCommentService {
         );
         comment.setAuthor(currentMember);
         comment.setRecruitment(recruitment);
-        return new CommentResponseDto(commentRepository.save(comment));
+        return new CommentDto.Response(commentRepository.save(comment));
     }
 
 

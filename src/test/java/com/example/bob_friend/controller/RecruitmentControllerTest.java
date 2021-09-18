@@ -1,7 +1,6 @@
 package com.example.bob_friend.controller;
 
-import com.example.bob_friend.model.dto.RecruitmentRequestDto;
-import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
@@ -65,7 +64,6 @@ class RecruitmentControllerTest {
         testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-//                .username("testMember")
                 .nickname("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
@@ -77,7 +75,6 @@ class RecruitmentControllerTest {
         testAuthor = Member.builder()
                 .id(1)
                 .email("testAuthor@test.com")
-//                .username("testAuthor")
                 .nickname("testAuthor")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
@@ -109,7 +106,7 @@ class RecruitmentControllerTest {
     @Test
     void getAllRecruitment() throws Exception {
         // 전체 recruitment를 list 형태로 받아옴
-        RecruitmentResponseDto responseDto1 = new RecruitmentResponseDto(testRecruitment);
+        RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
 
         given(recruitmentService.findAll())
                 .willReturn(Arrays.asList(responseDto1));
@@ -125,8 +122,8 @@ class RecruitmentControllerTest {
 
     @Test
     void getRecruitment() throws Exception {
-        RecruitmentResponseDto responseDto =
-                new RecruitmentResponseDto(testRecruitment);
+        RecruitmentDto.Response responseDto =
+                new RecruitmentDto.Response(testRecruitment);
         given(recruitmentService.findById(any()))
                 .willReturn(responseDto);
 
@@ -177,8 +174,8 @@ class RecruitmentControllerTest {
 
     @Test
     void createRecruitment() throws Exception {
-        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(testRecruitment);
-        RecruitmentRequestDto requestDto = new RecruitmentRequestDto(testRecruitment);
+        RecruitmentDto.Response responseDto = new RecruitmentDto.Response(testRecruitment);
+        RecruitmentDto.Request requestDto = new RecruitmentDto.Request(testRecruitment);
         given(recruitmentService.createRecruitment(any()))
                 .willReturn(responseDto);
 
