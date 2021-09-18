@@ -26,10 +26,9 @@ public class MemberService {
     private final EmailService emailService;
 
     @Transactional
-    public MemberResponseDto  signup(MemberSignupDto memberSignupDto) {
+    public MemberResponseDto signup(MemberSignupDto memberSignupDto) {
         if (memberRepository
-                .existsMemberByEmail(memberSignupDto.getEmail())
-        ) {
+                .existsMemberByEmail(memberSignupDto.getEmail())) {
             throw new MemberDuplicatedException(memberSignupDto.getEmail());
         }
 
@@ -39,12 +38,10 @@ public class MemberService {
                 .convertToEntityWithPasswordEncoder(passwordEncoder);
         member.setAuthorities(Collections.singleton(authority));
         Member save = memberRepository.save(member);
-        emailService.sendMail(save.getEmail(),save.getEmail(),
 
-                "http://localhost:8080/api/?" + "email="+
-                        save.getEmail()+"&code="+
-                        save.hashCode()
-                );
+        emailService.sendMail(save.getEmail(), save.getEmail(),
+                emailService.makeMailText(member));
+
         return new MemberResponseDto(save);
     }
 
@@ -113,7 +110,7 @@ public class MemberService {
         Member member = memberRepository.getMemberByEmail(email);
         System.out.println(code);
         System.out.println(member.hashCode());
-        if (Integer.parseInt(code)==(member.hashCode())) {
+        if (Integer.parseInt(code) == (member.hashCode())) {
             member.setVerified(true);
         }
     }
