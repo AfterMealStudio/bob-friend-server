@@ -1,0 +1,37 @@
+= RESTful Notes API Guide
+:doctype:
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectnums:
+:sectlinks:
+:sectanchors:
+
+[[api]]
+== Recruitment Api
+=== 생성
+request::
+include::{snippets}/create-recruitment/http-request.adoc[]
+response::
+include::{snippets}/create-recruitment/http-response.adoc[]
+response field description::
+include::{snippets}/create-recruitment/response-fields.adoc[]
+=== 한 건 조회
+request::
+include::{snippets}/get-one-recruitment/http-request.adoc[]
+response::
+include::{snippets}/get-one-recruitment/http-response.adoc[]
+parameter::
+include::{snippets}/get-one-recruitment/path-parameters.adoc[]
+response field description::
+include::{snippets}/get-one-recruitment/response-fields.adoc[]
+
+=== 전체 조회
+request::
+include::{snippets}/get-all-recruitments/http-request.adoc[]
+response::
+include::{snippets}/get-all-recruitments/http-response.adoc[]
+=== 삭제
+
+== test

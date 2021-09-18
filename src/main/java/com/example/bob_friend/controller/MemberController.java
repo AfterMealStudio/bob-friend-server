@@ -1,9 +1,7 @@
 package com.example.bob_friend.controller;
 
-import com.example.bob_friend.model.dto.MemberResponseDto;
 import com.example.bob_friend.model.dto.MemberSignupDto;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
-import com.example.bob_friend.service.EmailService;
 import com.example.bob_friend.service.MemberService;
 import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
