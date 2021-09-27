@@ -1,0 +1,72 @@
+= RESTful Notes API Guide
+:doctype:
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectnums:
+:sectlinks:
+:sectanchors:
+
+[[api]]
+== Recruitment
+=== 생성
+request::
+include::{snippets}/create-recruitment/http-request.adoc[]
+response::
+include::{snippets}/create-recruitment/http-response.adoc[]
+response field description::
+include::{snippets}/create-recruitment/response-fields.adoc[]
+=== 한 건 조회
+request::
+include::{snippets}/get-one-recruitment/http-request.adoc[]
+response::
+include::{snippets}/get-one-recruitment/http-response.adoc[]
+parameter::
+include::{snippets}/get-one-recruitment/path-parameters.adoc[]
+response field description::
+include::{snippets}/get-one-recruitment/response-fields.adoc[]
+
+=== 전체 조회
+request::
+include::{snippets}/get-all-recruitments/http-request.adoc[]
+response::
+include::{snippets}/get-all-recruitments/http-response.adoc[]
+=== 삭제
+
+== Member
+=== 회원가입
+request::
+include::{snippets}/member/signup/http-request.adoc[]
+response::
+include::{snippets}/member/signup/http-response.adoc[]
+
+=== 유저정보 조회(본인)
+request::
+include::{snippets}/member/getMyUserInfo/http-request.adoc[]
+response::
+include::{snippets}/member/getMyUserInfo/http-response.adoc[]
+
+=== 유저정보 조회(타인)
+IMPORTANT: 관리자권한 필요
+
+request::
+include::{snippets}/member/getUserInfo/http-request.adoc[]
+response::
+include::{snippets}/member/getUserInfo/http-response.adoc[]
+
+=== 이메일 중복 체크
+NOTE: 중복된 이메일이 존재할 경우 true
+
+request::
+include::{snippets}/member/check-email/http-request.adoc[]
+response::
+include::{snippets}/member/check-email/http-response.adoc[]
+
+=== 닉네임 중복 체크
+NOTE: 중복된 닉네임이 존재할 경우 true
+
+request::
+include::{snippets}/member/check-nickname/http-request.adoc[]
+response::
+include::{snippets}/member/check-nickname/http-response.adoc[]

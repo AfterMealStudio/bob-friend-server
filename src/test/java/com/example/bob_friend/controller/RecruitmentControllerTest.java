@@ -1,20 +1,23 @@
 package com.example.bob_friend.controller;
 
-import com.example.bob_friend.model.dto.RecruitmentRequestDto;
-import com.example.bob_friend.model.dto.RecruitmentResponseDto;
+import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.service.RecruitmentCommentService;
 import com.example.bob_friend.service.RecruitmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -22,8 +25,15 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentRequest;
+import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -32,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(RecruitmentController.class)
 @WebMvcTest(useDefaultFilters = false)
 @AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureRestDocs
 class RecruitmentControllerTest {
 
     @Autowired
@@ -41,6 +52,8 @@ class RecruitmentControllerTest {
 
     @MockBean
     RecruitmentService recruitmentService;
+    @MockBean
+    RecruitmentCommentService recruitmentCommentService;
 
     Recruitment testRecruitment;
     Member testAuthor;
@@ -51,7 +64,6 @@ class RecruitmentControllerTest {
         testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
-                .username("testMember")
                 .nickname("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
@@ -63,7 +75,6 @@ class RecruitmentControllerTest {
         testAuthor = Member.builder()
                 .id(1)
                 .email("testAuthor@test.com")
-                .username("testAuthor")
                 .nickname("testAuthor")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
@@ -94,29 +105,55 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitment() throws Exception {
-        // 전체 recruitment를 list 형태로 받아옴
-        RecruitmentResponseDto responseDto1 = new RecruitmentResponseDto(testRecruitment);
+        RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
 
         given(recruitmentService.findAll())
                 .willReturn(Arrays.asList(responseDto1));
         mvc.perform(get("/recruitments"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
-                .andDo(print());
+                .andDo(document("get-all-recruitments",
+                        getDocumentRequest(),
+                        getDocumentResponse()
+                ));
+
     }
 
     @Test
     void getRecruitment() throws Exception {
-        RecruitmentResponseDto responseDto =
-                new RecruitmentResponseDto(testRecruitment);
+        RecruitmentDto.Response responseDto =
+                new RecruitmentDto.Response(testRecruitment);
         given(recruitmentService.findById(any()))
                 .willReturn(responseDto);
 
-        mvc.perform(get("/recruitments/{id}", 1))
+        mvc.perform(RestDocumentationRequestBuilders.get("/recruitments/{id}", 1))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(responseDto)))
-                .andDo(print());
+                .andDo(document("get-one-recruitment",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("id").description("글 번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("글 제목"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
+                                fieldWithPath("author").type(JsonFieldType.STRING).description("작성자"),
+                                fieldWithPath("members").type(JsonFieldType.ARRAY).description("참여 중인 사람"),
+                                fieldWithPath("totalNumberOfPeople").type(JsonFieldType.NUMBER).description("총 인원"),
+                                fieldWithPath("currentNumberOfPeople").type(JsonFieldType.NUMBER).description("현재 인원"),
+                                fieldWithPath("full").type(JsonFieldType.BOOLEAN).description("가득 찼는지 여부"),
+                                fieldWithPath("restaurantName").type(JsonFieldType.STRING).description("식당 이름"),
+                                fieldWithPath("restaurantAddress").type(JsonFieldType.STRING).description("식당 주소"),
+                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
+                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도"),
+                                fieldWithPath("sexRestriction").type(JsonFieldType.VARIES).description("성별 제한"),
+                                fieldWithPath("appointmentTime").type(JsonFieldType.STRING).description("약속 시간"),
+                                fieldWithPath("createdAt").type(JsonFieldType.STRING).description("작성 시간")
+                                )
+                ));
     }
 
     // 단위테스트에서는 controller의 동작만 확인하고, controllerAdvice의 동작은 통합테스트로 넘기기로 한다.
@@ -136,9 +173,9 @@ class RecruitmentControllerTest {
 
     @Test
     void createRecruitment() throws Exception {
-        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(testRecruitment);
-        RecruitmentRequestDto requestDto = new RecruitmentRequestDto(testRecruitment);
-        given(recruitmentService.add(any()))
+        RecruitmentDto.Response responseDto = new RecruitmentDto.Response(testRecruitment);
+        RecruitmentDto.Request requestDto = new RecruitmentDto.Request(testRecruitment);
+        given(recruitmentService.createRecruitment(any()))
                 .willReturn(responseDto);
 
         mvc.perform(post("/recruitments").
@@ -147,7 +184,27 @@ class RecruitmentControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
-                .andDo(print());
+                .andDo(document("create-recruitment",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("글 제목"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
+                                fieldWithPath("author").type(JsonFieldType.STRING).description("작성자"),
+                                fieldWithPath("members").type(JsonFieldType.ARRAY).description("참여 중인 사람"),
+                                fieldWithPath("totalNumberOfPeople").type(JsonFieldType.NUMBER).description("총 인원"),
+                                fieldWithPath("currentNumberOfPeople").type(JsonFieldType.NUMBER).description("현재 인원"),
+                                fieldWithPath("full").type(JsonFieldType.BOOLEAN).description("가득 찼는지 여부"),
+                                fieldWithPath("restaurantName").type(JsonFieldType.STRING).description("식당 이름"),
+                                fieldWithPath("restaurantAddress").type(JsonFieldType.STRING).description("식당 주소"),
+                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
+                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도"),
+                                fieldWithPath("sexRestriction").type(JsonFieldType.VARIES).description("성별 제한"),
+                                fieldWithPath("appointmentTime").type(JsonFieldType.STRING).description("약속 시간"),
+                                fieldWithPath("createdAt").type(JsonFieldType.STRING).description("작성 시간")
+                        )
+                ));
     }
 
     @Test

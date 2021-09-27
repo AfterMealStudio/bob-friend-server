@@ -5,8 +5,9 @@ import org.springframework.http.HttpStatus;
 
 public class MemberDuplicatedException extends CustomException {
     HttpStatus httpStatus = HttpStatus.CONFLICT;
+
     public MemberDuplicatedException(String username) {
-        super(username + " is already exist");
+        super("username [ " + username + " ] is already exist");
     }
 
     @Override

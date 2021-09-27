@@ -35,9 +35,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/signin/**/",
                         "/api/signup/**/",
-                        "/api/username/**/",
+                        "/api/nickname/**/",
                         "/api/email/**/",
-                        "/api/validate/**/").permitAll()
+                        "/api/validate/**/",
+                        "/api/",
+                        "/docs/api-doc.html").permitAll()
                 .anyRequest().hasRole("USER")
 
                 .and()

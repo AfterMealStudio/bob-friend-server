@@ -1,9 +1,8 @@
 package com.example.bob_friend.controller;
 
-import com.example.bob_friend.model.dto.MemberSignupDto;
+import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
 import com.example.bob_friend.service.MemberService;
-import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,21 +16,26 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 public class MemberController {
     private final MemberService memberService;
-    private final RecruitmentService recruitmentService;
+
+    @GetMapping("")
+    public ResponseEntity verifyEmail(@RequestParam String email, @RequestParam String code) {
+        memberService.checkMemberWithCode(email, code);
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/signup")
-    public ResponseEntity signup(@Valid @RequestBody MemberSignupDto memberSignupDto) throws MemberDuplicatedException {
+    public ResponseEntity signup(@Valid @RequestBody MemberDto.Signup memberSignupDto) throws MemberDuplicatedException {
         return ResponseEntity.ok(memberService.signup(memberSignupDto));
     }
 
     @GetMapping("/email/{email}")
     public ResponseEntity checkEmail(@PathVariable String email) {
-        return ResponseEntity.ok(memberService.isExistByEmail(email));
+        return ResponseEntity.ok(memberService.checkExistByEmail(email));
     }
 
-    @GetMapping("/username/{username}")
-    public ResponseEntity checkNickname(@PathVariable String username) {
-        return ResponseEntity.ok(memberService.isExistByUsername(username));
+    @GetMapping("/nickname/{nickname}")
+    public ResponseEntity checkNickname(@PathVariable String nickname) {
+        return ResponseEntity.ok(memberService.checkExistByNickname(nickname));
     }
 
     @GetMapping("/user")

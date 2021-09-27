@@ -1,6 +1,7 @@
 package com.example.bob_friend.interceptor;
 
 import com.example.bob_friend.model.entity.Member;
+import com.example.bob_friend.model.exception.MemberNotActiveException;
 import com.example.bob_friend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,20 @@ public class MemberValidateInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
+
         Member currentMember = memberService.getCurrentMember();
         LocalDate reportEnd = currentMember.getReportEnd();
         if (reportEnd != null) {
             if (LocalDate.now().isAfter(reportEnd)) {
-                memberService.setMemberActive(currentMember);
+                currentMember.setActive();
             }
         }
-        return currentMember.isActive();
+
+        if (!currentMember.isActive()) {
+            throw new MemberNotActiveException(currentMember.getEmail());
+        }
+
+        return true;
     }
+
 }

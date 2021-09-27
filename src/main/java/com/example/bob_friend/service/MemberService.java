@@ -1,7 +1,6 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.dto.MemberResponseDto;
-import com.example.bob_friend.model.dto.MemberSignupDto;
+import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.entity.Authority;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
@@ -16,61 +15,53 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.Collections;
 
 @RequiredArgsConstructor
 @Service
 public class MemberService {
-    private final int REPORT_DAY = 3;
-
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Transactional
-    public MemberResponseDto signup(MemberSignupDto memberSignupDto) {
+    public MemberDto.Response signup(MemberDto.Signup memberSignupDto) {
         if (memberRepository
-                .findMemberWithAuthoritiesByUsername(
-                        memberSignupDto.getUsername()
-                )
-                .orElse(null) != null
-        ) throw new MemberDuplicatedException(memberSignupDto.getUsername());
+                .existsMemberByEmail(memberSignupDto.getEmail())) {
+            throw new MemberDuplicatedException(memberSignupDto.getEmail());
+        }
 
         Authority authority = Authority.ROLE_USER;
 
-        Member member = Member.builder()
-                .email(memberSignupDto.getEmail())
-                .username(memberSignupDto.getUsername())
-                .nickname(memberSignupDto.getNickname())
-                .password(passwordEncoder.encode(memberSignupDto.getPassword()))
-                .birth(memberSignupDto.getBirth())
-                .sex(memberSignupDto.getSex())
-                .reportCount(0)
-                .authorities(Collections.singleton(authority))
-                .agree(memberSignupDto.isAgree())
-                .active(true)
-                .build();
-        return new MemberResponseDto(memberRepository.save(member));
+        Member member = memberSignupDto
+                .convertToEntityWithPasswordEncoder(passwordEncoder);
+        member.setAuthorities(Collections.singleton(authority));
+        Member save = memberRepository.save(member);
+
+        emailService.sendMail(save.getEmail(), save.getEmail(),
+                emailService.makeMailText(member));
+
+        return new MemberDto.Response(save);
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto getMemberWithAuthorities(String username) {
-        Member member = memberRepository.findMemberWithAuthoritiesByUsername(username).orElseThrow(() -> {
-            throw new UsernameNotFoundException(username);
+    public MemberDto.Response getMemberWithAuthorities(String email) {
+        Member member = memberRepository.findMemberWithAuthoritiesByEmail(email).orElseThrow(() -> {
+            throw new UsernameNotFoundException(email);
         });
-        return new MemberResponseDto(member);
+        return new MemberDto.Response(member);
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto getMyMemberWithAuthorities() {
+    public MemberDto.Response getMyMemberWithAuthorities() {
         String currentUsername = getCurrentUsername();
 
-        Member member = memberRepository.findMemberWithAuthoritiesByUsername(currentUsername).orElseThrow(
+        Member member = memberRepository.findMemberWithAuthoritiesByEmail(currentUsername).orElseThrow(
                 () -> {
                     throw new UsernameNotFoundException(currentUsername);
                 }
         );
-        return new MemberResponseDto(member);
+        return new MemberDto.Response(member);
     }
 
     public String getCurrentUsername() {
@@ -98,46 +89,27 @@ public class MemberService {
     @Transactional
     public Member getCurrentMember() {
         String currentUsername = getCurrentUsername();
-        Member currentMember = memberRepository.findMemberByUsername(currentUsername)
-                .orElseThrow(() -> {
-                            throw new UsernameNotFoundException("user not found");
-                        }
-                );
+        Member currentMember = memberRepository.getMemberByEmail(currentUsername);
         return currentMember;
     }
 
     @Transactional
-    public void setMemberActive(Member member) {
-        member.setActive(true);
-        member.setReportStart(null);
-        member.setReportEnd(null);
-        member.setReportCount(0);
-        saveMember(member);
-    }
-
-    @Transactional
-    public MemberResponseDto reportMember(String username) {
-        Member member = memberRepository.findMemberByUsername(username)
+    public MemberDto.Response reportMember(String username) {
+        Member member = memberRepository.findMemberByEmail(username)
                 .orElseThrow(() -> {
                             throw new UsernameNotFoundException("user not found");
                         }
                 );
-        member.setReportCount(member.getReportCount() + 1);
-        if (member.getReportCount() > 3) {
-            member.setActive(false);
-            member.setReportStart(LocalDate.now());
-            member.setReportEnd(LocalDate.now().plusDays(REPORT_DAY));
-        }
-        return new MemberResponseDto((member));
-    }
-
-    public void saveMember(Member member) {
-        memberRepository.save(member);
+        member.increaseReportCount();
+        return new MemberDto.Response((member));
     }
 
     @Transactional
-    public void deleteByName(String username) {
-        memberRepository.deleteByUsername(username);
+    public void checkMemberWithCode(String email, String code) {
+        Member member = memberRepository.getMemberByEmail(email);
+        if (Integer.parseInt(code) == (member.hashCode())) {
+            member.setVerified(true);
+        }
     }
 
     @Transactional
@@ -145,15 +117,19 @@ public class MemberService {
         memberRepository.deleteById(memberId);
     }
 
-    public boolean isExistByUsername(String username) {
-        return memberRepository.existsMemberByUsername(username);
-    }
-
     public boolean isExistByEmail(String email) {
         return memberRepository.existsMemberByEmail(email);
     }
 
-    public boolean isExistByNickname(String nickname) {
-        return memberRepository.existsMemberByNickname(nickname);
+    public MemberDto.DuplicationCheck checkExistByEmail(String email) {
+        return new MemberDto.DuplicationCheck(
+                memberRepository.existsMemberByEmail(email));
     }
+
+    public MemberDto.DuplicationCheck checkExistByNickname(String nickname) {
+        return new MemberDto.DuplicationCheck(
+                memberRepository.existsMemberByNickname(nickname));
+    }
+
+
 }
