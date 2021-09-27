@@ -14,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -26,7 +25,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +37,7 @@ class MemberControllerTest {
     MockMvc mvc;
     @Autowired
     ObjectMapper objectMapper;
+
     @MockBean
     MemberService memberService;
 
@@ -62,31 +61,6 @@ class MemberControllerTest {
     }
 
     @Test
-    public void signup() throws Exception {
-        MemberDto.Signup signupDto = MemberDto.Signup.builder()
-                .email("testMember@test.com")
-                .nickname("testMember")
-                .password("testPassword")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
-                .agree(true)
-                .build();
-        MemberDto.Response responseDto =
-                new MemberDto.Response(signupDto.convertToEntityWithPasswordEncoder(passwordEncoder));
-        when(memberService.signup(any())).thenReturn(responseDto);
-        mvc.perform(post("/api/signup")
-                        .content(objectMapper.writeValueAsString(signupDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
-                .andDo(document("member/signup",
-                        getDocumentRequest(),
-                        getDocumentResponse())
-                );
-    }
-
-    @Test
     public void getMyUserInfo() throws Exception {
         MemberDto.Response responseDto = new MemberDto.Response(testMember);
         when(memberService.getMyMemberWithAuthorities())
@@ -104,7 +78,7 @@ class MemberControllerTest {
         MemberDto.Response responseDto = new MemberDto.Response(testMember);
         when(memberService.getMemberWithAuthorities(any()))
                 .thenReturn(responseDto);
-        mvc.perform(get("/api/user/{email}",testMember.getEmail()))
+        mvc.perform(get("/api/user/{email}", testMember.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
                 .andDo(document("member/getUserInfo",
@@ -114,25 +88,36 @@ class MemberControllerTest {
 
     @Test
     public void checkEmail() throws Exception {
-        when(memberService.isExistByEmail(any())).thenReturn(false);
-        mvc.perform(get("/api/email/{email}",testMember.getEmail()))
+        when(memberService.checkExistByEmail(any()))
+                .thenReturn(new MemberDto.DuplicationCheck(false));
+        mvc.perform(get("/api/email/{email}", testMember.getEmail()))
                 .andExpect(status().isOk())
-                .andExpect(content().string("false"))
+                .andExpect(content().json(objectMapper.writeValueAsString(
+                        new MemberDto.DuplicationCheck(false)
+                )))
                 .andDo(document("member/check-email",
                         getDocumentRequest(),
                         getDocumentResponse()));
+
     }
 
     @Test
     public void checkNickname() throws Exception {
-        when(memberService.isExistByEmail(any())).thenReturn(false);
-        mvc.perform(get("/api/nickname/{nickname}",testMember.getNickname()))
+        when(memberService.checkExistByNickname(any()))
+                .thenReturn(
+                        new MemberDto.DuplicationCheck(false)
+                );
+        mvc.perform(get("/api/nickname/{nickname}", testMember.getNickname()))
                 .andExpect(status().isOk())
-                .andExpect(content().string("false"))
+                .andExpect(content()
+                        .json(objectMapper.writeValueAsString(
+                                new MemberDto.DuplicationCheck(false)
+                        )))
                 .andDo(document("member/check-nickname",
                         getDocumentRequest(),
                         getDocumentResponse()
                 ));
+
     }
 
 

@@ -121,7 +121,15 @@ public class MemberService {
         return memberRepository.existsMemberByEmail(email);
     }
 
-    public boolean isExistByNickname(String nickname) {
-        return memberRepository.existsMemberByNickname(nickname);
+    public MemberDto.DuplicationCheck checkExistByEmail(String email) {
+        return new MemberDto.DuplicationCheck(
+                memberRepository.existsMemberByEmail(email));
     }
+
+    public MemberDto.DuplicationCheck checkExistByNickname(String nickname) {
+        return new MemberDto.DuplicationCheck(
+                memberRepository.existsMemberByNickname(nickname));
+    }
+
+
 }

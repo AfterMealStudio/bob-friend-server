@@ -74,6 +74,9 @@ public class Recruitment {
     @Column(name = "active")
     private boolean active;
 
+    @Column(name = "report_count")
+    private Integer reportCount;
+
     @Column(name = "sex_restriction")
     @Convert(converter = SexConverter.class)
     private Sex sexRestriction;
@@ -106,6 +109,14 @@ public class Recruitment {
         this.currentNumberOfPeople -= 1;
         if (currentNumberOfPeople < totalNumberOfPeople)
             setFull(false);
+    }
+
+    private void increaseReportCount() {
+        this.reportCount++;
+        if (this.reportCount >= 5) {
+            author.increaseReportCount();
+            this.active = false;
+        }
     }
 
     public void addMember(Member member) {

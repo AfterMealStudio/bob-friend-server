@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class MemberNotVerifiedException extends CustomException {
     public MemberNotVerifiedException(String email) {
-        super("Please verify your email : " + email);
+        super("Please check your email : " + email);
     }
 
     @Override

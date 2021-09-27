@@ -30,12 +30,12 @@ public class MemberController {
 
     @GetMapping("/email/{email}")
     public ResponseEntity checkEmail(@PathVariable String email) {
-        return ResponseEntity.ok(memberService.isExistByEmail(email));
+        return ResponseEntity.ok(memberService.checkExistByEmail(email));
     }
 
     @GetMapping("/nickname/{nickname}")
     public ResponseEntity checkNickname(@PathVariable String nickname) {
-        return ResponseEntity.ok(memberService.isExistByNickname(nickname));
+        return ResponseEntity.ok(memberService.checkExistByNickname(nickname));
     }
 
     @GetMapping("/user")

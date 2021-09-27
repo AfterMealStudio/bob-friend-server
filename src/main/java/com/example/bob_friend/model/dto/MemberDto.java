@@ -97,5 +97,17 @@ public class MemberDto {
                     .active(true)
                     .build();
         }
+
     }
+
+    @Data
+    public static class DuplicationCheck {
+        private boolean duplicated;
+
+        public DuplicationCheck(boolean duplicated) {
+            this.duplicated = duplicated;
+        }
+    }
+
+
 }
