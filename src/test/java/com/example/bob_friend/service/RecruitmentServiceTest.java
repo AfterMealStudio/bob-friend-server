@@ -1,5 +1,6 @@
 package com.example.bob_friend.service;
 
+import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
@@ -16,10 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -147,8 +145,8 @@ class RecruitmentServiceTest {
         RecruitmentDto.Response recruitmentResponseDto =
                 recruitmentService.joinOrUnjoin(testRecruitment.getId());
 
-        assertTrue(recruitmentResponseDto.getMembers().contains(
-                testMember.getNickname()));
+        Set<MemberDto.Preview> members = recruitmentResponseDto.getMembers();
+        assertTrue(members.contains(new MemberDto.Preview(testMember)));
     }
 
     @Test
@@ -170,8 +168,8 @@ class RecruitmentServiceTest {
         RecruitmentDto.Response recruitmentResponseDto =
                 recruitmentService.joinOrUnjoin(testRecruitment.getId());
 
-        assertFalse(recruitmentResponseDto.getMembers().contains(
-                testMember.getNickname()));
+        Set<MemberDto.Preview> members = recruitmentResponseDto.getMembers();
+        assertFalse(members.contains(new MemberDto.Preview(testMember)));
     }
 
     @Test

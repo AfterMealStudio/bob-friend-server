@@ -100,7 +100,7 @@ class RecruitmentControllerTest {
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
                 .build();
-
+        testRecruitment.addMember(testMember);
     }
 
     @Test
@@ -135,24 +135,25 @@ class RecruitmentControllerTest {
                         getDocumentResponse(),
                         pathParameters(
                                 parameterWithName("id").description("글 번호")
-                        ),
-                        responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("글 제목"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
-                                fieldWithPath("author").type(JsonFieldType.STRING).description("작성자"),
-                                fieldWithPath("members").type(JsonFieldType.ARRAY).description("참여 중인 사람"),
-                                fieldWithPath("totalNumberOfPeople").type(JsonFieldType.NUMBER).description("총 인원"),
-                                fieldWithPath("currentNumberOfPeople").type(JsonFieldType.NUMBER).description("현재 인원"),
-                                fieldWithPath("full").type(JsonFieldType.BOOLEAN).description("가득 찼는지 여부"),
-                                fieldWithPath("restaurantName").type(JsonFieldType.STRING).description("식당 이름"),
-                                fieldWithPath("restaurantAddress").type(JsonFieldType.STRING).description("식당 주소"),
-                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
-                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도"),
-                                fieldWithPath("sexRestriction").type(JsonFieldType.VARIES).description("성별 제한"),
-                                fieldWithPath("appointmentTime").type(JsonFieldType.STRING).description("약속 시간"),
-                                fieldWithPath("createdAt").type(JsonFieldType.STRING).description("작성 시간")
-                                )
+                        )
+//                        ,
+//                        responseFields(
+//                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("글 제목"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
+//                                fieldWithPath("author").type(JsonFieldType.STRING).description("작성자"),
+//                                fieldWithPath("members").type(JsonFieldType.ARRAY).description("참여 중인 사람"),
+//                                fieldWithPath("totalNumberOfPeople").type(JsonFieldType.NUMBER).description("총 인원"),
+//                                fieldWithPath("currentNumberOfPeople").type(JsonFieldType.NUMBER).description("현재 인원"),
+//                                fieldWithPath("full").type(JsonFieldType.BOOLEAN).description("가득 찼는지 여부"),
+//                                fieldWithPath("restaurantName").type(JsonFieldType.STRING).description("식당 이름"),
+//                                fieldWithPath("restaurantAddress").type(JsonFieldType.STRING).description("식당 주소"),
+//                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
+//                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도"),
+//                                fieldWithPath("sexRestriction").type(JsonFieldType.VARIES).description("성별 제한"),
+//                                fieldWithPath("appointmentTime").type(JsonFieldType.STRING).description("약속 시간"),
+//                                fieldWithPath("createdAt").type(JsonFieldType.STRING).description("작성 시간")
+//                                )
                 ));
     }
 
@@ -186,24 +187,25 @@ class RecruitmentControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
                 .andDo(document("create-recruitment",
                         getDocumentRequest(),
-                        getDocumentResponse(),
-                        responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("글 제목"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
-                                fieldWithPath("author").type(JsonFieldType.STRING).description("작성자"),
-                                fieldWithPath("members").type(JsonFieldType.ARRAY).description("참여 중인 사람"),
-                                fieldWithPath("totalNumberOfPeople").type(JsonFieldType.NUMBER).description("총 인원"),
-                                fieldWithPath("currentNumberOfPeople").type(JsonFieldType.NUMBER).description("현재 인원"),
-                                fieldWithPath("full").type(JsonFieldType.BOOLEAN).description("가득 찼는지 여부"),
-                                fieldWithPath("restaurantName").type(JsonFieldType.STRING).description("식당 이름"),
-                                fieldWithPath("restaurantAddress").type(JsonFieldType.STRING).description("식당 주소"),
-                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
-                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도"),
-                                fieldWithPath("sexRestriction").type(JsonFieldType.VARIES).description("성별 제한"),
-                                fieldWithPath("appointmentTime").type(JsonFieldType.STRING).description("약속 시간"),
-                                fieldWithPath("createdAt").type(JsonFieldType.STRING).description("작성 시간")
-                        )
+                        getDocumentResponse()
+//                        ,
+//                        responseFields(
+//                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("글 제목"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
+//                                fieldWithPath("author").type(JsonFieldType.STRING).description("작성자"),
+//                                fieldWithPath("members").type(JsonFieldType.ARRAY).description("참여 중인 사람"),
+//                                fieldWithPath("totalNumberOfPeople").type(JsonFieldType.NUMBER).description("총 인원"),
+//                                fieldWithPath("currentNumberOfPeople").type(JsonFieldType.NUMBER).description("현재 인원"),
+//                                fieldWithPath("full").type(JsonFieldType.BOOLEAN).description("가득 찼는지 여부"),
+//                                fieldWithPath("restaurantName").type(JsonFieldType.STRING).description("식당 이름"),
+//                                fieldWithPath("restaurantAddress").type(JsonFieldType.STRING).description("식당 주소"),
+//                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
+//                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도"),
+//                                fieldWithPath("sexRestriction").type(JsonFieldType.VARIES).description("성별 제한"),
+//                                fieldWithPath("appointmentTime").type(JsonFieldType.STRING).description("약속 시간"),
+//                                fieldWithPath("createdAt").type(JsonFieldType.STRING).description("작성 시간")
+//                        )
                 ));
     }
 

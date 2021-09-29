@@ -66,7 +66,7 @@ public class RecruitmentDto {
         private String title;
         private String content;
         private String author;
-        private Set<String> members;
+        private Set<MemberDto.Preview> members;
         private Integer totalNumberOfPeople;
         private Integer currentNumberOfPeople;
         private Boolean full;
@@ -84,7 +84,7 @@ public class RecruitmentDto {
             this.content = recruitment.getContent();
             this.author = recruitment.getAuthor().getNickname();
             this.members = recruitment.getMembers().stream()
-                    .map(Member::getNickname)
+                    .map(member -> new MemberDto.Preview(member))
                     .collect(Collectors.toSet());
             this.currentNumberOfPeople = recruitment.getCurrentNumberOfPeople();
             this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
