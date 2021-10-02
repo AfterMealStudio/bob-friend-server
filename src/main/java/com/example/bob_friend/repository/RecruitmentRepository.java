@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> {
-    List<Recruitment> findAllByRestaurantNameOrRestaurantAddress(String restaurantName, String restaurantAddress);
+    List<Recruitment> findAllByRestaurantNameAndRestaurantAddress(String restaurantName, String restaurantAddress);
+
+    List<Recruitment> findAllByRestaurantAddress(String restaurantAddress);
 
     List<Recruitment> findAllByAuthor(Member member);
 }

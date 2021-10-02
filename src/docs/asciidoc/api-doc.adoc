@@ -32,6 +32,23 @@ request::
 include::{snippets}/get-all-recruitments/http-request.adoc[]
 response::
 include::{snippets}/get-all-recruitments/http-response.adoc[]
+
+=== 검색 - 주소
+request::
+include::{snippets}/get-all-recruitments-by-address/http-request.adoc[]
+parameter::
+include::{snippets}/get-all-recruitments-by-address/request-parameters.adoc[]
+response::
+include::{snippets}/get-all-recruitments-by-address/http-response.adoc[]
+
+=== 검색 - 식당 이름 & 주소
+request::
+include::{snippets}/get-all-recruitments-by-restaurant/http-request.adoc[]
+parameter::
+include::{snippets}/get-all-recruitments-by-restaurant/request-parameters.adoc[]
+response::
+include::{snippets}/get-all-recruitments-by-restaurant/http-response.adoc[]
+
 === 삭제
 
 == Member

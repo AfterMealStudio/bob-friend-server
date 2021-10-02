@@ -1,6 +1,8 @@
 package com.example.bob_friend.controller;
 
-import com.example.bob_friend.model.dto.*;
+import com.example.bob_friend.model.dto.CommentDto;
+import com.example.bob_friend.model.dto.MemberDto;
+import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.RecruitmentCommentService;
@@ -20,14 +22,21 @@ public class RecruitmentController {
 
 
     @GetMapping()
-    public ResponseEntity getAllRecruitment(@RequestParam(value = "restaurantName", required = false) String restaurantName,
-                                            @RequestParam(value = "restaurantAddress", required = false) String restaurantAddress) {
+    public ResponseEntity getAllRecruitment(
+            @RequestParam(value = "restaurantName", required = false) String restaurantName,
+            @RequestParam(value = "restaurantAddress", required = false) String restaurantAddress) {
         List<RecruitmentDto.Response> responseDtoList = null;
-        if (restaurantName == null && restaurantAddress == null)
-            responseDtoList = recruitmentService.findAll();
-        else
+        if (restaurantName == null) {
+            if (restaurantAddress == null) {
+                responseDtoList = recruitmentService.findAllAvailableRecruitments();
+            } else {
+                responseDtoList = recruitmentService
+                        .findAllByRestaurantAddress(restaurantAddress);
+            }
+        } else {
             responseDtoList = recruitmentService
-                    .findAllByRestaurantNameOrRestaurantAddress(restaurantName, restaurantAddress);
+                    .findAllByRestaurantNameAndRestaurantAddress(restaurantName, restaurantAddress);
+        }
         return ResponseEntity.ok(responseDtoList);
     }
 
@@ -68,7 +77,8 @@ public class RecruitmentController {
 //    }
 
     @DeleteMapping("/{recruitmentId}")
-    public ResponseEntity deleteRecruitment(@PathVariable Long recruitmentId) {
+    public ResponseEntity deleteRecruitment(
+            @PathVariable Long recruitmentId) {
         recruitmentService.delete(recruitmentId);
         return ResponseEntity.ok().build();
     }

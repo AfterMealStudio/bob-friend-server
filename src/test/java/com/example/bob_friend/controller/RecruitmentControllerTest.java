@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -30,10 +29,7 @@ import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentRespon
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -99,6 +95,7 @@ class RecruitmentControllerTest {
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
+                .active(true)
                 .build();
         testRecruitment.addMember(testMember);
     }
@@ -107,7 +104,7 @@ class RecruitmentControllerTest {
     void getAllRecruitment() throws Exception {
         RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
 
-        given(recruitmentService.findAll())
+        given(recruitmentService.findAllAvailableRecruitments())
                 .willReturn(Arrays.asList(responseDto1));
         mvc.perform(get("/recruitments"))
                 .andExpect(status().isOk())
@@ -117,6 +114,49 @@ class RecruitmentControllerTest {
                         getDocumentResponse()
                 ));
 
+    }
+
+    @Test
+    void getAllRecruitments_restaurantAddress() throws Exception {
+        RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
+
+        String testRestaurantAddress = "testRestaurantAddress";
+        given(recruitmentService.findAllByRestaurantAddress(testRestaurantAddress))
+                .willReturn(Arrays.asList(responseDto1));
+        mvc.perform(get("/recruitments").param("restaurantAddress", testRestaurantAddress))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
+                .andDo(document("get-all-recruitments-by-address",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestParameters(
+                                parameterWithName("restaurantAddress").description("식당 주소")
+                        )
+                ));
+    }
+
+    @Test
+    void getAllRecruitments_restaurant() throws Exception {
+        RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
+
+        String testRestaurantName = "testRestaurantName";
+        String testRestaurantAddress = "testRestaurantAddress";
+
+        given(recruitmentService.findAllByRestaurantNameAndRestaurantAddress(testRestaurantName, testRestaurantAddress))
+                .willReturn(Arrays.asList(responseDto1));
+        mvc.perform(get("/recruitments")
+                        .param("restaurantAddress", testRestaurantAddress)
+                        .param("restaurantName", testRestaurantName))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
+                .andDo(document("get-all-recruitments-by-restaurant",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestParameters(
+                                parameterWithName("restaurantName").description("식당 이름"),
+                                parameterWithName("restaurantAddress").description("식당 주소")
+                        )
+                ));
     }
 
     @Test

@@ -39,6 +39,7 @@ class RecruitmentServiceTest {
     Recruitment testRecruitment;
     Member testAuthor;
 
+
     @BeforeEach
     public void setup() {
         testAuthor = Member.builder()
@@ -72,6 +73,7 @@ class RecruitmentServiceTest {
 
     }
 
+
     @Test
     public void findByIdSuccess() {
         given(recruitmentRepository.findById(testRecruitment.getId()))
@@ -84,6 +86,7 @@ class RecruitmentServiceTest {
         assertThat(byId, equalTo(dtoFromEntity));
     }
 
+
     @Test
     public void findByIdFail() {
         given(recruitmentRepository.findById(0L))
@@ -94,6 +97,7 @@ class RecruitmentServiceTest {
         );
 
     }
+
 
     @Test
     public void findAll() {
@@ -109,6 +113,7 @@ class RecruitmentServiceTest {
                         .collect(Collectors.toList())));
     }
 
+
     @Test
     public void create() {
         when(memberService.getCurrentMember()).thenReturn(testAuthor);
@@ -123,6 +128,7 @@ class RecruitmentServiceTest {
 
         assertThat(add, equalTo(byId));
     }
+
 
     @Test
     public void join() throws RecruitmentAlreadyJoined {
@@ -149,6 +155,7 @@ class RecruitmentServiceTest {
         assertTrue(members.contains(new MemberDto.Preview(testMember)));
     }
 
+
     @Test
     public void unJoin() {
         Member testMember = Member.builder()
@@ -171,6 +178,7 @@ class RecruitmentServiceTest {
         Set<MemberDto.Preview> members = recruitmentResponseDto.getMembers();
         assertFalse(members.contains(new MemberDto.Preview(testMember)));
     }
+
 
     @Test
     public void findAllJoinedRecruitments() {
@@ -219,6 +227,7 @@ class RecruitmentServiceTest {
                         .collect(Collectors.toList())));
     }
 
+
     @Test
     public void findAllAvailableRecruitments() {
         Member testMember = Member.builder()
@@ -266,6 +275,7 @@ class RecruitmentServiceTest {
                         .collect(Collectors.toList())));
     }
 
+
     @Test
     public void findMyRecruitments() {
         Member testMember = Member.builder()
@@ -310,5 +320,41 @@ class RecruitmentServiceTest {
                         .collect(Collectors.toList())));
     }
 
+
+    @Test
+    void findAllByRestaurantAddress() {
+        when(recruitmentRepository.findAllByRestaurantAddress(
+                any()
+        )).thenReturn(Arrays.asList(testRecruitment));
+
+        String restaurantAddress = "restaurantAddress";
+
+        List<RecruitmentDto.Response> restaurantList = recruitmentService
+                .findAllByRestaurantAddress(restaurantAddress);
+
+        assertThat(restaurantList,
+                equalTo(Arrays.asList(
+                        new RecruitmentDto.Response(testRecruitment)
+                )));
+    }
+
+    @Test
+    void findAllByRestaurantNameAndAddress() {
+        when(recruitmentRepository.findAllByRestaurantNameAndRestaurantAddress(
+                any(), any()
+        )).thenReturn(Arrays.asList(testRecruitment));
+
+        String restaurantName = "restaurantName";
+        String restaurantAddress = "restaurantAddress";
+
+        List<RecruitmentDto.Response> restaurantList = recruitmentService
+                .findAllByRestaurantNameAndRestaurantAddress(
+                        restaurantName, restaurantAddress);
+
+        assertThat(restaurantList,
+                equalTo(Arrays.asList(
+                        new RecruitmentDto.Response(testRecruitment)
+                )));
+    }
 
 }
