@@ -10,10 +10,12 @@ import lombok.ToString;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RecruitmentDto {
+
     @Data
     @NoArgsConstructor
     public static class Request {
@@ -58,6 +60,7 @@ public class RecruitmentDto {
         }
     }
 
+
     @ToString
     @Data
     @NoArgsConstructor
@@ -65,7 +68,7 @@ public class RecruitmentDto {
         private Long id;
         private String title;
         private String content;
-        private String author;
+        private MemberDto.Preview author;
         private Set<MemberDto.Preview> members;
         private Integer totalNumberOfPeople;
         private Integer currentNumberOfPeople;
@@ -82,7 +85,7 @@ public class RecruitmentDto {
             this.id = recruitment.getId();
             this.title = recruitment.getTitle();
             this.content = recruitment.getContent();
-            this.author = recruitment.getAuthor().getNickname();
+            this.author = new MemberDto.Preview(recruitment.getAuthor());
             this.members = recruitment.getMembers().stream()
                     .map(member -> new MemberDto.Preview(member))
                     .collect(Collectors.toSet());
@@ -96,6 +99,34 @@ public class RecruitmentDto {
             this.appointmentTime = recruitment.getAppointmentTime();
             this.sexRestriction = recruitment.getSexRestriction();
             this.createdAt = recruitment.getCreatedAt().toLocalDate();
+        }
+    }
+
+
+    @Data
+    @ToString
+    public static class Address {
+        private double latitude;
+        private double longitude;
+        private String address;
+
+        public Address(Recruitment recruitment) {
+            this.latitude = recruitment.getLatitude();
+            this.longitude = recruitment.getLongitude();
+            this.address = recruitment.getRestaurantAddress();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Address address1 = (Address) o;
+            return Double.compare(address1.latitude, latitude) == 0 && Double.compare(address1.longitude, longitude) == 0 && address.equals(address1.address);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(latitude, longitude, address);
         }
     }
 }

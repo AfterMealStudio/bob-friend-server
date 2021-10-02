@@ -1,7 +1,6 @@
 package com.example.bob_friend.controller;
 
 import com.example.bob_friend.model.dto.CommentDto;
-import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
@@ -39,6 +38,13 @@ public class RecruitmentController {
         }
         return ResponseEntity.ok(responseDtoList);
     }
+
+
+    @GetMapping("/locations")
+    public ResponseEntity getAllLocations() {
+        return ResponseEntity.ok(recruitmentService.findAllAvailableLocations());
+    }
+
 
     @GetMapping("/{recruitmentId}")
     public ResponseEntity getRecruitment(@PathVariable Long recruitmentId)

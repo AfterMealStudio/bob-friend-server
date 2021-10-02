@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -60,17 +61,17 @@ public class RecruitmentService {
     }
 
 
-    public RecruitmentDto.Response update(Long recruitmentId,
-                                          RecruitmentDto.Request update) {
-        Recruitment recruitment = Recruitment.builder()
-                .id(recruitmentId)
-                .title(update.getTitle())
-                .content(update.getContent())
-                .build();
-
-        Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
-        return new RecruitmentDto.Response(savedRecruitment);
-    }
+//    public RecruitmentDto.Response update(Long recruitmentId,
+//                                          RecruitmentDto.Request update) {
+//        Recruitment recruitment = Recruitment.builder()
+//                .id(recruitmentId)
+//                .title(update.getTitle())
+//                .content(update.getContent())
+//                .build();
+//
+//        Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
+//        return new RecruitmentDto.Response(savedRecruitment);
+//    }
 
 
     public List<RecruitmentDto.Response> findAllByRestaurantNameAndRestaurantAddress(
@@ -97,6 +98,12 @@ public class RecruitmentService {
                                 !recruitment.getAuthor().equals(currentMember)
                 ).map(RecruitmentDto.Response::new)
                 .collect(Collectors.toList());
+    }
+
+    public Set<RecruitmentDto.Address> findAllAvailableLocations() {
+        return recruitmentRepository.findAll().stream()
+                .map(RecruitmentDto.Address::new)
+                .collect(Collectors.toSet());
     }
 
 

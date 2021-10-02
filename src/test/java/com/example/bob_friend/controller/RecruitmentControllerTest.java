@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentRequest;
 import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
@@ -109,7 +110,7 @@ class RecruitmentControllerTest {
         mvc.perform(get("/recruitments"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
-                .andDo(document("get-all-recruitments",
+                .andDo(document("recruitment/get-all-recruitments",
                         getDocumentRequest(),
                         getDocumentResponse()
                 ));
@@ -126,7 +127,7 @@ class RecruitmentControllerTest {
         mvc.perform(get("/recruitments").param("restaurantAddress", testRestaurantAddress))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
-                .andDo(document("get-all-recruitments-by-address",
+                .andDo(document("recruitment/get-all-recruitments-by-address",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestParameters(
@@ -149,13 +150,31 @@ class RecruitmentControllerTest {
                         .param("restaurantName", testRestaurantName))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
-                .andDo(document("get-all-recruitments-by-restaurant",
+                .andDo(document("recruitment/get-all-recruitments-by-restaurant",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestParameters(
                                 parameterWithName("restaurantName").description("식당 이름"),
                                 parameterWithName("restaurantAddress").description("식당 주소")
                         )
+                ));
+    }
+
+    @Test
+    void getAllLocations() throws Exception {
+        RecruitmentDto.Address addressDto = new RecruitmentDto.Address(testRecruitment);
+
+        String testRestaurantName = "testRestaurantName";
+        String testRestaurantAddress = "testRestaurantAddress";
+
+        given(recruitmentService.findAllAvailableLocations())
+                .willReturn(Set.of(addressDto));
+        mvc.perform(get("/recruitments/locations"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(addressDto))))
+                .andDo(document("recruitment/get-all-recruitments-locations",
+                        getDocumentRequest(),
+                        getDocumentResponse()
                 ));
     }
 
@@ -170,7 +189,7 @@ class RecruitmentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(responseDto)))
-                .andDo(document("get-one-recruitment",
+                .andDo(document("recruitment/get-one-recruitment",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(
@@ -225,7 +244,7 @@ class RecruitmentControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
-                .andDo(document("create-recruitment",
+                .andDo(document("recruitment/create-recruitment",
                         getDocumentRequest(),
                         getDocumentResponse()
 //                        ,

@@ -357,4 +357,9 @@ class RecruitmentServiceTest {
                 )));
     }
 
+    @Test
+    void findAllAvailableLocations() {
+
+    }
+
 }
