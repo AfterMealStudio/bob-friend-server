@@ -5,6 +5,7 @@ import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.model.exception.MemberNotAllowedException;
 import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
@@ -362,4 +363,46 @@ class RecruitmentServiceTest {
 
     }
 
+//    @Test
+//    void deleteRecruitmentSuccess() {
+//        when(memberService.getCurrentMember())
+//                .thenReturn(testAuthor);
+//        when(recruitmentRepository.findById(any()))
+//                .thenReturn(Optional.ofNullable(testRecruitment));
+//
+//        recruitmentService.delete(testRecruitment.getId());
+//
+//    }
+
+    @Test
+    void deleteRecruitmentFail_RecruitmentNotFound() {
+        when(memberService.getCurrentMember())
+                .thenReturn(testAuthor);
+        when(recruitmentRepository.findById(any()))
+                .thenReturn(Optional.empty());
+        assertThrows(RecruitmentNotFoundException.class, () -> {
+            recruitmentService.delete(testRecruitment.getId());
+        });
+    }
+
+    @Test
+    void deleteRecruitmentFail_MemberNotAllowed() {
+        Member testMember = Member.builder()
+                .id(2)
+                .email("testMember@test.com")
+                .nickname("testMember")
+                .password("testPassword")
+                .sex(Sex.FEMALE)
+                .birth(LocalDate.now())
+                .active(true)
+                .build();
+        when(memberService.getCurrentMember())
+                .thenReturn(testMember);
+        when(recruitmentRepository.findById(any()))
+                .thenReturn(Optional.ofNullable(testRecruitment));
+
+        assertThrows(MemberNotAllowedException.class, () -> {
+            recruitmentService.delete(testRecruitment.getId());
+        });
+    }
 }

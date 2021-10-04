@@ -30,9 +30,8 @@ import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentRespon
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -185,7 +184,7 @@ class RecruitmentControllerTest {
         given(recruitmentService.findById(any()))
                 .willReturn(responseDto);
 
-        mvc.perform(RestDocumentationRequestBuilders.get("/recruitments/{id}", 1))
+        mvc.perform(get("/recruitments/{id}", 1))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(responseDto)))
@@ -272,7 +271,14 @@ class RecruitmentControllerTest {
     void deleteRecruitment() throws Exception {
         mvc.perform(delete("/recruitments/{id}", 1))
                 .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(document("recruitment/delete-recruitment",
+                                getDocumentRequest(),
+                                getDocumentResponse(),
+                                pathParameters(
+                                        parameterWithName("id").description("글 번호")
+                                )
+                        )
+                );
     }
 
     //update 기능 보류
