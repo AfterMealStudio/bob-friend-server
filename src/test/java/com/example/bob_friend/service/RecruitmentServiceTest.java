@@ -1,9 +1,11 @@
 package com.example.bob_friend.service;
 
+import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.model.exception.MemberNotAllowedException;
 import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
@@ -16,10 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -40,6 +39,7 @@ class RecruitmentServiceTest {
 
     Recruitment testRecruitment;
     Member testAuthor;
+
 
     @BeforeEach
     public void setup() {
@@ -74,6 +74,7 @@ class RecruitmentServiceTest {
 
     }
 
+
     @Test
     public void findByIdSuccess() {
         given(recruitmentRepository.findById(testRecruitment.getId()))
@@ -86,6 +87,7 @@ class RecruitmentServiceTest {
         assertThat(byId, equalTo(dtoFromEntity));
     }
 
+
     @Test
     public void findByIdFail() {
         given(recruitmentRepository.findById(0L))
@@ -96,6 +98,7 @@ class RecruitmentServiceTest {
         );
 
     }
+
 
     @Test
     public void findAll() {
@@ -111,6 +114,7 @@ class RecruitmentServiceTest {
                         .collect(Collectors.toList())));
     }
 
+
     @Test
     public void create() {
         when(memberService.getCurrentMember()).thenReturn(testAuthor);
@@ -125,6 +129,7 @@ class RecruitmentServiceTest {
 
         assertThat(add, equalTo(byId));
     }
+
 
     @Test
     public void join() throws RecruitmentAlreadyJoined {
@@ -147,9 +152,10 @@ class RecruitmentServiceTest {
         RecruitmentDto.Response recruitmentResponseDto =
                 recruitmentService.joinOrUnjoin(testRecruitment.getId());
 
-        assertTrue(recruitmentResponseDto.getMembers().contains(
-                testMember.getNickname()));
+        Set<MemberDto.Preview> members = recruitmentResponseDto.getMembers();
+        assertTrue(members.contains(new MemberDto.Preview(testMember)));
     }
+
 
     @Test
     public void unJoin() {
@@ -170,9 +176,10 @@ class RecruitmentServiceTest {
         RecruitmentDto.Response recruitmentResponseDto =
                 recruitmentService.joinOrUnjoin(testRecruitment.getId());
 
-        assertFalse(recruitmentResponseDto.getMembers().contains(
-                testMember.getNickname()));
+        Set<MemberDto.Preview> members = recruitmentResponseDto.getMembers();
+        assertFalse(members.contains(new MemberDto.Preview(testMember)));
     }
+
 
     @Test
     public void findAllJoinedRecruitments() {
@@ -221,6 +228,7 @@ class RecruitmentServiceTest {
                         .collect(Collectors.toList())));
     }
 
+
     @Test
     public void findAllAvailableRecruitments() {
         Member testMember = Member.builder()
@@ -268,6 +276,7 @@ class RecruitmentServiceTest {
                         .collect(Collectors.toList())));
     }
 
+
     @Test
     public void findMyRecruitments() {
         Member testMember = Member.builder()
@@ -313,4 +322,87 @@ class RecruitmentServiceTest {
     }
 
 
+    @Test
+    void findAllByRestaurantAddress() {
+        when(recruitmentRepository.findAllByRestaurantAddress(
+                any()
+        )).thenReturn(Arrays.asList(testRecruitment));
+
+        String restaurantAddress = "restaurantAddress";
+
+        List<RecruitmentDto.Response> restaurantList = recruitmentService
+                .findAllByRestaurantAddress(restaurantAddress);
+
+        assertThat(restaurantList,
+                equalTo(Arrays.asList(
+                        new RecruitmentDto.Response(testRecruitment)
+                )));
+    }
+
+    @Test
+    void findAllByRestaurantNameAndAddress() {
+        when(recruitmentRepository.findAllByRestaurantNameAndRestaurantAddress(
+                any(), any()
+        )).thenReturn(Arrays.asList(testRecruitment));
+
+        String restaurantName = "restaurantName";
+        String restaurantAddress = "restaurantAddress";
+
+        List<RecruitmentDto.Response> restaurantList = recruitmentService
+                .findAllByRestaurantNameAndRestaurantAddress(
+                        restaurantName, restaurantAddress);
+
+        assertThat(restaurantList,
+                equalTo(Arrays.asList(
+                        new RecruitmentDto.Response(testRecruitment)
+                )));
+    }
+
+    @Test
+    void findAllAvailableLocations() {
+
+    }
+
+//    @Test
+//    void deleteRecruitmentSuccess() {
+//        when(memberService.getCurrentMember())
+//                .thenReturn(testAuthor);
+//        when(recruitmentRepository.findById(any()))
+//                .thenReturn(Optional.ofNullable(testRecruitment));
+//
+//        recruitmentService.delete(testRecruitment.getId());
+//
+//    }
+
+    @Test
+    void deleteRecruitmentFail_RecruitmentNotFound() {
+        when(memberService.getCurrentMember())
+                .thenReturn(testAuthor);
+        when(recruitmentRepository.findById(any()))
+                .thenReturn(Optional.empty());
+        assertThrows(RecruitmentNotFoundException.class, () -> {
+            recruitmentService.delete(testRecruitment.getId());
+        });
+    }
+
+    @Test
+    void deleteRecruitmentFail_MemberNotAllowed() {
+        Member testMember = Member.builder()
+                .id(2)
+                .email("testMember@test.com")
+                .nickname("testMember")
+                .password("testPassword")
+                .sex(Sex.FEMALE)
+                .birth(LocalDate.now())
+                .active(true)
+                .build();
+        when(memberService.getCurrentMember())
+                .thenReturn(testMember);
+        when(recruitmentRepository.findById(any()))
+                .thenReturn(Optional.ofNullable(testRecruitment));
+
+        assertThrows(MemberNotAllowedException.class, () -> {
+            recruitmentService.delete(testRecruitment.getId());
+        });
+    }
 }

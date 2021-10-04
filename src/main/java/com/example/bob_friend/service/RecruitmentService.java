@@ -1,8 +1,10 @@
 package com.example.bob_friend.service;
 
+import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
+import com.example.bob_friend.model.exception.MemberNotAllowedException;
 import com.example.bob_friend.model.exception.RecruitmentIsFullException;
 import com.example.bob_friend.model.exception.RecruitmentNotActiveException;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -28,11 +31,13 @@ public class RecruitmentService {
         return new RecruitmentDto.Response(recruitment);
     }
 
+
     public List<RecruitmentDto.Response> findAll() {
         return recruitmentRepository.findAll().stream()
                 .map(RecruitmentDto.Response::new)
                 .collect(Collectors.toList());
     }
+
 
     public RecruitmentDto.Response createRecruitment(RecruitmentDto.Request recruitmentRequestDto) {
         Member currentMember = memberService.getCurrentMember();
@@ -42,29 +47,48 @@ public class RecruitmentService {
         return new RecruitmentDto.Response(savedRecruitment);
     }
 
+
     public void delete(Long recruitmentId) {
-        recruitmentRepository.deleteById(recruitmentId);
+        Member currentMember = memberService.getCurrentMember();
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> {
+                    throw new RecruitmentNotFoundException(recruitmentId);
+                });
+        if (recruitment.getAuthor().equals(currentMember))
+            recruitmentRepository.deleteById(recruitmentId);
+        else
+            throw new MemberNotAllowedException(currentMember.getEmail());
     }
 
-    public RecruitmentDto.Response update(Long recruitmentId,
-                                          RecruitmentDto.Request update) {
-        Recruitment recruitment = Recruitment.builder()
-                .id(recruitmentId)
-                .title(update.getTitle())
-                .content(update.getContent())
-                .build();
 
-        Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
-        return new RecruitmentDto.Response(savedRecruitment);
-    }
+//    public RecruitmentDto.Response update(Long recruitmentId,
+//                                          RecruitmentDto.Request update) {
+//        Recruitment recruitment = Recruitment.builder()
+//                .id(recruitmentId)
+//                .title(update.getTitle())
+//                .content(update.getContent())
+//                .build();
+//
+//        Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
+//        return new RecruitmentDto.Response(savedRecruitment);
+//    }
 
-    public List<RecruitmentDto.Response> findAllByRestaurantNameOrRestaurantAddress(
+
+    public List<RecruitmentDto.Response> findAllByRestaurantNameAndRestaurantAddress(
             String restaurantName,
             String restaurantAddress) {
-        return recruitmentRepository.findAllByRestaurantNameOrRestaurantAddress(restaurantName,restaurantAddress).stream()
+        return recruitmentRepository.findAllByRestaurantNameAndRestaurantAddress(restaurantName, restaurantAddress).stream()
                 .map(RecruitmentDto.Response::new)
                 .collect(Collectors.toList());
     }
+
+
+    public List<RecruitmentDto.Response> findAllByRestaurantAddress(String restaurantAddress) {
+        return recruitmentRepository.findAllByRestaurantAddress(restaurantAddress).stream()
+                .map(RecruitmentDto.Response::new)
+                .collect(Collectors.toList());
+    }
+
 
     public List<RecruitmentDto.Response> findAllAvailableRecruitments() {
         Member currentMember = memberService.getCurrentMember();
@@ -76,6 +100,13 @@ public class RecruitmentService {
                 .collect(Collectors.toList());
     }
 
+    public Set<RecruitmentDto.Address> findAllAvailableLocations() {
+        return recruitmentRepository.findAll().stream()
+                .map(RecruitmentDto.Address::new)
+                .collect(Collectors.toSet());
+    }
+
+
     public List<RecruitmentDto.Response> findAllJoinedRecruitments() {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAll().stream()
@@ -86,12 +117,14 @@ public class RecruitmentService {
                 .collect(Collectors.toList());
     }
 
+
     public List<RecruitmentDto.Response> findMyRecruitments() {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllByAuthor(author).stream()
                 .map(RecruitmentDto.Response::new)
                 .collect(Collectors.toList());
     }
+
 
     @Transactional
     public RecruitmentDto.Response joinOrUnjoin(Long recruitmentId) throws RecruitmentIsFullException, RecruitmentNotActiveException {
@@ -111,6 +144,7 @@ public class RecruitmentService {
 
         return new RecruitmentDto.Response(recruitment);
     }
+
 
     private void validateRecruitment(Recruitment recruitment) {
         if (recruitment.isFull())

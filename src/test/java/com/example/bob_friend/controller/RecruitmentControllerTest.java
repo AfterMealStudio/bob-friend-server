@@ -17,25 +17,21 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentRequest;
 import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -99,24 +95,86 @@ class RecruitmentControllerTest {
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
+                .active(true)
                 .build();
-
+        testRecruitment.addMember(testMember);
     }
 
     @Test
     void getAllRecruitment() throws Exception {
         RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
 
-        given(recruitmentService.findAll())
+        given(recruitmentService.findAllAvailableRecruitments())
                 .willReturn(Arrays.asList(responseDto1));
         mvc.perform(get("/recruitments"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
-                .andDo(document("get-all-recruitments",
+                .andDo(document("recruitment/get-all-recruitments",
                         getDocumentRequest(),
                         getDocumentResponse()
                 ));
 
+    }
+
+    @Test
+    void getAllRecruitments_restaurantAddress() throws Exception {
+        RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
+
+        String testRestaurantAddress = "testRestaurantAddress";
+        given(recruitmentService.findAllByRestaurantAddress(testRestaurantAddress))
+                .willReturn(Arrays.asList(responseDto1));
+        mvc.perform(get("/recruitments").param("restaurantAddress", testRestaurantAddress))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
+                .andDo(document("recruitment/get-all-recruitments-by-address",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestParameters(
+                                parameterWithName("restaurantAddress").description("식당 주소")
+                        )
+                ));
+    }
+
+    @Test
+    void getAllRecruitments_restaurant() throws Exception {
+        RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
+
+        String testRestaurantName = "testRestaurantName";
+        String testRestaurantAddress = "testRestaurantAddress";
+
+        given(recruitmentService.findAllByRestaurantNameAndRestaurantAddress(testRestaurantName, testRestaurantAddress))
+                .willReturn(Arrays.asList(responseDto1));
+        mvc.perform(get("/recruitments")
+                        .param("restaurantAddress", testRestaurantAddress)
+                        .param("restaurantName", testRestaurantName))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
+                .andDo(document("recruitment/get-all-recruitments-by-restaurant",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestParameters(
+                                parameterWithName("restaurantName").description("식당 이름"),
+                                parameterWithName("restaurantAddress").description("식당 주소")
+                        )
+                ));
+    }
+
+    @Test
+    void getAllLocations() throws Exception {
+        RecruitmentDto.Address addressDto = new RecruitmentDto.Address(testRecruitment);
+
+        String testRestaurantName = "testRestaurantName";
+        String testRestaurantAddress = "testRestaurantAddress";
+
+        given(recruitmentService.findAllAvailableLocations())
+                .willReturn(Set.of(addressDto));
+        mvc.perform(get("/recruitments/locations"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(addressDto))))
+                .andDo(document("recruitment/get-all-recruitments-locations",
+                        getDocumentRequest(),
+                        getDocumentResponse()
+                ));
     }
 
     @Test
@@ -126,33 +184,34 @@ class RecruitmentControllerTest {
         given(recruitmentService.findById(any()))
                 .willReturn(responseDto);
 
-        mvc.perform(RestDocumentationRequestBuilders.get("/recruitments/{id}", 1))
+        mvc.perform(get("/recruitments/{id}", 1))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(responseDto)))
-                .andDo(document("get-one-recruitment",
+                .andDo(document("recruitment/get-one-recruitment",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(
                                 parameterWithName("id").description("글 번호")
-                        ),
-                        responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("글 제목"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
-                                fieldWithPath("author").type(JsonFieldType.STRING).description("작성자"),
-                                fieldWithPath("members").type(JsonFieldType.ARRAY).description("참여 중인 사람"),
-                                fieldWithPath("totalNumberOfPeople").type(JsonFieldType.NUMBER).description("총 인원"),
-                                fieldWithPath("currentNumberOfPeople").type(JsonFieldType.NUMBER).description("현재 인원"),
-                                fieldWithPath("full").type(JsonFieldType.BOOLEAN).description("가득 찼는지 여부"),
-                                fieldWithPath("restaurantName").type(JsonFieldType.STRING).description("식당 이름"),
-                                fieldWithPath("restaurantAddress").type(JsonFieldType.STRING).description("식당 주소"),
-                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
-                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도"),
-                                fieldWithPath("sexRestriction").type(JsonFieldType.VARIES).description("성별 제한"),
-                                fieldWithPath("appointmentTime").type(JsonFieldType.STRING).description("약속 시간"),
-                                fieldWithPath("createdAt").type(JsonFieldType.STRING).description("작성 시간")
-                                )
+                        )
+//                        ,
+//                        responseFields(
+//                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("글 제목"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
+//                                fieldWithPath("author").type(JsonFieldType.STRING).description("작성자"),
+//                                fieldWithPath("members").type(JsonFieldType.ARRAY).description("참여 중인 사람"),
+//                                fieldWithPath("totalNumberOfPeople").type(JsonFieldType.NUMBER).description("총 인원"),
+//                                fieldWithPath("currentNumberOfPeople").type(JsonFieldType.NUMBER).description("현재 인원"),
+//                                fieldWithPath("full").type(JsonFieldType.BOOLEAN).description("가득 찼는지 여부"),
+//                                fieldWithPath("restaurantName").type(JsonFieldType.STRING).description("식당 이름"),
+//                                fieldWithPath("restaurantAddress").type(JsonFieldType.STRING).description("식당 주소"),
+//                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
+//                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도"),
+//                                fieldWithPath("sexRestriction").type(JsonFieldType.VARIES).description("성별 제한"),
+//                                fieldWithPath("appointmentTime").type(JsonFieldType.STRING).description("약속 시간"),
+//                                fieldWithPath("createdAt").type(JsonFieldType.STRING).description("작성 시간")
+//                                )
                 ));
     }
 
@@ -184,26 +243,27 @@ class RecruitmentControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
-                .andDo(document("create-recruitment",
+                .andDo(document("recruitment/create-recruitment",
                         getDocumentRequest(),
-                        getDocumentResponse(),
-                        responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("글 제목"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
-                                fieldWithPath("author").type(JsonFieldType.STRING).description("작성자"),
-                                fieldWithPath("members").type(JsonFieldType.ARRAY).description("참여 중인 사람"),
-                                fieldWithPath("totalNumberOfPeople").type(JsonFieldType.NUMBER).description("총 인원"),
-                                fieldWithPath("currentNumberOfPeople").type(JsonFieldType.NUMBER).description("현재 인원"),
-                                fieldWithPath("full").type(JsonFieldType.BOOLEAN).description("가득 찼는지 여부"),
-                                fieldWithPath("restaurantName").type(JsonFieldType.STRING).description("식당 이름"),
-                                fieldWithPath("restaurantAddress").type(JsonFieldType.STRING).description("식당 주소"),
-                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
-                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도"),
-                                fieldWithPath("sexRestriction").type(JsonFieldType.VARIES).description("성별 제한"),
-                                fieldWithPath("appointmentTime").type(JsonFieldType.STRING).description("약속 시간"),
-                                fieldWithPath("createdAt").type(JsonFieldType.STRING).description("작성 시간")
-                        )
+                        getDocumentResponse()
+//                        ,
+//                        responseFields(
+//                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("글 제목"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
+//                                fieldWithPath("author").type(JsonFieldType.STRING).description("작성자"),
+//                                fieldWithPath("members").type(JsonFieldType.ARRAY).description("참여 중인 사람"),
+//                                fieldWithPath("totalNumberOfPeople").type(JsonFieldType.NUMBER).description("총 인원"),
+//                                fieldWithPath("currentNumberOfPeople").type(JsonFieldType.NUMBER).description("현재 인원"),
+//                                fieldWithPath("full").type(JsonFieldType.BOOLEAN).description("가득 찼는지 여부"),
+//                                fieldWithPath("restaurantName").type(JsonFieldType.STRING).description("식당 이름"),
+//                                fieldWithPath("restaurantAddress").type(JsonFieldType.STRING).description("식당 주소"),
+//                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
+//                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도"),
+//                                fieldWithPath("sexRestriction").type(JsonFieldType.VARIES).description("성별 제한"),
+//                                fieldWithPath("appointmentTime").type(JsonFieldType.STRING).description("약속 시간"),
+//                                fieldWithPath("createdAt").type(JsonFieldType.STRING).description("작성 시간")
+//                        )
                 ));
     }
 
@@ -211,7 +271,14 @@ class RecruitmentControllerTest {
     void deleteRecruitment() throws Exception {
         mvc.perform(delete("/recruitments/{id}", 1))
                 .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(document("recruitment/delete-recruitment",
+                                getDocumentRequest(),
+                                getDocumentResponse(),
+                                pathParameters(
+                                        parameterWithName("id").description("글 번호")
+                                )
+                        )
+                );
     }
 
     //update 기능 보류

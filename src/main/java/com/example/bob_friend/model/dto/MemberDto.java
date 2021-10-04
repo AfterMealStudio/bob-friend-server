@@ -109,5 +109,13 @@ public class MemberDto {
         }
     }
 
+    @Data
+    @AllArgsConstructor
+    public static class Preview {
+        private String nickname;
 
+        public Preview(Member member) {
+            this.nickname = member.getNickname();
+        }
+    }
 }
