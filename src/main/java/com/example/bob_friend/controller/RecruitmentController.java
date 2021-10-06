@@ -3,6 +3,8 @@ package com.example.bob_friend.controller;
 import com.example.bob_friend.model.dto.CommentDto;
 import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
+import com.example.bob_friend.model.exception.RecruitmentIsFullException;
+import com.example.bob_friend.model.exception.RecruitmentNotActiveException;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.RecruitmentCommentService;
 import com.example.bob_friend.service.RecruitmentService;
@@ -91,7 +93,7 @@ public class RecruitmentController {
 
     @PatchMapping("/{recruitmentId}")
     public ResponseEntity joinRecruitment(@PathVariable Long recruitmentId)
-            throws RecruitmentAlreadyJoined {
+            throws RecruitmentIsFullException, RecruitmentNotActiveException {
         RecruitmentDto.Response join = recruitmentService.joinOrUnjoin(recruitmentId);
         return ResponseEntity.ok(join);
     }

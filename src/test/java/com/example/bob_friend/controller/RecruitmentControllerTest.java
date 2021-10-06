@@ -29,6 +29,7 @@ import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentReques
 import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -163,8 +164,7 @@ class RecruitmentControllerTest {
     void getAllLocations() throws Exception {
         RecruitmentDto.Address addressDto = new RecruitmentDto.Address(testRecruitment);
 
-        String testRestaurantName = "testRestaurantName";
-        String testRestaurantAddress = "testRestaurantAddress";
+        addressDto.setCount(1);
 
         given(recruitmentService.findAllAvailableLocations())
                 .willReturn(Set.of(addressDto));
@@ -266,6 +266,13 @@ class RecruitmentControllerTest {
 //                        )
                 ));
     }
+
+//    @Test
+//    void joinRecruitment() {
+//        RecruitmentDto.Response responseDto =
+//        when(recruitmentService.joinOrUnjoin(any()))
+//                .thenReturn(testRecruitment);
+//    }
 
     @Test
     void deleteRecruitment() throws Exception {

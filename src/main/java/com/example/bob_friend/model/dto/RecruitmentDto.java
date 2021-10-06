@@ -109,11 +109,14 @@ public class RecruitmentDto {
         private double latitude;
         private double longitude;
         private String address;
+        private int count;
+
 
         public Address(Recruitment recruitment) {
             this.latitude = recruitment.getLatitude();
             this.longitude = recruitment.getLongitude();
             this.address = recruitment.getRestaurantAddress();
+            this.count = 0;
         }
 
         @Override
