@@ -1,0 +1,37 @@
+package com.example.bob_friend.model.dto;
+
+import com.example.bob_friend.model.entity.Reply;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+public class ReplyDto {
+    @Getter
+    @Setter
+    public static class Request {
+        private String content;
+
+        public Reply convertToEntity() {
+            return Reply.builder()
+                    .content(content)
+                    .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class Response {
+        private Long id;
+        private MemberDto.Preview author;
+        private String content;
+        private LocalDateTime createdAt;
+
+        public Response(Reply reply) {
+            this.id = reply.getId();
+            this.author = new MemberDto.Preview(reply.getAuthor());
+            this.content = reply.getContent();
+            this.createdAt = reply.getCreatedAt();
+        }
+    }
+}

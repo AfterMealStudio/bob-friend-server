@@ -98,21 +98,6 @@ public class RecruitmentController {
         return ResponseEntity.ok(join);
     }
 
-    @GetMapping("/{recruitmentId}/comments")
-    public ResponseEntity getAllComments(@PathVariable Long recruitmentId) {
-        List<CommentDto.Response> allCommentByRecruitmentId = commentService
-                .getAllCommentByRecruitmentId(recruitmentId);
-        return ResponseEntity.ok(allCommentByRecruitmentId);
-    }
-
-    @PostMapping("/{recruitmentId}/comments")
-    public ResponseEntity createComment(@PathVariable Long recruitmentId,
-                                        @RequestBody CommentDto.Request commentRequestDto) {
-        CommentDto.Response comment =
-                commentService.createCommentToRecruitment(
-                        commentRequestDto, recruitmentId);
-        return ResponseEntity.ok(comment);
-    }
 
 
 }

@@ -1,12 +1,18 @@
 package com.example.bob_friend.model.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "reply")
 public class Reply {
     @Id
@@ -33,4 +39,11 @@ public class Reply {
         this.createdAt = LocalDateTime.now();
     }
 
+    public void setAuthor(Member author) {
+        this.author = author;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
+    }
 }
