@@ -113,7 +113,7 @@ public class RecruitmentService {
             addressMap.put(address, addressMap.getOrDefault(address, 0) + 1);
         }
 
-        for (Map.Entry<RecruitmentDto.Address, Integer> entry:
+        for (Map.Entry<RecruitmentDto.Address, Integer> entry :
                 addressMap.entrySet()) {
             entry.getKey().setCount(entry.getValue());
         }
@@ -139,6 +139,20 @@ public class RecruitmentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public RecruitmentDto.Response closeRecruitment(Long recruitmentId) {
+        Member author = memberService.getCurrentMember();
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> {
+                    throw new RecruitmentNotFoundException(recruitmentId);
+                });
+        if (recruitment.getAuthor().equals(author)) {
+            recruitment.setActive(false);
+        } else {
+            throw new MemberNotAllowedException(author.getNickname());
+        }
+        return new RecruitmentDto.Response(recruitment);
+    }
 
     @Transactional
     public RecruitmentDto.Response joinOrUnjoin(Long recruitmentId)

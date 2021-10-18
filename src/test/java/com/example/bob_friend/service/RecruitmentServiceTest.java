@@ -405,4 +405,15 @@ class RecruitmentServiceTest {
             recruitmentService.delete(testRecruitment.getId());
         });
     }
+
+    @Test
+    void closeRecruitmentTest() {
+        when(recruitmentRepository.findById(any()))
+                .thenReturn(Optional.ofNullable(testRecruitment));
+        when(memberService.getCurrentMember())
+                .thenReturn(testAuthor);
+        recruitmentService.closeRecruitment(testRecruitment.getId());
+
+        assertThat(testRecruitment.isActive(), equalTo(false));
+    }
 }
