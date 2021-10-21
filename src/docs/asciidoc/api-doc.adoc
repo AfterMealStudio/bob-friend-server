@@ -36,7 +36,7 @@ include::{snippets}/recruitment/get-all-recruitments/http-response.adoc[]
 === 약속이 있는 위치 전체 조회
 request::
 include::{snippets}/recruitment/get-all-recruitments-locations/http-request.adoc[]
-reponse::
+response::
 include::{snippets}/recruitment/get-all-recruitments-locations/http-response.adoc[]
 
 === 검색 - 주소

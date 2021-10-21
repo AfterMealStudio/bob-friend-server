@@ -15,8 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -29,7 +29,8 @@ import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentReques
 import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -109,7 +110,8 @@ class RecruitmentControllerTest {
                 .willReturn(Arrays.asList(responseDto1));
         mvc.perform(get("/recruitments"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
+                .andExpect(content().json(objectMapper.writeValueAsString(
+                        Arrays.asList(responseDto1))))
                 .andDo(document("recruitment/get-all-recruitments",
                         getDocumentRequest(),
                         getDocumentResponse()
@@ -237,8 +239,8 @@ class RecruitmentControllerTest {
         given(recruitmentService.createRecruitment(any()))
                 .willReturn(responseDto);
 
-        mvc.perform(post("/recruitments").
-                        content(objectMapper.writeValueAsString(requestDto))
+        mvc.perform(post("/recruitments")
+                        .content(objectMapper.writeValueAsString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -246,6 +248,10 @@ class RecruitmentControllerTest {
                 .andDo(document("recruitment/create-recruitment",
                         getDocumentRequest(),
                         getDocumentResponse()
+//                        ,
+//                        requestHeaders(
+//                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+//                        )
 //                        ,
 //                        responseFields(
 //                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),

@@ -2,6 +2,7 @@ package com.example.bob_friend.model.dto;
 
 import com.example.bob_friend.model.entity.Reply;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 public class ReplyDto {
     @Getter
     @Setter
+    @NoArgsConstructor
     public static class Request {
         private String content;
 
@@ -16,6 +18,10 @@ public class ReplyDto {
             return Reply.builder()
                     .content(content)
                     .build();
+        }
+
+        public Request(Reply reply) {
+            this.content = reply.getContent();
         }
     }
 

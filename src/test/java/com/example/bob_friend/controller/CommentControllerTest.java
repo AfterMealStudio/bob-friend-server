@@ -1,8 +1,10 @@
 package com.example.bob_friend.controller;
 
 import com.example.bob_friend.model.dto.CommentDto;
+import com.example.bob_friend.model.dto.ReplyDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.service.RecruitmentCommentService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -134,6 +136,9 @@ public class CommentControllerTest {
         CommentDto.Request requestDto = new CommentDto.Request(testComment);
         CommentDto.Response responseDto = new CommentDto.Response(testComment);
 
+        when(commentService.createComment(any(), any()))
+                .thenReturn(responseDto);
+
         mvc.perform(post("/recruitments/1/comments")
                         .content(objectMapper.writeValueAsString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -148,8 +153,24 @@ public class CommentControllerTest {
     }
 
     @Test
-    void createReplyToComment() {
+    void createReplyToComment() throws Exception {
+        ReplyDto.Request requestDto = new ReplyDto.Request(testReply);
+        ReplyDto.Response responseDto = new ReplyDto.Response(testReply);
 
+        when(commentService.createReply(any(), any()))
+                .thenReturn(responseDto);
+
+        mvc.perform(post("/recruitments/1/comments/1/replies")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(responseDto)
+                ))
+                .andDo(document("comment/reply/create-reply",
+                        getDocumentRequest(),
+                        getDocumentResponse()));
 
     }
 }
