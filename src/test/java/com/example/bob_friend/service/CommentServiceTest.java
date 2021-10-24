@@ -4,6 +4,8 @@ import com.example.bob_friend.model.dto.CommentDto;
 import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.ReplyDto;
 import com.example.bob_friend.model.entity.*;
+import com.example.bob_friend.model.exception.MemberNotAllowedException;
+import com.example.bob_friend.model.exception.ReplyNotFoundException;
 import com.example.bob_friend.repository.RecruitmentCommentRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import com.example.bob_friend.repository.ReplyRepository;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -111,6 +114,36 @@ public class CommentServiceTest {
                 testComment.getContent()));
     }
 
+
+    @Test
+    void deleteCommentTest() {
+        when(memberService.getCurrentMember())
+                .thenReturn(testAuthor);
+        when(commentRepository.findById(any()))
+                .thenReturn(java.util.Optional.ofNullable(testComment));
+
+        commentService.deleteComment(testComment.getId());
+
+        assertThat(testComment.getAuthor(), equalTo(null));
+        assertThat(testComment.getContent(), equalTo(null));
+    }
+
+
+    @Test
+    void deleteCommentTest_fail_memberNotAllowed() {
+        Member member = Member.builder()
+                .id(2L).build();
+        when(memberService.getCurrentMember())
+                .thenReturn(member);
+        when(commentRepository.findById(any()))
+                .thenReturn(java.util.Optional.ofNullable(testComment));
+
+        assertThrows(MemberNotAllowedException.class, () -> {
+            commentService.deleteComment(testComment.getId());
+        });
+    }
+
+
     @Test
     void getAllCommentsTest() {
         List<Comment> commentList = Arrays.asList(testComment);
@@ -147,4 +180,21 @@ public class CommentServiceTest {
         ));
     }
 
+
+    @Test
+    void deleteReplyTest_fail_memberNotAllowed() {
+        Member member = Member.builder()
+                .id(2L).build();
+        when(memberService.getCurrentMember())
+                .thenReturn(member);
+        when(replyRepository.findById(any()))
+                .thenReturn(java.util.Optional.ofNullable(testReply));
+
+        assertThrows(MemberNotAllowedException.class, () -> {
+                    commentService.deleteReply(testReply.getId());
+                }
+        );
+
+
+    }
 }

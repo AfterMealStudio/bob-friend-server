@@ -4,7 +4,6 @@ import com.example.bob_friend.model.dto.CommentDto;
 import com.example.bob_friend.model.dto.ReplyDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.service.RecruitmentCommentService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,8 +27,9 @@ import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentRespon
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -121,14 +121,17 @@ public class CommentControllerTest {
         when(commentService.getAllCommentByRecruitmentId(any()))
                 .thenReturn(responseList);
 
-        mvc.perform(get("/recruitments/1/comments"))
+        mvc.perform(get("/recruitments/{recruitmentId}/comments", 1))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(responseList)
                 ))
                 .andDo(document("comment/get-all-comments-by-recruitment",
                         getDocumentRequest(),
-                        getDocumentResponse()));
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId").description("약속 번호")
+                        )));
     }
 
     @Test
@@ -139,7 +142,7 @@ public class CommentControllerTest {
         when(commentService.createComment(any(), any()))
                 .thenReturn(responseDto);
 
-        mvc.perform(post("/recruitments/1/comments")
+        mvc.perform(post("/recruitments/{recruitmentId}/comments", 1)
                         .content(objectMapper.writeValueAsString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -149,7 +152,10 @@ public class CommentControllerTest {
                 ))
                 .andDo(document("comment/create-comment",
                         getDocumentRequest(),
-                        getDocumentResponse()));
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId").description("약속 번호")
+                        )));
     }
 
     @Test
@@ -160,7 +166,7 @@ public class CommentControllerTest {
         when(commentService.createReply(any(), any()))
                 .thenReturn(responseDto);
 
-        mvc.perform(post("/recruitments/1/comments/1/replies")
+        mvc.perform(post("/recruitments/{recruitmentId}/comments/{commentId}/replies", 1, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
@@ -170,7 +176,39 @@ public class CommentControllerTest {
                 ))
                 .andDo(document("comment/reply/create-reply",
                         getDocumentRequest(),
-                        getDocumentResponse()));
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId").description("약속 번호"),
+                                parameterWithName("commentId").description("댓글 번호")
+                        )));
+    }
 
+
+    @Test
+    void deleteCommentTest() throws Exception {
+        mvc.perform(delete("/recruitments/{recruitmentId}/comments/{commentId}", 1, 1))
+                .andExpect(status().isOk())
+                .andDo(document("comment/delete-comment",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId").description("약속 번호"),
+                                parameterWithName("commentId").description("댓글 번호")
+                        )));
+    }
+
+
+    @Test
+    void deleteReplyTest() throws Exception {
+        mvc.perform(delete("/recruitments/{recruitmentId}/comments/{commentId}/replies/{replyId}", 1, 1, 1))
+                .andExpect(status().isOk())
+                .andDo(document("comment/reply/delete-reply",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId").description("약속 번호"),
+                                parameterWithName("commentId").description("댓글 번호"),
+                                parameterWithName("replyId").description("대댓글 번호")
+                        )));
     }
 }

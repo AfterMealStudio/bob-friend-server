@@ -7,7 +7,9 @@ import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Reply;
 import com.example.bob_friend.model.exception.CommentNotFoundException;
+import com.example.bob_friend.model.exception.MemberNotAllowedException;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
+import com.example.bob_friend.model.exception.ReplyNotFoundException;
 import com.example.bob_friend.repository.RecruitmentCommentRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import com.example.bob_friend.repository.ReplyRepository;
@@ -50,6 +52,20 @@ public class RecruitmentCommentService {
     }
 
     @Transactional
+    public void deleteComment(Long commentId) {
+        Member author = memberService.getCurrentMember();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> {
+                    throw new CommentNotFoundException(commentId);
+                });
+        if (comment.getAuthor().equals(author)) {
+            comment.clear();
+        } else {
+            throw new MemberNotAllowedException(author.getNickname());
+        }
+    }
+
+    @Transactional
     public ReplyDto.Response createReply(
             Long commentId,
             ReplyDto.Request replyDto) {
@@ -65,6 +81,18 @@ public class RecruitmentCommentService {
         return new ReplyDto.Response(save);
     }
 
-
+    @Transactional
+    public void deleteReply(Long replyId) {
+        Member author = memberService.getCurrentMember();
+        Reply reply = replyRepository.findById(replyId)
+                .orElseThrow(() -> {
+                    throw new ReplyNotFoundException(replyId);
+                });
+        if (reply.getAuthor().equals(author)) {
+            replyRepository.delete(reply);
+        } else {
+            throw new MemberNotAllowedException(author.getNickname());
+        }
+    }
 
 }

@@ -28,6 +28,9 @@ include::{snippets}/recruitment/get-one-recruitment/path-parameters.adoc[]
 //include::{snippets}/get-one-recruitment/response-fields.adoc[]
 
 === 전체 조회
+```
+참여 가능한 약속 전체 조회(작성자가 본인이 아님 & 현재 참여되어있지 않음)
+```
 request::
 include::{snippets}/recruitment/get-all-recruitments/http-request.adoc[]
 response::
@@ -62,6 +65,50 @@ response::
 include::{snippets}/recruitment/delete-recruitment/http-response.adoc[]
 path-parameter::
 include::{snippets}/recruitment/delete-recruitment/path-parameters.adoc[]
+
+=== 댓글
+==== 댓글 생성
+request::
+include::{snippets}/comment/create-comment/http-request.adoc[]
+response::
+include::{snippets}/comment/create-comment/http-response.adoc[]
+path-param::
+include::{snippets}/comment/create-comment/path-parameters.adoc[]
+
+==== 댓글 삭제
+```
+댓글 삭제 시 author, content가 null이 됨
+```
+request::
+include::{snippets}/comment/delete-comment/http-request.adoc[]
+response::
+include::{snippets}/comment/delete-comment/http-response.adoc[]
+path-param::
+include::{snippets}/comment/delete-comment/path-parameters.adoc[]
+
+==== 댓글 조회
+request::
+include::{snippets}/comment/get-all-comments-by-recruitment/http-request.adoc[]
+response::
+include::{snippets}/comment/get-all-comments-by-recruitment/http-response.adoc[]
+path-param::
+include::{snippets}/comment/get-all-comments-by-recruitment/path-parameters.adoc[]
+
+=== 대댓글
+==== 대댓글 생성
+request::
+include::{snippets}/comment/reply/create-reply/http-request.adoc[]
+response::
+include::{snippets}/comment/reply/create-reply/http-response.adoc[]
+path-param::
+include::{snippets}/comment/reply/create-reply/path-parameters.adoc[]
+==== 대댓글 삭제
+request::
+include::{snippets}/comment/reply/delete-reply/http-request.adoc[]
+response::
+include::{snippets}/comment/reply/delete-reply/http-response.adoc[]
+path-param::
+include::{snippets}/comment/reply/delete-reply/path-parameters.adoc[]
 
 == Member
 === 회원가입

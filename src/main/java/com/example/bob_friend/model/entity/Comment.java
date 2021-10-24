@@ -52,4 +52,9 @@ public class Comment {
     public void setRecruitment(Recruitment recruitment) {
         this.recruitment = recruitment;
     }
+
+    public void clear() {
+        this.author = null;
+        this.content = null;
+    }
 }

@@ -15,7 +15,6 @@ public class MemberDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @ToString
     public static class Login {
 
         @NotNull(message = "must be not null")
@@ -100,7 +99,8 @@ public class MemberDto {
 
     }
 
-    @Data
+    @Getter
+    @Setter
     public static class DuplicationCheck {
         private boolean duplicated;
 
@@ -115,7 +115,17 @@ public class MemberDto {
         private String nickname;
 
         public Preview(Member member) {
-            this.nickname = member.getNickname();
+            if (member == null)
+                this.nickname = "unknown";
+            else
+                this.nickname = member.getNickname();
         }
+    }
+
+    @Getter
+    @Setter
+    public static class Delete {
+        private String email;
+        private String password;
     }
 }
