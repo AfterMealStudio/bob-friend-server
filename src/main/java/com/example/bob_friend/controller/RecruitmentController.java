@@ -9,6 +9,9 @@ import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.service.RecruitmentCommentService;
 import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,18 +28,19 @@ public class RecruitmentController {
     @GetMapping()
     public ResponseEntity getAllRecruitment(
             @RequestParam(value = "restaurantName", required = false) String restaurantName,
-            @RequestParam(value = "restaurantAddress", required = false) String restaurantAddress) {
-        List<RecruitmentDto.Response> responseDtoList = null;
+            @RequestParam(value = "restaurantAddress", required = false) String restaurantAddress,
+            Pageable pageable) {
+        Page<RecruitmentDto.Response> responseDtoList = null;
         if (restaurantName == null) {
             if (restaurantAddress == null) {
-                responseDtoList = recruitmentService.findAllAvailableRecruitments();
+                responseDtoList = recruitmentService.findAllAvailableRecruitments(pageable);
             } else {
                 responseDtoList = recruitmentService
-                        .findAllByRestaurantAddress(restaurantAddress);
+                        .findAllByRestaurantAddress(restaurantAddress, pageable);
             }
         } else {
             responseDtoList = recruitmentService
-                    .findAllByRestaurantNameAndRestaurantAddress(restaurantName, restaurantAddress);
+                    .findAllByRestaurantNameAndRestaurantAddress(restaurantName, restaurantAddress, pageable);
         }
         return ResponseEntity.ok(responseDtoList);
     }
@@ -56,16 +60,16 @@ public class RecruitmentController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity getMyRecruitment() {
-        List<RecruitmentDto.Response> myRecruitments =
-                recruitmentService.findMyRecruitments();
+    public ResponseEntity getMyRecruitment(Pageable pageable) {
+        Page<RecruitmentDto.Response> myRecruitments =
+                recruitmentService.findMyRecruitments(pageable);
         return ResponseEntity.ok(myRecruitments);
     }
 
     @GetMapping("/my/joined")
-    public ResponseEntity getMyJoinedRecruitment() {
-        List<RecruitmentDto.Response> allJoinedRecruitments =
-                recruitmentService.findAllJoinedRecruitments();
+    public ResponseEntity getMyJoinedRecruitment(Pageable pageable) {
+        Page<RecruitmentDto.Response> allJoinedRecruitments =
+                recruitmentService.findAllJoinedRecruitments(pageable);
         return ResponseEntity.ok(allJoinedRecruitments);
     }
 

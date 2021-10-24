@@ -9,6 +9,9 @@ import com.example.bob_friend.model.exception.RecruitmentNotActiveException;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +33,9 @@ public class RecruitmentService {
     }
 
 
-    public List<RecruitmentDto.Response> findAll() {
-        return recruitmentRepository.findAll().stream()
-                .map(RecruitmentDto.Response::new)
-                .collect(Collectors.toList());
+    public Page<RecruitmentDto.Response> findAll(Pageable pageable) {
+        Page<Recruitment> all = recruitmentRepository.findAll(pageable);
+        return all.map(RecruitmentDto.Response::new);
     }
 
 
@@ -52,53 +54,44 @@ public class RecruitmentService {
                 .orElseThrow(() -> {
                     throw new RecruitmentNotFoundException(recruitmentId);
                 });
-        if (recruitment.getAuthor().equals(currentMember))
+        if (currentMember.equals(recruitment.getAuthor()))
             recruitmentRepository.deleteById(recruitmentId);
         else
             throw new MemberNotAllowedException(currentMember.getEmail());
     }
 
 
-//    public RecruitmentDto.Response update(Long recruitmentId,
-//                                          RecruitmentDto.Request update) {
-//        Recruitment recruitment = Recruitment.builder()
-//                .id(recruitmentId)
-//                .title(update.getTitle())
-//                .content(update.getContent())
-//                .build();
-//
-//        Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
-//        return new RecruitmentDto.Response(savedRecruitment);
-//    }
-
-
-    public List<RecruitmentDto.Response> findAllByRestaurantNameAndRestaurantAddress(
+    public Page<RecruitmentDto.Response> findAllByRestaurantNameAndRestaurantAddress(
             String restaurantName,
-            String restaurantAddress) {
-        return recruitmentRepository
+            String restaurantAddress,
+            Pageable pageable) {
+        List<RecruitmentDto.Response> collect = recruitmentRepository
                 .findAllByRestaurantNameAndRestaurantAddress(restaurantName,
-                        restaurantAddress).stream()
+                        restaurantAddress, pageable).stream()
                 .map(RecruitmentDto.Response::new)
                 .collect(Collectors.toList());
+        return new PageImpl<>(collect);
     }
 
 
-    public List<RecruitmentDto.Response> findAllByRestaurantAddress(String restaurantAddress) {
-        return recruitmentRepository
-                .findAllByRestaurantAddress(restaurantAddress).stream()
+    public Page<RecruitmentDto.Response> findAllByRestaurantAddress(String restaurantAddress, Pageable pageable) {
+        List<RecruitmentDto.Response> collect = recruitmentRepository
+                .findAllByRestaurantAddress(restaurantAddress, pageable).stream()
                 .map(RecruitmentDto.Response::new)
                 .collect(Collectors.toList());
+        return new PageImpl<>(collect);
     }
 
 
-    public List<RecruitmentDto.Response> findAllAvailableRecruitments() {
+    public Page<RecruitmentDto.Response> findAllAvailableRecruitments(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
-        return recruitmentRepository.findAll().stream()
-                .filter(recruitment ->
+        Page<Recruitment> all = recruitmentRepository.findAll(pageable);
+
+        List<RecruitmentDto.Response> map = all.filter(recruitment ->
                         !recruitment.hasMember(currentMember) &&
-                                !recruitment.getAuthor().equals(currentMember))
-                .map(RecruitmentDto.Response::new)
-                .collect(Collectors.toList());
+                                !currentMember.equals(recruitment.getAuthor()))
+                .map(RecruitmentDto.Response::new).toList();
+        return new PageImpl<>(map);
     }
 
     public Set<RecruitmentDto.Address> findAllAvailableLocations() {
@@ -121,22 +114,24 @@ public class RecruitmentService {
     }
 
 
-    public List<RecruitmentDto.Response> findAllJoinedRecruitments() {
+    public Page<RecruitmentDto.Response> findAllJoinedRecruitments(Pageable pageable) {
         Member author = memberService.getCurrentMember();
-        return recruitmentRepository.findAll().stream()
+        List<RecruitmentDto.Response> collect = recruitmentRepository.findAll(pageable).stream()
                 .filter(recruitment ->
                         recruitment.hasMember(author) ||
-                                recruitment.getAuthor().equals(author)
+                                author.equals(recruitment.getAuthor())
                 ).map(RecruitmentDto.Response::new)
                 .collect(Collectors.toList());
+        return new PageImpl<>(collect);
     }
 
 
-    public List<RecruitmentDto.Response> findMyRecruitments() {
+    public Page<RecruitmentDto.Response> findMyRecruitments(Pageable pageable) {
         Member author = memberService.getCurrentMember();
-        return recruitmentRepository.findAllByAuthor(author).stream()
+        List<RecruitmentDto.Response> collect = recruitmentRepository.findAllByAuthor(author, pageable).stream()
                 .map(RecruitmentDto.Response::new)
                 .collect(Collectors.toList());
+        return new PageImpl<>(collect);
     }
 
     @Transactional
@@ -146,7 +141,7 @@ public class RecruitmentService {
                 .orElseThrow(() -> {
                     throw new RecruitmentNotFoundException(recruitmentId);
                 });
-        if (recruitment.getAuthor().equals(author)) {
+        if (author.equals(recruitment.getAuthor())) {
             recruitment.setActive(false);
         } else {
             throw new MemberNotAllowedException(author.getNickname());

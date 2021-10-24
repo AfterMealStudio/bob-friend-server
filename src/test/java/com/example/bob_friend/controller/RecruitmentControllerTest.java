@@ -15,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -29,8 +29,6 @@ import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentReques
 import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -106,12 +104,18 @@ class RecruitmentControllerTest {
     void getAllRecruitment() throws Exception {
         RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
 
-        given(recruitmentService.findAllAvailableRecruitments())
-                .willReturn(Arrays.asList(responseDto1));
-        mvc.perform(get("/recruitments"))
+        PageImpl<RecruitmentDto.Response> responsePage = new PageImpl<>(Arrays.asList(responseDto1));
+        given(recruitmentService.findAllAvailableRecruitments(any()))
+                .willReturn(responsePage);
+
+        mvc.perform(get("/recruitments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(
-                        Arrays.asList(responseDto1))))
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(responsePage)
+                ))
                 .andDo(document("recruitment/get-all-recruitments",
                         getDocumentRequest(),
                         getDocumentResponse()
@@ -124,11 +128,12 @@ class RecruitmentControllerTest {
         RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
 
         String testRestaurantAddress = "testRestaurantAddress";
-        given(recruitmentService.findAllByRestaurantAddress(testRestaurantAddress))
-                .willReturn(Arrays.asList(responseDto1));
+        PageImpl<RecruitmentDto.Response> responsePage = new PageImpl<>(Arrays.asList(responseDto1));
+        given(recruitmentService.findAllByRestaurantAddress(any(), any()))
+                .willReturn(responsePage);
         mvc.perform(get("/recruitments").param("restaurantAddress", testRestaurantAddress))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
+                .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
                 .andDo(document("recruitment/get-all-recruitments-by-address",
                         getDocumentRequest(),
                         getDocumentResponse(),
@@ -141,17 +146,23 @@ class RecruitmentControllerTest {
     @Test
     void getAllRecruitments_restaurant() throws Exception {
         RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
+        PageImpl<RecruitmentDto.Response> responsePage = new PageImpl<>(Arrays.asList(responseDto1));
 
         String testRestaurantName = "testRestaurantName";
         String testRestaurantAddress = "testRestaurantAddress";
 
-        given(recruitmentService.findAllByRestaurantNameAndRestaurantAddress(testRestaurantName, testRestaurantAddress))
-                .willReturn(Arrays.asList(responseDto1));
+        given(recruitmentService
+                .findAllByRestaurantNameAndRestaurantAddress(
+                        any(),
+                        any(),
+                        any()))
+                .willReturn(responsePage);
+
         mvc.perform(get("/recruitments")
                         .param("restaurantAddress", testRestaurantAddress)
                         .param("restaurantName", testRestaurantName))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(responseDto1))))
+                .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
                 .andDo(document("recruitment/get-all-recruitments-by-restaurant",
                         getDocumentRequest(),
                         getDocumentResponse(),
