@@ -66,29 +66,29 @@ public class AuthenticationControllerTest {
                 .verified(false)
                 .build();
     }
-//    @Test
-//    public void signin() throws Exception {
-//        when(memberService.isExistByEmail(any())).thenReturn(true);
-//        when(tokenProvider.createToken(any())).thenReturn("jwt-token");
-//
-//        MemberDto.Login login = MemberDto.Login.builder()
-//                .email(testMember.getEmail())
-//                .password(testMember.getPassword())
-//                .build();
-//
-//        mvc.perform(post("/api/signin")
-//                        .content(objectMapper.writeValueAsString(login))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(objectMapper.writeValueAsString(
-//                        new TokenDto("jwt-token")
-//                )))
-//
-//                .andDo(document("member/signin",
-//                        getDocumentRequest(),
-//                        getDocumentResponse())
-//                );
-//
-//    }
+    @Test
+    public void signin() throws Exception {
+        when(memberService.isExistByEmail(any())).thenReturn(true);
+        when(tokenProvider.createToken(any())).thenReturn("jwt-token-example");
+
+        MemberDto.Login login = MemberDto.Login.builder()
+                .email(testMember.getEmail())
+                .password(testMember.getPassword())
+                .build();
+
+        mvc.perform(post("/api/signin")
+                        .content(objectMapper.writeValueAsString(login))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(
+                        new TokenDto("jwt-token-example")
+                )))
+
+                .andDo(document("member/signin",
+                        getDocumentRequest(),
+                        getDocumentResponse())
+                );
+
+    }
 }

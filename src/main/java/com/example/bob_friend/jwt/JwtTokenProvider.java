@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider implements InitializingBean {
+    @Value("${jwt.header}")
     private String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORITY_KEY = "roles";
     private final String secret;

@@ -2,10 +2,19 @@ package com.example.bob_friend.service;
 
 import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.entity.Authority;
+import com.example.bob_friend.model.entity.Comment;
 import com.example.bob_friend.model.entity.Member;
+import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
+import com.example.bob_friend.model.exception.MemberNotAllowedException;
 import com.example.bob_friend.repository.MemberRepository;
+import com.example.bob_friend.repository.RecruitmentCommentRepository;
+import com.example.bob_friend.repository.RecruitmentRepository;
+import com.example.bob_friend.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,8 +30,26 @@ import java.util.Collections;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final RecruitmentRepository recruitmentRepository;
+    private final ReplyRepository replyRepository;
+    private final RecruitmentCommentRepository commentRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
+
+    public Authentication signin(MemberDto.Login loginDto) {
+        if (!isExistByEmail(loginDto.getEmail())) {
+            throw new UsernameNotFoundException(loginDto.getEmail() + " is not a member");
+        }
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
+        Authentication authentication = authenticationManagerBuilder.getObject()
+                .authenticate(authenticationToken);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication;
+    }
 
     @Transactional
     public MemberDto.Response signup(MemberDto.Signup memberSignupDto) {
@@ -114,6 +141,26 @@ public class MemberService {
 
     @Transactional
     public void deleteById(Long memberId) {
+        Member currentMember = getCurrentMember();
+        if (currentMember.getId() != memberId)
+            throw new MemberNotAllowedException(currentMember.getNickname());
+
+        for (Recruitment recruitment :
+                recruitmentRepository.findAllByAuthor(currentMember)) {
+            recruitment.setAuthor(null);
+        }
+
+        for (Comment comment:
+                commentRepository.findAllByAuthor(currentMember)) {
+            comment.clear();
+        }
+
+//        for (Reply reply:
+//        replyRepository.findAllByAuthor(currentMember)) {
+//            replyRepository.delete(reply);
+//        }
+        replyRepository.deleteAllByAuthor(currentMember);
+
         memberRepository.deleteById(memberId);
     }
 
