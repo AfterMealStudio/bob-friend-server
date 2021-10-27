@@ -25,10 +25,7 @@ public class RecruitmentService {
     private final MemberService memberService;
 
     public RecruitmentDto.Response findById(Long recruitmentId) {
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
-                .orElseThrow(() -> {
-                    throw new RecruitmentNotFoundException(recruitmentId);
-                });
+        Recruitment recruitment = getRecruitment(recruitmentId);
         return new RecruitmentDto.Response(recruitment);
     }
 
@@ -50,10 +47,7 @@ public class RecruitmentService {
 
     public void delete(Long recruitmentId) {
         Member currentMember = memberService.getCurrentMember();
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
-                .orElseThrow(() -> {
-                    throw new RecruitmentNotFoundException(recruitmentId);
-                });
+        Recruitment recruitment = getRecruitment(recruitmentId);
         if (currentMember.equals(recruitment.getAuthor()))
             recruitmentRepository.deleteById(recruitmentId);
         else
@@ -137,12 +131,9 @@ public class RecruitmentService {
     @Transactional
     public RecruitmentDto.Response closeRecruitment(Long recruitmentId) {
         Member author = memberService.getCurrentMember();
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
-                .orElseThrow(() -> {
-                    throw new RecruitmentNotFoundException(recruitmentId);
-                });
+        Recruitment recruitment = getRecruitment(recruitmentId);
         if (author.equals(recruitment.getAuthor())) {
-            recruitment.setActive(false);
+            recruitment.close();
         } else {
             throw new MemberNotAllowedException(author.getNickname());
         }
@@ -154,10 +145,7 @@ public class RecruitmentService {
             throws RecruitmentIsFullException, RecruitmentNotActiveException {
         Member currentMember = memberService.getCurrentMember();
 
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
-                .orElseThrow(() -> {
-                    throw new RecruitmentNotFoundException(recruitmentId);
-                });
+        Recruitment recruitment = getRecruitment(recruitmentId);
 
         validateRecruitment(recruitment);
 
@@ -170,11 +158,44 @@ public class RecruitmentService {
     }
 
 
+
+    public Page<RecruitmentDto.Response> searchTitle(String keyword, Pageable pageable) {
+        List<RecruitmentDto.Response> collect = recruitmentRepository
+                .findAllByTitleContaining(keyword, pageable)
+                .stream().map(RecruitmentDto.Response::new)
+                .collect(Collectors.toList());
+        return new PageImpl<>(collect);
+    }
+
+    public Page<RecruitmentDto.Response> searchContent(String keyword, Pageable pageable) {
+        List<RecruitmentDto.Response> collect = recruitmentRepository
+                .findAllByContentContaining(keyword, pageable)
+                .stream().map(RecruitmentDto.Response::new)
+                .collect(Collectors.toList());
+        return new PageImpl<>(collect);
+    }
+
+    public Page<RecruitmentDto.Response> searchRestaurant(String keyword, Pageable pageable) {
+        List<RecruitmentDto.Response> collect = recruitmentRepository
+                .findAllByRestaurantNameContaining(keyword, pageable)
+                .stream().map(RecruitmentDto.Response::new)
+                .collect(Collectors.toList());
+        return new PageImpl<>(collect);
+    }
+
+
     private void validateRecruitment(Recruitment recruitment) {
         if (recruitment.isFull())
             throw new RecruitmentIsFullException(recruitment.getId());
         if (!recruitment.isActive())
             throw new RecruitmentNotActiveException(recruitment.getId());
+    }
+
+    private Recruitment getRecruitment(Long recruitmentId) {
+        return recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> {
+                    throw new RecruitmentNotFoundException(recruitmentId);
+                });
     }
 
 }

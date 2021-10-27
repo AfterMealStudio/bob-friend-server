@@ -18,9 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.util.Streamable;
-import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -373,21 +370,11 @@ class RecruitmentServiceTest {
                 )));
     }
 
-    @Test
-    void findAllAvailableLocations() {
-
-    }
-
 //    @Test
-//    void deleteRecruitmentSuccess() {
-//        when(memberService.getCurrentMember())
-//                .thenReturn(testAuthor);
-//        when(recruitmentRepository.findById(any()))
-//                .thenReturn(Optional.ofNullable(testRecruitment));
-//
-//        recruitmentService.delete(testRecruitment.getId());
+//    void findAllAvailableLocations() {
 //
 //    }
+
 
     @Test
     void deleteRecruitmentFail_RecruitmentNotFound() {
@@ -430,5 +417,24 @@ class RecruitmentServiceTest {
         recruitmentService.closeRecruitment(testRecruitment.getId());
 
         assertThat(testRecruitment.isActive(), equalTo(false));
+    }
+
+
+    @Test
+    void searchTest() {
+        // search 메소드는 비슷한 구조에 호출하는 메소드 하나만 다르기 때문에
+        // 테스트 하나로 충분한듯
+        List<Recruitment> recruitments = Arrays.asList(testRecruitment);
+        when(recruitmentRepository.findAllByTitleContaining(any(), any()))
+                .thenReturn(new PageImpl<>(recruitments));
+        PageRequest pageRequest = PageRequest.of(0, 1);
+
+        List<RecruitmentDto.Response> collect = recruitments.stream()
+                .map(RecruitmentDto.Response::new)
+                .collect(Collectors.toList());
+        Page<RecruitmentDto.Response> responsePage =
+                recruitmentService.searchTitle(testRecruitment.getTitle(), pageRequest);
+
+        assertThat(responsePage, equalTo(new PageImpl<>(collect)));
     }
 }

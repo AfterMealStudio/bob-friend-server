@@ -15,4 +15,8 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
 
     Page<Recruitment> findAllByAuthor(Member member, Pageable pageable);
     List<Recruitment> findAllByAuthor(Member author);
+
+    Page<Recruitment> findAllByTitleContaining(String keyword, Pageable pageable);
+    Page<Recruitment> findAllByContentContaining(String keyword, Pageable pageable);
+    Page<Recruitment> findAllByRestaurantNameContaining(String keyword, Pageable pageable);
 }
