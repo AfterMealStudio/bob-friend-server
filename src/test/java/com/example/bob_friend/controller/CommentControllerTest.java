@@ -3,7 +3,7 @@ package com.example.bob_friend.controller;
 import com.example.bob_friend.model.dto.CommentDto;
 import com.example.bob_friend.model.dto.ReplyDto;
 import com.example.bob_friend.model.entity.*;
-import com.example.bob_friend.service.RecruitmentCommentService;
+import com.example.bob_friend.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -26,6 +27,8 @@ import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentReques
 import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -44,7 +47,7 @@ public class CommentControllerTest {
     ObjectMapper objectMapper;
 
     @MockBean
-    RecruitmentCommentService commentService;
+    CommentService commentService;
 
     Recruitment testRecruitment;
     Member testAuthor;
@@ -121,7 +124,10 @@ public class CommentControllerTest {
         when(commentService.getAllCommentByRecruitmentId(any()))
                 .thenReturn(responseList);
 
-        mvc.perform(get("/recruitments/{recruitmentId}/comments", 1))
+        mvc.perform(get("/recruitments/{recruitmentId}/comments", 1)
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(responseList)
@@ -131,7 +137,11 @@ public class CommentControllerTest {
                         getDocumentResponse(),
                         pathParameters(
                                 parameterWithName("recruitmentId").description("약속 번호")
-                        )));
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
     }
 
     @Test
@@ -143,6 +153,7 @@ public class CommentControllerTest {
                 .thenReturn(responseDto);
 
         mvc.perform(post("/recruitments/{recruitmentId}/comments", 1)
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
                         .content(objectMapper.writeValueAsString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -155,7 +166,11 @@ public class CommentControllerTest {
                         getDocumentResponse(),
                         pathParameters(
                                 parameterWithName("recruitmentId").description("약속 번호")
-                        )));
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
     }
 
     @Test
@@ -167,6 +182,7 @@ public class CommentControllerTest {
                 .thenReturn(responseDto);
 
         mvc.perform(post("/recruitments/{recruitmentId}/comments/{commentId}/replies", 1, 1)
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
@@ -180,13 +196,20 @@ public class CommentControllerTest {
                         pathParameters(
                                 parameterWithName("recruitmentId").description("약속 번호"),
                                 parameterWithName("commentId").description("댓글 번호")
-                        )));
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
     }
 
 
     @Test
     void deleteCommentTest() throws Exception {
-        mvc.perform(delete("/recruitments/{recruitmentId}/comments/{commentId}", 1, 1))
+        mvc.perform(delete("/recruitments/{recruitmentId}/comments/{commentId}", 1, 1)
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("comment/delete-comment",
                         getDocumentRequest(),
@@ -194,13 +217,20 @@ public class CommentControllerTest {
                         pathParameters(
                                 parameterWithName("recruitmentId").description("약속 번호"),
                                 parameterWithName("commentId").description("댓글 번호")
-                        )));
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
     }
 
 
     @Test
     void deleteReplyTest() throws Exception {
-        mvc.perform(delete("/recruitments/{recruitmentId}/comments/{commentId}/replies/{replyId}", 1, 1, 1))
+        mvc.perform(delete("/recruitments/{recruitmentId}/comments/{commentId}/replies/{replyId}", 1, 1, 1)
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("comment/reply/delete-reply",
                         getDocumentRequest(),
@@ -209,6 +239,10 @@ public class CommentControllerTest {
                                 parameterWithName("recruitmentId").description("약속 번호"),
                                 parameterWithName("commentId").description("댓글 번호"),
                                 parameterWithName("replyId").description("대댓글 번호")
-                        )));
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
     }
 }

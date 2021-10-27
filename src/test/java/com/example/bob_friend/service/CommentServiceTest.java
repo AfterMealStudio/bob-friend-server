@@ -5,8 +5,7 @@ import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.ReplyDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberNotAllowedException;
-import com.example.bob_friend.model.exception.ReplyNotFoundException;
-import com.example.bob_friend.repository.RecruitmentCommentRepository;
+import com.example.bob_friend.repository.CommentRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import com.example.bob_friend.repository.ReplyRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +31,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CommentServiceTest {
     @Mock
-    RecruitmentCommentRepository commentRepository;
+    CommentRepository commentRepository;
     @Mock
     ReplyRepository replyRepository;
     @Mock
@@ -40,7 +39,7 @@ public class CommentServiceTest {
     @Mock
     MemberService memberService;
     @InjectMocks
-    RecruitmentCommentService commentService;
+    CommentService commentService;
 
     private Member testAuthor;
     private Comment testComment;

@@ -13,6 +13,8 @@
 === 생성
 request::
 include::{snippets}/recruitment/create-recruitment/http-request.adoc[]
+header::
+include::{snippets}/recruitment/create-recruitment/request-headers.adoc[]
 response::
 include::{snippets}/recruitment/create-recruitment/http-response.adoc[]
 //response field description::
@@ -20,6 +22,8 @@ include::{snippets}/recruitment/create-recruitment/http-response.adoc[]
 === 한 건 조회
 request::
 include::{snippets}/recruitment/get-one-recruitment/http-request.adoc[]
+header::
+include::{snippets}/recruitment/get-one-recruitment/request-headers.adoc[]
 response::
 include::{snippets}/recruitment/get-one-recruitment/http-response.adoc[]
 path-parameter::
@@ -28,31 +32,36 @@ include::{snippets}/recruitment/get-one-recruitment/path-parameters.adoc[]
 //include::{snippets}/get-one-recruitment/response-fields.adoc[]
 
 === 전체 조회
-```
-참여 가능한 약속 전체 조회(작성자가 본인이 아님 & 현재 참여되어있지 않음)
-```
 request::
 include::{snippets}/recruitment/get-all-recruitments/http-request.adoc[]
+header::
+include::{snippets}/recruitment/get-all-recruitments/request-headers.adoc[]
 response::
 include::{snippets}/recruitment/get-all-recruitments/http-response.adoc[]
 
-=== 약속이 있는 위치 전체 조회
+==== 약속이 있는 위치 전체 조회
 request::
 include::{snippets}/recruitment/get-all-recruitments-locations/http-request.adoc[]
+header::
+include::{snippets}/recruitment/get-all-recruitments-locations/request-headers.adoc[]
 response::
 include::{snippets}/recruitment/get-all-recruitments-locations/http-response.adoc[]
 
-=== 검색 - 주소
+==== 주소로 약속 조회
 request::
 include::{snippets}/recruitment/get-all-recruitments-by-address/http-request.adoc[]
+header::
+include::{snippets}/recruitment/get-all-recruitments-by-address/request-headers.adoc[]
 parameter::
 include::{snippets}/recruitment/get-all-recruitments-by-address/request-parameters.adoc[]
 response::
 include::{snippets}/recruitment/get-all-recruitments-by-address/http-response.adoc[]
 
-=== 검색 - 식당 이름 & 주소
+==== 주소와 식당이름으로 약속 조회
 request::
 include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-request.adoc[]
+header::
+include::{snippets}/recruitment/get-all-recruitments-by-restaurant/request-headers.adoc[]
 parameter::
 include::{snippets}/recruitment/get-all-recruitments-by-restaurant/request-parameters.adoc[]
 response::
@@ -61,6 +70,8 @@ include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-response
 === 삭제
 request::
 include::{snippets}/recruitment/delete-recruitment/http-request.adoc[]
+header::
+include::{snippets}/recruitment/delete-recruitment/request-headers.adoc[]
 response::
 include::{snippets}/recruitment/delete-recruitment/http-response.adoc[]
 path-parameter::
@@ -70,45 +81,64 @@ include::{snippets}/recruitment/delete-recruitment/path-parameters.adoc[]
 ==== 댓글 생성
 request::
 include::{snippets}/comment/create-comment/http-request.adoc[]
-response::
-include::{snippets}/comment/create-comment/http-response.adoc[]
+header::
+include::{snippets}/comment/create-comment/request-headers.adoc[]
 path-param::
 include::{snippets}/comment/create-comment/path-parameters.adoc[]
+response::
+include::{snippets}/comment/create-comment/http-response.adoc[]
 
 ==== 댓글 삭제
-```
-댓글 삭제 시 author, content가 null이 됨
-```
+NOTE: 댓글 삭제 시 author, content가 null이 됨
+
 request::
 include::{snippets}/comment/delete-comment/http-request.adoc[]
-response::
-include::{snippets}/comment/delete-comment/http-response.adoc[]
+header::
+include::{snippets}/comment/delete-comment/request-headers.adoc[]
 path-param::
 include::{snippets}/comment/delete-comment/path-parameters.adoc[]
+response::
+include::{snippets}/comment/delete-comment/http-response.adoc[]
 
 ==== 댓글 조회
 request::
 include::{snippets}/comment/get-all-comments-by-recruitment/http-request.adoc[]
-response::
-include::{snippets}/comment/get-all-comments-by-recruitment/http-response.adoc[]
+header::
+include::{snippets}/comment/get-all-comments-by-recruitment/request-headers.adoc[]
 path-param::
 include::{snippets}/comment/get-all-comments-by-recruitment/path-parameters.adoc[]
+response::
+include::{snippets}/comment/get-all-comments-by-recruitment/http-response.adoc[]
 
 === 대댓글
 ==== 대댓글 생성
 request::
 include::{snippets}/comment/reply/create-reply/http-request.adoc[]
-response::
-include::{snippets}/comment/reply/create-reply/http-response.adoc[]
+header::
+include::{snippets}/comment/reply/create-reply/request-headers.adoc[]
 path-param::
 include::{snippets}/comment/reply/create-reply/path-parameters.adoc[]
+response::
+include::{snippets}/comment/reply/create-reply/http-response.adoc[]
 ==== 대댓글 삭제
 request::
 include::{snippets}/comment/reply/delete-reply/http-request.adoc[]
-response::
-include::{snippets}/comment/reply/delete-reply/http-response.adoc[]
+header::
+include::{snippets}/comment/reply/delete-reply/request-headers.adoc[]
 path-param::
 include::{snippets}/comment/reply/delete-reply/path-parameters.adoc[]
+response::
+include::{snippets}/comment/reply/delete-reply/http-response.adoc[]
+
+=== 검색
+request::
+include::{snippets}/recruitment/search-recruitment/http-request.adoc[]
+header::
+include::{snippets}/recruitment/search-recruitment/request-headers.adoc[]
+parameter::
+include::{snippets}/recruitment/search-recruitment/request-parameters.adoc[]
+response::
+include::{snippets}/recruitment/search-recruitment/http-response.adoc[]
 
 == Member
 === 회원가입
@@ -117,9 +147,17 @@ include::{snippets}/member/signup/http-request.adoc[]
 response::
 include::{snippets}/member/signup/http-response.adoc[]
 
+=== 로그인
+request::
+include::{snippets}/member/signin/http-request.adoc[]
+response::
+include::{snippets}/member/signin/http-response.adoc[]
+
 === 유저정보 조회(본인)
 request::
 include::{snippets}/member/getMyUserInfo/http-request.adoc[]
+header::
+include::{snippets}/member/getMyUserInfo/request-headers.adoc[]
 response::
 include::{snippets}/member/getMyUserInfo/http-response.adoc[]
 
@@ -128,6 +166,10 @@ IMPORTANT: 관리자권한 필요
 
 request::
 include::{snippets}/member/getUserInfo/http-request.adoc[]
+header::
+include::{snippets}/member/getUserInfo/request-headers.adoc[]
+path-param::
+include::{snippets}/member/getUserInfo/path-parameters.adoc[]
 response::
 include::{snippets}/member/getUserInfo/http-response.adoc[]
 
@@ -136,6 +178,8 @@ NOTE: 중복된 이메일이 존재할 경우 true
 
 request::
 include::{snippets}/member/check-email/http-request.adoc[]
+path-param::
+include::{snippets}/member/check-email/path-parameters.adoc[]
 response::
 include::{snippets}/member/check-email/http-response.adoc[]
 
@@ -144,5 +188,7 @@ NOTE: 중복된 닉네임이 존재할 경우 true
 
 request::
 include::{snippets}/member/check-nickname/http-request.adoc[]
+path-param::
+include::{snippets}/member/check-nickname/path-parameters.adoc[]
 response::
 include::{snippets}/member/check-nickname/http-response.adoc[]

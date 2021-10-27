@@ -2,7 +2,7 @@ package com.example.bob_friend.controller;
 
 import com.example.bob_friend.model.dto.CommentDto;
 import com.example.bob_friend.model.dto.ReplyDto;
-import com.example.bob_friend.service.RecruitmentCommentService;
+import com.example.bob_friend.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/recruitments/{recruitmentId}/comments")
 public class CommentController {
-    private final RecruitmentCommentService commentService;
+    private final CommentService commentService;
 
     @GetMapping()
     public ResponseEntity getAllComments(@PathVariable Long recruitmentId) {

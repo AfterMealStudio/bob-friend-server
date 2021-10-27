@@ -10,7 +10,7 @@ import com.example.bob_friend.model.exception.CommentNotFoundException;
 import com.example.bob_friend.model.exception.MemberNotAllowedException;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.model.exception.ReplyNotFoundException;
-import com.example.bob_friend.repository.RecruitmentCommentRepository;
+import com.example.bob_friend.repository.CommentRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import com.example.bob_friend.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class RecruitmentCommentService {
-    private final RecruitmentCommentRepository commentRepository;
+public class CommentService {
+    private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final MemberService memberService;
