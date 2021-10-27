@@ -14,8 +14,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
 
@@ -23,8 +26,12 @@ import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentReques
 import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,12 +72,20 @@ class MemberControllerTest {
         MemberDto.Response responseDto = new MemberDto.Response(testMember);
         when(memberService.getMyMemberWithAuthorities())
                 .thenReturn(responseDto);
-        mvc.perform(get("/api/user"))
+        mvc.perform(get("/api/user")
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
                 .andDo(document("member/getMyUserInfo",
                         getDocumentRequest(),
-                        getDocumentResponse()));
+                        getDocumentResponse(),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
     }
 
     @Test
@@ -78,12 +93,23 @@ class MemberControllerTest {
         MemberDto.Response responseDto = new MemberDto.Response(testMember);
         when(memberService.getMemberWithAuthorities(any()))
                 .thenReturn(responseDto);
-        mvc.perform(get("/api/user/{email}", testMember.getEmail()))
+        mvc.perform(get("/api/user/{email}", testMember.getEmail())
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
                 .andDo(document("member/getUserInfo",
                         getDocumentRequest(),
-                        getDocumentResponse()));
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("email").description("이메일")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
     }
 
     @Test
@@ -97,7 +123,11 @@ class MemberControllerTest {
                 )))
                 .andDo(document("member/check-email",
                         getDocumentRequest(),
-                        getDocumentResponse()));
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("email").description("이메일")
+                        )
+                ));
 
     }
 
@@ -115,7 +145,10 @@ class MemberControllerTest {
                         )))
                 .andDo(document("member/check-nickname",
                         getDocumentRequest(),
-                        getDocumentResponse()
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("nickname").description("닉네임")
+                        )
                 ));
 
     }

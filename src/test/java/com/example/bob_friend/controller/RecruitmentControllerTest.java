@@ -4,7 +4,7 @@ import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
-import com.example.bob_friend.service.RecruitmentCommentService;
+import com.example.bob_friend.service.CommentService;
 import com.example.bob_friend.service.RecruitmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -29,6 +30,9 @@ import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentReques
 import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -49,7 +53,7 @@ class RecruitmentControllerTest {
     @MockBean
     RecruitmentService recruitmentService;
     @MockBean
-    RecruitmentCommentService recruitmentCommentService;
+    CommentService commentService;
 
     Recruitment testRecruitment;
     Member testAuthor;
@@ -105,10 +109,11 @@ class RecruitmentControllerTest {
         RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
 
         PageImpl<RecruitmentDto.Response> responsePage = new PageImpl<>(Arrays.asList(responseDto1));
-        given(recruitmentService.findAllAvailableRecruitments(any()))
+        given(recruitmentService.findAll(any()))
                 .willReturn(responsePage);
 
         mvc.perform(get("/recruitments")
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 )
@@ -118,7 +123,10 @@ class RecruitmentControllerTest {
                 ))
                 .andDo(document("recruitment/get-all-recruitments",
                         getDocumentRequest(),
-                        getDocumentResponse()
+                        getDocumentResponse(),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
                 ));
 
     }
@@ -131,7 +139,11 @@ class RecruitmentControllerTest {
         PageImpl<RecruitmentDto.Response> responsePage = new PageImpl<>(Arrays.asList(responseDto1));
         given(recruitmentService.findAllByRestaurantAddress(any(), any()))
                 .willReturn(responsePage);
-        mvc.perform(get("/recruitments").param("restaurantAddress", testRestaurantAddress))
+        mvc.perform(get("/recruitments")
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .param("restaurantAddress", testRestaurantAddress))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
                 .andDo(document("recruitment/get-all-recruitments-by-address",
@@ -139,6 +151,9 @@ class RecruitmentControllerTest {
                         getDocumentResponse(),
                         requestParameters(
                                 parameterWithName("restaurantAddress").description("식당 주소")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )
                 ));
     }
@@ -160,7 +175,12 @@ class RecruitmentControllerTest {
 
         mvc.perform(get("/recruitments")
                         .param("restaurantAddress", testRestaurantAddress)
-                        .param("restaurantName", testRestaurantName))
+                        .param("restaurantName", testRestaurantName)
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
                 .andDo(document("recruitment/get-all-recruitments-by-restaurant",
@@ -169,6 +189,9 @@ class RecruitmentControllerTest {
                         requestParameters(
                                 parameterWithName("restaurantName").description("식당 이름"),
                                 parameterWithName("restaurantAddress").description("식당 주소")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )
                 ));
     }
@@ -181,12 +204,19 @@ class RecruitmentControllerTest {
 
         given(recruitmentService.findAllAvailableLocations())
                 .willReturn(Set.of(addressDto));
-        mvc.perform(get("/recruitments/locations"))
+        mvc.perform(get("/recruitments/locations")
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(addressDto))))
                 .andDo(document("recruitment/get-all-recruitments-locations",
                         getDocumentRequest(),
-                        getDocumentResponse()
+                        getDocumentResponse(),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
                 ));
     }
 
@@ -197,7 +227,11 @@ class RecruitmentControllerTest {
         given(recruitmentService.findById(any()))
                 .willReturn(responseDto);
 
-        mvc.perform(get("/recruitments/{id}", 1))
+        mvc.perform(get("/recruitments/{recruitmentId}", 1)
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(responseDto)))
@@ -205,7 +239,10 @@ class RecruitmentControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(
-                                parameterWithName("id").description("글 번호")
+                                parameterWithName("recruitmentId").description("글 번호")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )
 //                        ,
 //                        responseFields(
@@ -252,17 +289,17 @@ class RecruitmentControllerTest {
 
         mvc.perform(post("/recruitments")
                         .content(objectMapper.writeValueAsString(requestDto))
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
                 .andDo(document("recruitment/create-recruitment",
                         getDocumentRequest(),
-                        getDocumentResponse()
-//                        ,
-//                        requestHeaders(
-//                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
-//                        )
+                        getDocumentResponse(),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
 //                        ,
 //                        responseFields(
 //                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("글 번호"),
@@ -284,26 +321,65 @@ class RecruitmentControllerTest {
                 ));
     }
 
-//    @Test
-//    void joinRecruitment() {
-//        RecruitmentDto.Response responseDto =
-//        when(recruitmentService.joinOrUnjoin(any()))
-//                .thenReturn(testRecruitment);
-//    }
+    @Test
+    void joinRecruitment() {
+
+    }
 
     @Test
     void deleteRecruitment() throws Exception {
-        mvc.perform(delete("/recruitments/{id}", 1))
+        mvc.perform(delete("/recruitments/{recruitmentId}", 1)
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andDo(document("recruitment/delete-recruitment",
                                 getDocumentRequest(),
                                 getDocumentResponse(),
                                 pathParameters(
-                                        parameterWithName("id").description("글 번호")
+                                        parameterWithName("recruitmentId").description("글 번호")
+                                ),
+                                requestHeaders(
+                                        headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                                 )
                         )
                 );
     }
+
+
+    @Test
+    void searchRecruitmentTest() throws Exception {
+        RecruitmentDto.Response responseDto =
+                new RecruitmentDto.Response(testRecruitment);
+        PageImpl<RecruitmentDto.Response> responsePage =
+                new PageImpl<>(Arrays.asList(responseDto));
+        when(recruitmentService.searchTitle(any(), any()))
+                .thenReturn(new PageImpl<>(Arrays.asList(responseDto)));
+        mvc.perform(get("/recruitments/search")
+                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .param("category", "title")
+                        .param("keyword", "ti")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(responsePage)
+                ))
+                .andDo(document("recruitment/search-recruitment",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestParameters(
+                                parameterWithName("category").description("검색 분류"),
+                                parameterWithName("keyword").description("검색어")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
+    }
+
 
     //update 기능 보류
 //    @Test

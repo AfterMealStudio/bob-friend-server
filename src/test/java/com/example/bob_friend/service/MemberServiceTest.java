@@ -4,7 +4,7 @@ import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
 import com.example.bob_friend.repository.MemberRepository;
-import com.example.bob_friend.repository.RecruitmentCommentRepository;
+import com.example.bob_friend.repository.CommentRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import com.example.bob_friend.repository.ReplyRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,19 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
-import org.springframework.security.test.context.support.WithUserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -49,7 +41,7 @@ public class MemberServiceTest {
     @Mock
     ReplyRepository replyRepository;
     @Mock
-    RecruitmentCommentRepository commentRepository;
+    CommentRepository commentRepository;
 
     @Mock
     AuthenticationManagerBuilder authenticationManagerBuilder;
