@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -26,8 +25,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentRequest;
-import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
+import static com.example.bob_friend.document.ApiDocumentUtils.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -62,7 +60,7 @@ class RecruitmentControllerTest {
     @BeforeEach
     public void setup() {
         testMember = Member.builder()
-                .id(1)
+                .id(2)
                 .email("testMember@test.com")
                 .nickname("testMember")
                 .password("testPassword")
@@ -106,16 +104,16 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitment() throws Exception {
-        RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
+        RecruitmentDto.Response responseDto1 =
+                new RecruitmentDto.Response(testRecruitment);
 
-        PageImpl<RecruitmentDto.Response> responsePage = new PageImpl<>(Arrays.asList(responseDto1));
+        PageImpl<RecruitmentDto.Response> responsePage =
+                new PageImpl<>(Arrays.asList(responseDto1));
         given(recruitmentService.findAll(any()))
                 .willReturn(responsePage);
 
-        mvc.perform(get("/recruitments")
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+        mvc.perform(getRequestBuilder(
+                        get("/recruitments"))
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(
@@ -125,7 +123,8 @@ class RecruitmentControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("토큰")
                         )
                 ));
 
@@ -133,16 +132,16 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitments_restaurantAddress() throws Exception {
-        RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
+        RecruitmentDto.Response responseDto1 =
+                new RecruitmentDto.Response(testRecruitment);
 
         String testRestaurantAddress = "testRestaurantAddress";
-        PageImpl<RecruitmentDto.Response> responsePage = new PageImpl<>(Arrays.asList(responseDto1));
+        PageImpl<RecruitmentDto.Response> responsePage =
+                new PageImpl<>(Arrays.asList(responseDto1));
         given(recruitmentService.findAllByRestaurantAddress(any(), any()))
                 .willReturn(responsePage);
-        mvc.perform(get("/recruitments")
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+        mvc.perform(getRequestBuilder(
+                        get("/recruitments"))
                         .param("restaurantAddress", testRestaurantAddress))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
@@ -150,18 +149,22 @@ class RecruitmentControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestParameters(
-                                parameterWithName("restaurantAddress").description("식당 주소")
+                                parameterWithName("restaurantAddress")
+                                        .description("식당 주소")
                         ),
                         requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("토큰")
                         )
                 ));
     }
 
     @Test
     void getAllRecruitments_restaurant() throws Exception {
-        RecruitmentDto.Response responseDto1 = new RecruitmentDto.Response(testRecruitment);
-        PageImpl<RecruitmentDto.Response> responsePage = new PageImpl<>(Arrays.asList(responseDto1));
+        RecruitmentDto.Response responseDto1 =
+                new RecruitmentDto.Response(testRecruitment);
+        PageImpl<RecruitmentDto.Response> responsePage =
+                new PageImpl<>(Arrays.asList(responseDto1));
 
         String testRestaurantName = "testRestaurantName";
         String testRestaurantAddress = "testRestaurantAddress";
@@ -173,49 +176,50 @@ class RecruitmentControllerTest {
                         any()))
                 .willReturn(responsePage);
 
-        mvc.perform(get("/recruitments")
+        mvc.perform(getRequestBuilder(
+                        get("/recruitments"))
                         .param("restaurantAddress", testRestaurantAddress)
                         .param("restaurantName", testRestaurantName)
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
                 )
-
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
                 .andDo(document("recruitment/get-all-recruitments-by-restaurant",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestParameters(
-                                parameterWithName("restaurantName").description("식당 이름"),
-                                parameterWithName("restaurantAddress").description("식당 주소")
+                                parameterWithName("restaurantName")
+                                        .description("식당 이름"),
+                                parameterWithName("restaurantAddress")
+                                        .description("식당 주소")
                         ),
                         requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("토큰")
                         )
                 ));
     }
 
     @Test
     void getAllLocations() throws Exception {
-        RecruitmentDto.Address addressDto = new RecruitmentDto.Address(testRecruitment);
+        RecruitmentDto.Address addressDto =
+                new RecruitmentDto.Address(testRecruitment);
 
         addressDto.setCount(1);
 
         given(recruitmentService.findAllAvailableLocations())
                 .willReturn(Set.of(addressDto));
-        mvc.perform(get("/recruitments/locations")
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+        mvc.perform(getRequestBuilder(
+                        get("/recruitments/locations"))
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(Arrays.asList(addressDto))))
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(Arrays.asList(addressDto))))
                 .andDo(document("recruitment/get-all-recruitments-locations",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("토큰")
                         )
                 ));
     }
@@ -227,10 +231,9 @@ class RecruitmentControllerTest {
         given(recruitmentService.findById(any()))
                 .willReturn(responseDto);
 
-        mvc.perform(get("/recruitments/{recruitmentId}", 1)
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+        mvc.perform(getRequestBuilder(
+                        get("/recruitments/{recruitmentId}",
+                                1))
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(
@@ -239,10 +242,12 @@ class RecruitmentControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(
-                                parameterWithName("recruitmentId").description("글 번호")
+                                parameterWithName("recruitmentId")
+                                        .description("글 번호")
                         ),
                         requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("토큰")
                         )
 //                        ,
 //                        responseFields(
@@ -265,40 +270,29 @@ class RecruitmentControllerTest {
                 ));
     }
 
-    // 단위테스트에서는 controller의 동작만 확인하고, controllerAdvice의 동작은 통합테스트로 넘기기로 한다.
-//    @Test
-//    void getRecruitmentFail() throws Exception {
-//        long recruitmentId = -1L;
-////        given(recruitmentService.findById(recruitmentId))
-////                .willReturn(null);
-////        when(recruitmentService.findById(any())).thenThrow(new RecruitmentNotFoundException(recruitmentId));
-//        mvc.perform(get("/recruitments/{id}", 1))
-//                .andExpect(status().isNotFound())
-//                .andExpect(result -> assertTrue((result.getResolvedException()).getClass().isAssignableFrom(RecruitmentNotFoundException.class)
-//                ))
-//                .andDo(print());
-//    }
-
 
     @Test
     void createRecruitment() throws Exception {
-        RecruitmentDto.Response responseDto = new RecruitmentDto.Response(testRecruitment);
-        RecruitmentDto.Request requestDto = new RecruitmentDto.Request(testRecruitment);
+        RecruitmentDto.Response responseDto =
+                new RecruitmentDto.Response(testRecruitment);
+        RecruitmentDto.Request requestDto =
+                new RecruitmentDto.Request(testRecruitment);
         given(recruitmentService.createRecruitment(any()))
                 .willReturn(responseDto);
 
-        mvc.perform(post("/recruitments")
+        mvc.perform(getRequestBuilder(
+                        post("/recruitments"))
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                )
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(responseDto)))
                 .andDo(document("recruitment/create-recruitment",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("토큰")
                         )
 //                        ,
 //                        responseFields(
@@ -322,26 +316,61 @@ class RecruitmentControllerTest {
     }
 
     @Test
-    void joinRecruitment() {
+    void joinRecruitmentTest() throws Exception {
+        Member testMember2 = Member.builder()
+                .id(1)
+                .email("testMember2@test.com")
+                .nickname("testMember2")
+                .password("1234")
+                .sex(Sex.FEMALE)
+                .birth(LocalDate.now())
+                .agree(true)
+                .active(true)
+                .build();
+        testRecruitment.addMember(testMember2);
+        RecruitmentDto.Response response = new RecruitmentDto.Response(testRecruitment);
+        when(recruitmentService.joinOrUnjoin(any()))
+                .thenReturn(response);
 
+        mvc.perform(getRequestBuilder(
+                        patch("/recruitments/{recruitmentId}",
+                                testRecruitment.getId())
+                ))
+                .andExpect(status().isOk())
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(response)
+                ))
+                .andDo(document("recruitment/join-recruitment",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId")
+                                        .description("글 번호")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("토큰")
+                        )
+                ));
     }
 
     @Test
     void deleteRecruitment() throws Exception {
-        mvc.perform(delete("/recruitments/{recruitmentId}", 1)
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+        mvc.perform(getRequestBuilder(
+                        delete("/recruitments/{recruitmentId}",
+                                1))
                 )
                 .andExpect(status().isOk())
                 .andDo(document("recruitment/delete-recruitment",
                                 getDocumentRequest(),
                                 getDocumentResponse(),
                                 pathParameters(
-                                        parameterWithName("recruitmentId").description("글 번호")
+                                        parameterWithName("recruitmentId")
+                                                .description("글 번호")
                                 ),
                                 requestHeaders(
-                                        headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                                        headerWithName(HttpHeaders.AUTHORIZATION)
+                                                .description("토큰")
                                 )
                         )
                 );
@@ -356,10 +385,8 @@ class RecruitmentControllerTest {
                 new PageImpl<>(Arrays.asList(responseDto));
         when(recruitmentService.searchTitle(any(), any()))
                 .thenReturn(new PageImpl<>(Arrays.asList(responseDto)));
-        mvc.perform(get("/recruitments/search")
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+        mvc.perform(getRequestBuilder(
+                        get("/recruitments/search"))
                         .param("category", "title")
                         .param("keyword", "ti")
                 )
@@ -375,32 +402,11 @@ class RecruitmentControllerTest {
                                 parameterWithName("keyword").description("검색어")
                         ),
                         requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("토큰")
                         )
                 ));
     }
 
 
-    //update 기능 보류
-//    @Test
-//    void updateRecruitment() throws Exception {
-//        Recruitment update = Recruitment.builder()
-//                .id(1L)
-//                .title("update title")
-//                .content("update content")
-//                .build();
-//        RecruitmentResponseDto responseDto = new RecruitmentResponseDto(update);
-//        RecruitmentRequestDto requestDto = new RecruitmentRequestDto(update);
-//
-//        given(recruitmentService.update(any(),any()))
-//                .willReturn(responseDto);
-//
-//        mvc.perform(put("/recruitments/{id}",1)
-//                        .content(objectMapper.writeValueAsString(requestDto))
-//                )
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
-//                .andDo(print());
-
-    //    }
 }

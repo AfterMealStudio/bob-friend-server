@@ -67,6 +67,18 @@ include::{snippets}/recruitment/get-all-recruitments-by-restaurant/request-param
 response::
 include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-response.adoc[]
 
+=== 참여
+NOTE: 이미 참여한 멤버가 요청을 보내면 해당 약속에서 제외됨
+
+request::
+include::{snippets}/recruitment/join-recruitment/http-request.adoc[]
+header::
+include::{snippets}/recruitment/join-recruitment/request-headers.adoc[]
+response::
+include::{snippets}/recruitment/join-recruitment/http-response.adoc[]
+path-parameter::
+include::{snippets}/recruitment/join-recruitment/path-parameters.adoc[]
+
 === 삭제
 request::
 include::{snippets}/recruitment/delete-recruitment/http-request.adoc[]
