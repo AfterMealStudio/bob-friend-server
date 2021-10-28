@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,8 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentRequest;
-import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
+import static com.example.bob_friend.document.ApiDocumentUtils.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -124,10 +124,8 @@ public class CommentControllerTest {
         when(commentService.getAllCommentByRecruitmentId(any()))
                 .thenReturn(responseList);
 
-        mvc.perform(get("/recruitments/{recruitmentId}/comments", 1)
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+        mvc.perform(getRequestBuilder(
+                        get("/recruitments/{recruitmentId}/comments", 1)))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(responseList)
@@ -152,11 +150,10 @@ public class CommentControllerTest {
         when(commentService.createComment(any(), any()))
                 .thenReturn(responseDto);
 
-        mvc.perform(post("/recruitments/{recruitmentId}/comments", 1)
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+        mvc.perform(getRequestBuilder(
+                        post("/recruitments/{recruitmentId}/comments", 1))
                         .content(objectMapper.writeValueAsString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(responseDto)
@@ -181,10 +178,8 @@ public class CommentControllerTest {
         when(commentService.createReply(any(), any()))
                 .thenReturn(responseDto);
 
-        mvc.perform(post("/recruitments/{recruitmentId}/comments/{commentId}/replies", 1, 1)
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+        mvc.perform(getRequestBuilder(
+                        post("/recruitments/{recruitmentId}/comments/{commentId}/replies", 1, 1))
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
@@ -206,10 +201,8 @@ public class CommentControllerTest {
 
     @Test
     void deleteCommentTest() throws Exception {
-        mvc.perform(delete("/recruitments/{recruitmentId}/comments/{commentId}", 1, 1)
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+        mvc.perform(getRequestBuilder(
+                        delete("/recruitments/{recruitmentId}/comments/{commentId}", 1, 1)))
                 .andExpect(status().isOk())
                 .andDo(document("comment/delete-comment",
                         getDocumentRequest(),
@@ -227,10 +220,8 @@ public class CommentControllerTest {
 
     @Test
     void deleteReplyTest() throws Exception {
-        mvc.perform(delete("/recruitments/{recruitmentId}/comments/{commentId}/replies/{replyId}", 1, 1, 1)
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+        mvc.perform(getRequestBuilder(
+                        delete("/recruitments/{recruitmentId}/comments/{commentId}/replies/{replyId}", 1, 1, 1)))
                 .andExpect(status().isOk())
                 .andDo(document("comment/reply/delete-reply",
                         getDocumentRequest(),

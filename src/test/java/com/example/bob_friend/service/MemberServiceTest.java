@@ -3,8 +3,8 @@ package com.example.bob_friend.service;
 import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
-import com.example.bob_friend.repository.MemberRepository;
 import com.example.bob_friend.repository.CommentRepository;
+import com.example.bob_friend.repository.MemberRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import com.example.bob_friend.repository.ReplyRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,13 +38,9 @@ public class MemberServiceTest {
     @Mock
     RecruitmentRepository recruitmentRepository;
     @Mock
-    ReplyRepository replyRepository;
-    @Mock
     CommentRepository commentRepository;
-
     @Mock
-    AuthenticationManagerBuilder authenticationManagerBuilder;
-
+    ReplyRepository replyRepository;
     @Mock
     MemberRepository memberRepository;
     @Mock
@@ -154,13 +149,7 @@ public class MemberServiceTest {
 
     @Test
     void deleteMember() {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        testMember.getEmail(),
-                        testMember.getPassword(),
-                        Collections.singleton(
-                                new SimpleGrantedAuthority("ROLE_USER"))
-                ));
+        login();
 
         Recruitment recruitment = Recruitment.builder()
                 .id(1L)
@@ -204,25 +193,23 @@ public class MemberServiceTest {
     }
 
     @Test
-    void getCurrentUsername() {
-        String currentUsername = memberService.getCurrentUsername();
+    void getCurrentMember() {
+        login();
+        when(memberRepository.getMemberByEmail(testMember.getEmail()))
+                .thenReturn(testMember);
+        Member currentMember = memberService.getCurrentMember();
 
-        assertThat(currentUsername, equalTo(testMember.getEmail()));
+        assertThat(currentMember, equalTo(testMember));
     }
 
 
-//    @Test
-//    void signinTest() {
-//        when(memberRepository.existsMemberByEmail(any()))
-//                .thenReturn(true);
-//
-//
-//        Authentication signin =
-//                memberService.signin(
-//                        new MemberDto.Login(
-//                                testMember.getEmail(),
-//                                testMember.getPassword()));
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        assertThat(signin, equalTo(authentication));
-//    }
+    private void login() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        testMember.getEmail(),
+                        testMember.getPassword(),
+                        Collections.singleton(
+                                new SimpleGrantedAuthority("ROLE_USER"))
+                ));
+    }
 }
