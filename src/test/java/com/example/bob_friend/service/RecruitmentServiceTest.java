@@ -409,7 +409,7 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    void closeRecruitmentTest() {
+    void closeRecruitment() {
         when(recruitmentRepository.findById(any()))
                 .thenReturn(Optional.ofNullable(testRecruitment));
         when(memberService.getCurrentMember())
@@ -421,7 +421,7 @@ class RecruitmentServiceTest {
 
 
     @Test
-    void searchTest() {
+    void search() {
         // search 메소드는 비슷한 구조에 호출하는 메소드 하나만 다르기 때문에
         // 테스트 하나로 충분한듯
         List<Recruitment> recruitments = Arrays.asList(testRecruitment);
@@ -437,4 +437,5 @@ class RecruitmentServiceTest {
 
         assertThat(responsePage, equalTo(new PageImpl<>(collect)));
     }
+
 }

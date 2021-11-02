@@ -26,6 +26,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
     private final RecruitmentRepository recruitmentRepository;
+    private final ReportService reportService;
     private final MemberService memberService;
 
     public List<CommentDto.Response> getAllCommentByRecruitmentId(Long recruitmentId) {
@@ -42,10 +43,10 @@ public class CommentService {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(
-                () -> {
-                    throw new RecruitmentNotFoundException(recruitmentId);
-                }
-        );
+                        () -> {
+                            throw new RecruitmentNotFoundException(recruitmentId);
+                        }
+                );
         comment.setAuthor(currentMember);
         comment.setRecruitment(recruitment);
         return new CommentDto.Response(commentRepository.save(comment));
@@ -54,10 +55,7 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long commentId) {
         Member author = memberService.getCurrentMember();
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> {
-                    throw new CommentNotFoundException(commentId);
-                });
+        Comment comment = getComment(commentId);
         if (comment.getAuthor().equals(author)) {
             comment.clear();
         } else {
@@ -70,9 +68,7 @@ public class CommentService {
             Long commentId,
             ReplyDto.Request replyDto) {
         Member author = memberService.getCurrentMember();
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
-            throw new CommentNotFoundException(commentId);
-        });
+        Comment comment = getComment(commentId);
         Reply reply = replyDto.convertToEntity();
         reply.setAuthor(author);
         reply.setComment(comment);
@@ -84,10 +80,7 @@ public class CommentService {
     @Transactional
     public void deleteReply(Long replyId) {
         Member author = memberService.getCurrentMember();
-        Reply reply = replyRepository.findById(replyId)
-                .orElseThrow(() -> {
-                    throw new ReplyNotFoundException(replyId);
-                });
+        Reply reply = getReply(replyId);
         if (reply.getAuthor().equals(author)) {
             replyRepository.delete(reply);
         } else {
@@ -95,4 +88,30 @@ public class CommentService {
         }
     }
 
+
+    public void reportComment(Long commentId) {
+        Comment comment = getComment(commentId);
+        Member author = comment.getAuthor();
+        reportService.reportWriting(author, comment);
+    }
+
+    public void reportReply(Long replyId) {
+        Reply reply = getReply(replyId);
+        Member author = reply.getAuthor();
+        reportService.reportWriting(author, reply);
+    }
+
+    private Comment getComment(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> {
+                    throw new CommentNotFoundException(commentId);
+                });
+    }
+
+    private Reply getReply(Long replyId) {
+        return replyRepository.findById(replyId)
+                .orElseThrow(() -> {
+                    throw new ReplyNotFoundException(replyId);
+                });
+    }
 }

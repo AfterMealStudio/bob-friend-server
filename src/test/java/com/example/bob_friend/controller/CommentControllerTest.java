@@ -4,6 +4,7 @@ import com.example.bob_friend.model.dto.CommentDto;
 import com.example.bob_friend.model.dto.ReplyDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.service.CommentService;
+import com.example.bob_friend.service.ReportService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,9 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,6 +47,9 @@ public class CommentControllerTest {
 
     @MockBean
     CommentService commentService;
+
+    @MockBean
+    ReportService reportService;
 
     Recruitment testRecruitment;
     Member testAuthor;
@@ -171,6 +173,25 @@ public class CommentControllerTest {
     }
 
     @Test
+    void reportComment() throws Exception {
+        mvc.perform(getRequestBuilder(
+                        patch("/recruitments/{recruitmentId}/comments/{commentId}/report",
+                                1, 1)))
+                .andExpect(status().isOk())
+                .andDo(document("comment/report-comment",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId").description("약속 번호"),
+                                parameterWithName("commentId").description("댓글 번호")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )));
+
+    }
+
+    @Test
     void createReplyToComment() throws Exception {
         ReplyDto.Request requestDto = new ReplyDto.Request(testReply);
         ReplyDto.Response responseDto = new ReplyDto.Response(testReply);
@@ -235,5 +256,26 @@ public class CommentControllerTest {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )
                 ));
+    }
+
+    @Test
+    void reportReply() throws Exception {
+        mvc.perform(getRequestBuilder(
+                        patch(
+                                "/recruitments/{recruitmentId}/comments/{commentId}/replies/{replyId}/report",
+                                1, 1, 1)))
+                .andExpect(status().isOk())
+                .andDo(document("comment/reply/report-reply",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId").description("약속 번호"),
+                                parameterWithName("commentId").description("댓글 번호"),
+                                parameterWithName("replyId").description("대댓글 번호")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )));
+
     }
 }

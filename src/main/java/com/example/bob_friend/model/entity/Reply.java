@@ -1,46 +1,28 @@
 package com.example.bob_friend.model.entity;
 
+import com.example.bob_friend.model.Constant;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
 @Entity
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "reply")
-public class Reply {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reply_id")
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member author;
-
-    @Column(name = "content")
-    private String content;
+@PrimaryKeyJoinColumn(name = "reply_id")
+@DiscriminatorValue(value = "reply")
+public class Reply extends Writing {
 
     @ManyToOne
     @JoinColumn(name = "comment_id")
     private Comment comment;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    public void createAt() {
-        this.createdAt = LocalDateTime.now();
-    }
 
     public void setAuthor(Member author) {
         this.author = author;
@@ -61,5 +43,14 @@ public class Reply {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void report() {
+        this.reportCount++;
+        if (this.reportCount > Constant.REPORT_LIMIT) {
+            this.getAuthor().increaseReportCount();
+            this.content = null;
+            this.reportCount = 0;
+        }
     }
 }

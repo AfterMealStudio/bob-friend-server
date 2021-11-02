@@ -39,6 +39,12 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/{commentId}/report")
+    public ResponseEntity reportComment(@PathVariable Long commentId) {
+        commentService.reportComment(commentId);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/{commentId}/replies")
     public ResponseEntity createReplyToComment(
             @PathVariable Long commentId,
@@ -53,6 +59,12 @@ public class CommentController {
     public ResponseEntity deleteReply(
             @PathVariable Long replyId) {
         commentService.deleteReply(replyId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{commentId}/replies/{replyId}/report")
+    public ResponseEntity reportReply(@PathVariable Long replyId) {
+        commentService.reportReply(replyId);
         return ResponseEntity.ok().build();
     }
 }

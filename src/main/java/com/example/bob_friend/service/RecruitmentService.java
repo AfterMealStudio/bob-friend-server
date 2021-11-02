@@ -22,7 +22,9 @@ import java.util.stream.Collectors;
 @Service
 public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
+    private final ReportService reportService;
     private final MemberService memberService;
+
 
     public RecruitmentDto.Response findById(Long recruitmentId) {
         Recruitment recruitment = getRecruitment(recruitmentId);
@@ -184,12 +186,22 @@ public class RecruitmentService {
     }
 
 
+    public void reportRecruitment(Long recruitmentId) {
+        Recruitment recruitment = getRecruitment(recruitmentId);
+        Member member = recruitment.getAuthor();
+        reportService.reportWriting(member, recruitment);
+    }
+
+
+
+
     private void validateRecruitment(Recruitment recruitment) {
         if (recruitment.isFull())
             throw new RecruitmentIsFullException(recruitment.getId());
         if (!recruitment.isActive())
             throw new RecruitmentNotActiveException(recruitment.getId());
     }
+
 
     private Recruitment getRecruitment(Long recruitmentId) {
         return recruitmentRepository.findById(recruitmentId)

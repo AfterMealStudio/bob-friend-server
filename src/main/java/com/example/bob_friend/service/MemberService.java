@@ -72,9 +72,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberDto.Response getMemberWithAuthorities(String email) {
-        Member member = memberRepository.findMemberWithAuthoritiesByEmail(email).orElseThrow(() -> {
-            throw new UsernameNotFoundException(email);
-        });
+        Member member = getMember(email);
         return new MemberDto.Response(member);
     }
 
@@ -82,34 +80,8 @@ public class MemberService {
     public MemberDto.Response getMyMemberWithAuthorities() {
         String currentUsername = getCurrentUsername();
 
-        Member member = memberRepository.findMemberWithAuthoritiesByEmail(currentUsername).orElseThrow(
-                () -> {
-                    throw new UsernameNotFoundException(currentUsername);
-                }
-        );
+        Member member = getMember(currentUsername);
         return new MemberDto.Response(member);
-    }
-
-    public String getCurrentUsername() {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            throw new AuthenticationException("Authentication not found") {
-                @Override
-                public String getMessage() {
-                    return super.getMessage();
-                }
-            };
-        }
-
-        String username = null;
-        if (authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails user = (UserDetails) authentication.getPrincipal();
-            username = user.getUsername();
-        } else if (authentication.getPrincipal() instanceof String) {
-            username = (String) authentication.getPrincipal();
-        }
-
-        return username;
     }
 
     @Transactional
@@ -119,16 +91,7 @@ public class MemberService {
         return currentMember;
     }
 
-    @Transactional
-    public MemberDto.Response reportMember(String username) {
-        Member member = memberRepository.findMemberByEmail(username)
-                .orElseThrow(() -> {
-                            throw new UsernameNotFoundException("user not found");
-                        }
-                );
-        member.increaseReportCount();
-        return new MemberDto.Response((member));
-    }
+
 
     @Transactional
     public void checkMemberWithCode(String email, String code) {
@@ -177,5 +140,35 @@ public class MemberService {
                 memberRepository.existsMemberByNickname(nickname));
     }
 
+
+    private Member getMember(String currentUsername) {
+        return memberRepository.findMemberWithAuthoritiesByEmail(currentUsername).orElseThrow(
+                () -> {
+                    throw new UsernameNotFoundException(currentUsername);
+                }
+        );
+    }
+
+    private String getCurrentUsername() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new AuthenticationException("Authentication not found") {
+                @Override
+                public String getMessage() {
+                    return super.getMessage();
+                }
+            };
+        }
+
+        String username = null;
+        if (authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails user = (UserDetails) authentication.getPrincipal();
+            username = user.getUsername();
+        } else if (authentication.getPrincipal() instanceof String) {
+            username = (String) authentication.getPrincipal();
+        }
+
+        return username;
+    }
 
 }

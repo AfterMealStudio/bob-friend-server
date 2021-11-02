@@ -97,6 +97,12 @@ public class RecruitmentController {
         return ResponseEntity.ok(join);
     }
 
+    @PutMapping("/{recruitmentId}/report")
+    public ResponseEntity report(@PathVariable Long recruitmentId) {
+        recruitmentService.reportRecruitment(recruitmentId);
+        return ResponseEntity.ok().build();
+    }
+
 
     @GetMapping("/search")
     public ResponseEntity searchRecruitment(
