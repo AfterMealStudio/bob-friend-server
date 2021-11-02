@@ -89,6 +89,7 @@ include::{snippets}/recruitment/delete-recruitment/http-response.adoc[]
 path-parameter::
 include::{snippets}/recruitment/delete-recruitment/path-parameters.adoc[]
 
+
 === 댓글
 ==== 댓글 생성
 request::
@@ -122,6 +123,16 @@ include::{snippets}/comment/get-all-comments-by-recruitment/path-parameters.adoc
 response::
 include::{snippets}/comment/get-all-comments-by-recruitment/http-response.adoc[]
 
+==== 댓글 신고
+request::
+include::{snippets}/comment/report-comment/http-request.adoc[]
+header::
+include::{snippets}/comment/report-comment/request-headers.adoc[]
+path-param::
+include::{snippets}/comment/report-comment/path-parameters.adoc[]
+response::
+include::{snippets}/comment/report-comment/http-response.adoc[]
+
 === 대댓글
 ==== 대댓글 생성
 request::
@@ -141,6 +152,16 @@ path-param::
 include::{snippets}/comment/reply/delete-reply/path-parameters.adoc[]
 response::
 include::{snippets}/comment/reply/delete-reply/http-response.adoc[]
+
+==== 대댓글 신고
+request::
+include::{snippets}/comment/reply/report-reply/http-request.adoc[]
+header::
+include::{snippets}/comment/reply/report-reply/request-headers.adoc[]
+path-param::
+include::{snippets}/comment/reply/report-reply/path-parameters.adoc[]
+response::
+include::{snippets}/comment/reply/report-reply/http-response.adoc[]
 
 === 검색
 request::
