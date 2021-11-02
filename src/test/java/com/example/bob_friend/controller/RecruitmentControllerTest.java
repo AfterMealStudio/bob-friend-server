@@ -1,9 +1,7 @@
 package com.example.bob_friend.controller;
 
 import com.example.bob_friend.model.dto.RecruitmentDto;
-import com.example.bob_friend.model.entity.Member;
-import com.example.bob_friend.model.entity.Recruitment;
-import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.service.CommentService;
 import com.example.bob_friend.service.RecruitmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +54,8 @@ class RecruitmentControllerTest {
     Recruitment testRecruitment;
     Member testAuthor;
     Member testMember;
+    Comment testComment;
+    Reply testReply;
 
     @BeforeEach
     public void setup() {
@@ -81,12 +81,30 @@ class RecruitmentControllerTest {
                 .active(true)
                 .build();
 
+        testComment = Comment.builder()
+                .id(1L)
+                .author(testAuthor)
+                .recruitment(testRecruitment)
+                .content("test comment")
+                .replies(new HashSet<>())
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        testReply = Reply.builder()
+                .id(1L)
+                .author(testAuthor)
+                .comment(testComment)
+                .content("test reply")
+                .createdAt(LocalDateTime.now())
+                .build();
+
         testRecruitment = Recruitment.builder()
                 .id(1L)
                 .title("title")
                 .content("content")
                 .author(testAuthor)
                 .members(new HashSet<>())
+                .comments(Set.of(testComment))
                 .currentNumberOfPeople(1)
                 .totalNumberOfPeople(4)
                 .full(false)
@@ -104,10 +122,10 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitment() throws Exception {
-        RecruitmentDto.Response responseDto1 =
-                new RecruitmentDto.Response(testRecruitment);
+        RecruitmentDto.ResponseList responseDto1 =
+                new RecruitmentDto.ResponseList(testRecruitment);
 
-        PageImpl<RecruitmentDto.Response> responsePage =
+        PageImpl<RecruitmentDto.ResponseList> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
         given(recruitmentService.findAll(any()))
                 .willReturn(responsePage);
@@ -132,11 +150,11 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitments_restaurantAddress() throws Exception {
-        RecruitmentDto.Response responseDto1 =
-                new RecruitmentDto.Response(testRecruitment);
+        RecruitmentDto.ResponseList responseDto1 =
+                new RecruitmentDto.ResponseList(testRecruitment);
 
         String testRestaurantAddress = "testRestaurantAddress";
-        PageImpl<RecruitmentDto.Response> responsePage =
+        PageImpl<RecruitmentDto.ResponseList> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
         given(recruitmentService.findAllByRestaurantAddress(any(), any()))
                 .willReturn(responsePage);
@@ -161,9 +179,9 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitments_restaurant() throws Exception {
-        RecruitmentDto.Response responseDto1 =
-                new RecruitmentDto.Response(testRecruitment);
-        PageImpl<RecruitmentDto.Response> responsePage =
+        RecruitmentDto.ResponseList responseDto1 =
+                new RecruitmentDto.ResponseList(testRecruitment);
+        PageImpl<RecruitmentDto.ResponseList> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
 
         String testRestaurantName = "testRestaurantName";

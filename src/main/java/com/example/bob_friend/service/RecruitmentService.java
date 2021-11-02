@@ -32,9 +32,9 @@ public class RecruitmentService {
     }
 
 
-    public Page<RecruitmentDto.Response> findAll(Pageable pageable) {
+    public Page<RecruitmentDto.ResponseList> findAll(Pageable pageable) {
         Page<Recruitment> all = recruitmentRepository.findAll(pageable);
-        return all.map(RecruitmentDto.Response::new);
+        return all.map(RecruitmentDto.ResponseList::new);
     }
 
 
@@ -57,23 +57,23 @@ public class RecruitmentService {
     }
 
 
-    public Page<RecruitmentDto.Response> findAllByRestaurantNameAndRestaurantAddress(
+    public Page<RecruitmentDto.ResponseList> findAllByRestaurantNameAndRestaurantAddress(
             String restaurantName,
             String restaurantAddress,
             Pageable pageable) {
-        List<RecruitmentDto.Response> collect = recruitmentRepository
+        List<RecruitmentDto.ResponseList> collect = recruitmentRepository
                 .findAllByRestaurantNameAndRestaurantAddress(restaurantName,
                         restaurantAddress, pageable).stream()
-                .map(RecruitmentDto.Response::new)
+                .map(RecruitmentDto.ResponseList::new)
                 .collect(Collectors.toList());
         return new PageImpl<>(collect);
     }
 
 
-    public Page<RecruitmentDto.Response> findAllByRestaurantAddress(String restaurantAddress, Pageable pageable) {
-        List<RecruitmentDto.Response> collect = recruitmentRepository
+    public Page<RecruitmentDto.ResponseList> findAllByRestaurantAddress(String restaurantAddress, Pageable pageable) {
+        List<RecruitmentDto.ResponseList> collect = recruitmentRepository
                 .findAllByRestaurantAddress(restaurantAddress, pageable).stream()
-                .map(RecruitmentDto.Response::new)
+                .map(RecruitmentDto.ResponseList::new)
                 .collect(Collectors.toList());
         return new PageImpl<>(collect);
     }
@@ -110,22 +110,22 @@ public class RecruitmentService {
     }
 
 
-    public Page<RecruitmentDto.Response> findAllJoinedRecruitments(Pageable pageable) {
+    public Page<RecruitmentDto.ResponseList> findAllJoinedRecruitments(Pageable pageable) {
         Member author = memberService.getCurrentMember();
-        List<RecruitmentDto.Response> collect = recruitmentRepository.findAll(pageable).stream()
+        List<RecruitmentDto.ResponseList> collect = recruitmentRepository.findAll(pageable).stream()
                 .filter(recruitment ->
                         recruitment.hasMember(author) ||
                                 author.equals(recruitment.getAuthor())
-                ).map(RecruitmentDto.Response::new)
+                ).map(RecruitmentDto.ResponseList::new)
                 .collect(Collectors.toList());
         return new PageImpl<>(collect);
     }
 
 
-    public Page<RecruitmentDto.Response> findMyRecruitments(Pageable pageable) {
+    public Page<RecruitmentDto.ResponseList> findMyRecruitments(Pageable pageable) {
         Member author = memberService.getCurrentMember();
-        List<RecruitmentDto.Response> collect = recruitmentRepository.findAllByAuthor(author, pageable).stream()
-                .map(RecruitmentDto.Response::new)
+        List<RecruitmentDto.ResponseList> collect = recruitmentRepository.findAllByAuthor(author, pageable).stream()
+                .map(RecruitmentDto.ResponseList::new)
                 .collect(Collectors.toList());
         return new PageImpl<>(collect);
     }

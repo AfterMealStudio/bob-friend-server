@@ -25,7 +25,7 @@ public class RecruitmentController {
             @RequestParam(value = "restaurantName", required = false) String restaurantName,
             @RequestParam(value = "restaurantAddress", required = false) String restaurantAddress,
             Pageable pageable) {
-        Page<RecruitmentDto.Response> responseDtoList = null;
+        Page<RecruitmentDto.ResponseList> responseDtoList = null;
         if (restaurantName == null) {
             if (restaurantAddress == null) {
                 responseDtoList = recruitmentService.findAll(pageable);
@@ -56,14 +56,14 @@ public class RecruitmentController {
 
     @GetMapping("/my")
     public ResponseEntity getMyRecruitment(Pageable pageable) {
-        Page<RecruitmentDto.Response> myRecruitments =
+        Page<RecruitmentDto.ResponseList> myRecruitments =
                 recruitmentService.findMyRecruitments(pageable);
         return ResponseEntity.ok(myRecruitments);
     }
 
     @GetMapping("/my/joined")
     public ResponseEntity getMyJoinedRecruitment(Pageable pageable) {
-        Page<RecruitmentDto.Response> allJoinedRecruitments =
+        Page<RecruitmentDto.ResponseList> allJoinedRecruitments =
                 recruitmentService.findAllJoinedRecruitments(pageable);
         return ResponseEntity.ok(allJoinedRecruitments);
     }
