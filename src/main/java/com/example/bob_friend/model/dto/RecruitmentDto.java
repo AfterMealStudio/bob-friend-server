@@ -1,12 +1,12 @@
 package com.example.bob_friend.model.dto;
 
+import com.example.bob_friend.model.entity.Comment;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -62,14 +62,18 @@ public class RecruitmentDto {
 
 
     @ToString
-    @Data
+    @Getter
+    @Setter
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class Response {
         private Long id;
         private String title;
         private String content;
         private MemberDto.Preview author;
         private Set<MemberDto.Preview> members;
+        private Integer amountOfComments;
+        private Set<CommentDto.Response> comments;
         private Integer totalNumberOfPeople;
         private Integer currentNumberOfPeople;
         private Boolean full;
@@ -89,6 +93,10 @@ public class RecruitmentDto {
             this.members = recruitment.getMembers().stream()
                     .map(member -> new MemberDto.Preview(member))
                     .collect(Collectors.toSet());
+            this.amountOfComments = recruitment.getComments().size();
+            this.comments = recruitment.getComments().stream()
+                    .map(CommentDto.Response::new)
+                    .collect(Collectors.toSet());
             this.currentNumberOfPeople = recruitment.getCurrentNumberOfPeople();
             this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
             this.full = recruitment.isFull();
@@ -102,18 +110,76 @@ public class RecruitmentDto {
         }
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @EqualsAndHashCode
+    public static class ResponseList {
+        private Long id;
+        private String title;
+        private String content;
+        private MemberDto.Preview author;
+        private Set<MemberDto.Preview> members;
+        private Integer amountOfComments;
+        private Integer totalNumberOfPeople;
+        private Integer currentNumberOfPeople;
+        private Boolean full;
+        private String restaurantName;
+        private String restaurantAddress;
+        private Double latitude;
+        private Double longitude;
+        private Sex sexRestriction;
+        private LocalDateTime appointmentTime;
+        private LocalDate createdAt;
 
-    @Data
+        public ResponseList(Recruitment recruitment) {
+            this.id = recruitment.getId();
+            this.title = recruitment.getTitle();
+            this.content = recruitment.getContent();
+            this.author = new MemberDto.Preview(recruitment.getAuthor());
+            this.members = recruitment.getMembers().stream()
+                    .map(member -> new MemberDto.Preview(member))
+                    .collect(Collectors.toSet());
+            this.amountOfComments = getAmountOfComments(recruitment);
+            this.currentNumberOfPeople = recruitment.getCurrentNumberOfPeople();
+            this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
+            this.full = recruitment.isFull();
+            this.restaurantName = recruitment.getRestaurantName();
+            this.restaurantAddress = recruitment.getRestaurantAddress();
+            this.latitude = recruitment.getLatitude();
+            this.longitude = recruitment.getLongitude();
+            this.appointmentTime = recruitment.getAppointmentTime();
+            this.sexRestriction = recruitment.getSexRestriction();
+            this.createdAt = recruitment.getCreatedAt().toLocalDate();
+        }
+
+        private int getAmountOfComments(Recruitment recruitment) {
+            int amountOfReplies = 0;
+            Set<Comment> comments = recruitment.getComments();
+            for (Comment comment :
+                    comments) {
+                amountOfReplies += comment.getReplies().size();
+            }
+            return amountOfReplies + comments.size();
+        }
+    }
+
+
+    @Getter
+    @Setter
     @ToString
     public static class Address {
         private double latitude;
         private double longitude;
         private String address;
+        private int count;
+
 
         public Address(Recruitment recruitment) {
             this.latitude = recruitment.getLatitude();
             this.longitude = recruitment.getLongitude();
             this.address = recruitment.getRestaurantAddress();
+            this.count = 0;
         }
 
         @Override

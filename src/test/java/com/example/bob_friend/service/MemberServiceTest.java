@@ -1,11 +1,13 @@
 package com.example.bob_friend.service;
 
 import com.example.bob_friend.model.dto.MemberDto;
-import com.example.bob_friend.model.entity.Authority;
-import com.example.bob_friend.model.entity.Member;
-import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
+import com.example.bob_friend.model.exception.MemberWithdrawalException;
+import com.example.bob_friend.repository.CommentRepository;
 import com.example.bob_friend.repository.MemberRepository;
+import com.example.bob_friend.repository.RecruitmentRepository;
+import com.example.bob_friend.repository.ReplyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,11 +15,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,8 +35,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@SecurityTestExecutionListeners
 public class MemberServiceTest {
+    @Mock
+    RecruitmentRepository recruitmentRepository;
+    @Mock
+    CommentRepository commentRepository;
+    @Mock
+    ReplyRepository replyRepository;
     @Mock
     MemberRepository memberRepository;
     @Mock
@@ -41,7 +53,7 @@ public class MemberServiceTest {
     Member testMember;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         testMember = Member.builder()
                 .id(0L)
                 .email("testEmail")
@@ -55,11 +67,13 @@ public class MemberServiceTest {
                 .agree(true)
                 .active(true)
                 .build();
+
+
     }
 
     @Test
     @DisplayName("get_member_by_email")
-    public void getMemberWithAuthoritiesTest() {
+    void getMemberWithAuthoritiesTest() {
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
                 .thenReturn(Optional.ofNullable(testMember));
 
@@ -70,7 +84,7 @@ public class MemberServiceTest {
 
     @Test
     @DisplayName(value = "signup_success")
-    public void signup() {
+    void signup() {
         Member signupTest = Member.builder()
                 .id(1L)
                 .email("signupTestEmail")
@@ -108,7 +122,7 @@ public class MemberServiceTest {
 
     @Test
     @DisplayName(value = "signup_fail_MemberDuplicated")
-    public void signupFail() {
+    void signupFail() {
         MemberDto.Signup memberSignupDto = MemberDto.Signup.builder()
                 .email("signupTestEmail")
                 .nickname("signupTestUser")
@@ -126,40 +140,85 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName(value = "check_member_whit_code")
-    public void checkMemberWithCodeTest() {
+    @DisplayName(value = "check_member_with_code")
+    void checkMemberWithCodeTest() {
         when(memberRepository.getMemberByEmail(any())).thenReturn(testMember);
         memberService.checkMemberWithCode(testMember.getEmail(), String.valueOf(testMember.hashCode()));
         assertTrue(testMember.isVerified());
     }
 
-    @Test
-    @DisplayName(value = "report_member")
-    public void reportMemberTest() {
-        testMember.setReportCount(0);
-        when(memberRepository.findMemberByEmail(any()))
-                .thenReturn(Optional.ofNullable(testMember));
-        MemberDto.Response memberResponseDto =
-                memberService.reportMember(testMember.getEmail());
 
-        assertThat(memberResponseDto.getReportCount(), equalTo(1));
+    @Test
+    void deleteMember() {
+        login();
+
+        Recruitment recruitment = Recruitment.builder()
+                .id(1L)
+                .author(testMember)
+                .active(true)
+                .appointmentTime(LocalDateTime.now())
+                .totalNumberOfPeople(4)
+                .currentNumberOfPeople(1)
+                .members(new HashSet<>())
+                .full(false)
+                .sexRestriction(null)
+                .latitude(0.0)
+                .longitude(0.0)
+                .content("test content1")
+                .title("test title1")
+                .restaurantAddress("test address")
+                .restaurantName("test name")
+                .createdAt(LocalDateTime.now())
+                .endAt(LocalDateTime.now().plusDays(1))
+                .build();
+        Comment comment = Comment.builder()
+                .id(1L)
+                .content("test content")
+                .recruitment(recruitment)
+                .createdAt(LocalDateTime.now())
+                .author(testMember)
+                .replies(new HashSet<>())
+                .build();
+
+        when(memberRepository.getMemberByEmail(any()))
+                .thenReturn(testMember);
+        when(recruitmentRepository.findAllByAuthor(any()))
+                .thenReturn(Arrays.asList(recruitment));
+        when(commentRepository.findAllByAuthor(any()))
+                .thenReturn(Arrays.asList(comment));
+
+        memberService.deleteById(testMember.getId());
+
+        assertThrows(MemberWithdrawalException.class, () -> {
+            recruitment.getAuthor();
+                }
+        );
+        assertThrows(MemberWithdrawalException.class, () -> {
+            comment.getAuthor();
+                }
+        );
+
+
     }
 
     @Test
-    @DisplayName(value = "report_accumulated")
-    public void reportMemberMoreThanThreeTest() {
-        testMember.setReportCount(0);
-        when(memberRepository.findMemberByEmail(any()))
-                .thenReturn(Optional.ofNullable(testMember));
-        MemberDto.Response memberResponseDto = null;
+    void getCurrentMember() {
+        login();
+        when(memberRepository.getMemberByEmail(testMember.getEmail()))
+                .thenReturn(testMember);
+        Member currentMember = memberService.getCurrentMember();
 
-        for (int i = 0; i < 4; i++) {
-            memberResponseDto =
-                    memberService.reportMember(testMember.getEmail());
-        }
+        assertThat(currentMember, equalTo(testMember));
+    }
 
-        assertThat(memberResponseDto.getReportCount(), equalTo(0));
-        assertThat(memberResponseDto.getAccumulatedReports(), equalTo(1));
-        assertThat(testMember.getReportStart(), equalTo(LocalDate.now()));
+
+    private void login() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        testMember.getEmail(),
+                        testMember.getPassword(),
+                        Collections.singleton(
+                                new SimpleGrantedAuthority("ROLE_USER"))
+                ));
     }
 }

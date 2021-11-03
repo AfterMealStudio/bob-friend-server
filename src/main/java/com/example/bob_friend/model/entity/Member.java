@@ -1,5 +1,6 @@
 package com.example.bob_friend.model.entity;
 
+import com.example.bob_friend.model.Constant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -102,7 +103,7 @@ public class Member {
 
     public void increaseReportCount() {
         this.reportCount += 1;
-        if (this.reportCount > 3) {
+        if (this.reportCount > Constant.REPORT_LIMIT) {
             this.reportCount = 0;
             this.accumulatedReports += 1;
             this.active = false;
@@ -113,9 +114,8 @@ public class Member {
 
     private LocalDate calculateReportEnd() {
         return LocalDate.now()
-                .plusDays(
-                        (long) Math.pow(7,
-                                this.accumulatedReports));
+                .plusDays(Constant.REPORT_SUSPENSION_PERIOD *
+                                this.accumulatedReports);
     }
 
     public boolean isVerified() {

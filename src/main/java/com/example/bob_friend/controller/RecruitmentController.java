@@ -1,40 +1,41 @@
 package com.example.bob_friend.controller;
 
-import com.example.bob_friend.model.dto.CommentDto;
 import com.example.bob_friend.model.dto.RecruitmentDto;
-import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
+import com.example.bob_friend.model.exception.RecruitmentIsFullException;
+import com.example.bob_friend.model.exception.RecruitmentNotActiveException;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
-import com.example.bob_friend.service.RecruitmentCommentService;
+import com.example.bob_friend.service.CommentService;
 import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/recruitments")
 public class RecruitmentController {
     private final RecruitmentService recruitmentService;
-    private final RecruitmentCommentService commentService;
+    private final CommentService commentService;
 
 
     @GetMapping()
     public ResponseEntity getAllRecruitment(
             @RequestParam(value = "restaurantName", required = false) String restaurantName,
-            @RequestParam(value = "restaurantAddress", required = false) String restaurantAddress) {
-        List<RecruitmentDto.Response> responseDtoList = null;
+            @RequestParam(value = "restaurantAddress", required = false) String restaurantAddress,
+            Pageable pageable) {
+        Page<RecruitmentDto.ResponseList> responseDtoList = null;
         if (restaurantName == null) {
             if (restaurantAddress == null) {
-                responseDtoList = recruitmentService.findAllAvailableRecruitments();
+                responseDtoList = recruitmentService.findAll(pageable);
             } else {
                 responseDtoList = recruitmentService
-                        .findAllByRestaurantAddress(restaurantAddress);
+                        .findAllByRestaurantAddress(restaurantAddress, pageable);
             }
         } else {
             responseDtoList = recruitmentService
-                    .findAllByRestaurantNameAndRestaurantAddress(restaurantName, restaurantAddress);
+                    .findAllByRestaurantNameAndRestaurantAddress(restaurantName, restaurantAddress, pageable);
         }
         return ResponseEntity.ok(responseDtoList);
     }
@@ -54,16 +55,16 @@ public class RecruitmentController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity getMyRecruitment() {
-        List<RecruitmentDto.Response> myRecruitments =
-                recruitmentService.findMyRecruitments();
+    public ResponseEntity getMyRecruitment(Pageable pageable) {
+        Page<RecruitmentDto.ResponseList> myRecruitments =
+                recruitmentService.findMyRecruitments(pageable);
         return ResponseEntity.ok(myRecruitments);
     }
 
     @GetMapping("/my/joined")
-    public ResponseEntity getMyJoinedRecruitment() {
-        List<RecruitmentDto.Response> allJoinedRecruitments =
-                recruitmentService.findAllJoinedRecruitments();
+    public ResponseEntity getMyJoinedRecruitment(Pageable pageable) {
+        Page<RecruitmentDto.ResponseList> allJoinedRecruitments =
+                recruitmentService.findAllJoinedRecruitments(pageable);
         return ResponseEntity.ok(allJoinedRecruitments);
     }
 
@@ -91,26 +92,45 @@ public class RecruitmentController {
 
     @PatchMapping("/{recruitmentId}")
     public ResponseEntity joinRecruitment(@PathVariable Long recruitmentId)
-            throws RecruitmentAlreadyJoined {
+            throws RecruitmentIsFullException, RecruitmentNotActiveException {
         RecruitmentDto.Response join = recruitmentService.joinOrUnjoin(recruitmentId);
         return ResponseEntity.ok(join);
     }
 
-    @GetMapping("/{recruitmentId}/comments")
-    public ResponseEntity getAllComments(@PathVariable Long recruitmentId) {
-        List<CommentDto.Response> allCommentByRecruitmentId = commentService
-                .getAllCommentByRecruitmentId(recruitmentId);
-        return ResponseEntity.ok(allCommentByRecruitmentId);
-    }
-
-    @PostMapping("/{recruitmentId}/comments")
-    public ResponseEntity createComment(@PathVariable Long recruitmentId,
-                                        @RequestBody CommentDto.Request commentRequestDto) {
-        CommentDto.Response comment =
-                commentService.createCommentToRecruitment(
-                        commentRequestDto, recruitmentId);
-        return ResponseEntity.ok(comment);
+    @PutMapping("/{recruitmentId}/report")
+    public ResponseEntity report(@PathVariable Long recruitmentId) {
+        recruitmentService.reportRecruitment(recruitmentId);
+        return ResponseEntity.ok().build();
     }
 
 
+    @GetMapping("/search")
+    public ResponseEntity searchRecruitment(
+            @RequestParam(defaultValue = "title") Category category,
+            @RequestParam String keyword,
+            Pageable pageable) {
+
+        Page<RecruitmentDto.Response> searchResult = null;
+
+        switch (category) {
+            case time:
+                break;
+            case place:
+                searchResult = recruitmentService.searchRestaurant(keyword, pageable);
+                break;
+            case title:
+                searchResult = recruitmentService.searchTitle(keyword, pageable);
+                break;
+            case content:
+                searchResult = recruitmentService.searchContent(keyword, pageable);
+                break;
+        }
+
+        return ResponseEntity.ok(searchResult);
+    }
+
+
+    private enum Category {
+        title, content, place, time
+    }
 }

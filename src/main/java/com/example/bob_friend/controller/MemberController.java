@@ -56,9 +56,5 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("user/{username}")
-    public ResponseEntity reportUser(@PathVariable String username) {
-        return ResponseEntity.ok(memberService.reportMember(username));
-    }
 
 }

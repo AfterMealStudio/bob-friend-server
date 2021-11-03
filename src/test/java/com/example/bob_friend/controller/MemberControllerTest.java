@@ -14,17 +14,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
-import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentRequest;
-import static com.example.bob_friend.document.ApiDocumentUtils.getDocumentResponse;
+import static com.example.bob_friend.document.ApiDocumentUtils.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,12 +69,18 @@ class MemberControllerTest {
         MemberDto.Response responseDto = new MemberDto.Response(testMember);
         when(memberService.getMyMemberWithAuthorities())
                 .thenReturn(responseDto);
-        mvc.perform(get("/api/user"))
+        mvc.perform(getRequestBuilder(
+                        get("/api/user"))
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
                 .andDo(document("member/getMyUserInfo",
                         getDocumentRequest(),
-                        getDocumentResponse()));
+                        getDocumentResponse(),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
     }
 
     @Test
@@ -78,12 +88,21 @@ class MemberControllerTest {
         MemberDto.Response responseDto = new MemberDto.Response(testMember);
         when(memberService.getMemberWithAuthorities(any()))
                 .thenReturn(responseDto);
-        mvc.perform(get("/api/user/{email}", testMember.getEmail()))
+        mvc.perform(getRequestBuilder(
+                        get("/api/user/{email}", testMember.getEmail()))
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseDto)))
                 .andDo(document("member/getUserInfo",
                         getDocumentRequest(),
-                        getDocumentResponse()));
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("email").description("이메일")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
     }
 
     @Test
@@ -97,7 +116,11 @@ class MemberControllerTest {
                 )))
                 .andDo(document("member/check-email",
                         getDocumentRequest(),
-                        getDocumentResponse()));
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("email").description("이메일")
+                        )
+                ));
 
     }
 
@@ -115,7 +138,10 @@ class MemberControllerTest {
                         )))
                 .andDo(document("member/check-nickname",
                         getDocumentRequest(),
-                        getDocumentResponse()
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("nickname").description("닉네임")
+                        )
                 ));
 
     }

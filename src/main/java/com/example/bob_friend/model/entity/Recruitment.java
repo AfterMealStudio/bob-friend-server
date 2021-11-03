@@ -1,36 +1,29 @@
 package com.example.bob_friend.model.entity;
 
+import com.example.bob_friend.model.Constant;
 import com.example.bob_friend.model.exception.RecruitmentIsFullException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "recruitment")
-public class Recruitment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "recruitment_id")
-    private Long id;
+@DiscriminatorValue(value = "recruitment")
+@PrimaryKeyJoinColumn(name = "recruitment_id")
+public class Recruitment extends Writing {
 
     @Column(name = "title")
     private String title;
-
-    @Column(name = "content")
-    private String content;
-
-    @OneToOne()
-    @JoinColumn(name = "author")
-    private Member author;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "recruitment_member",
@@ -59,9 +52,6 @@ public class Recruitment {
     @Column(name = "longitude")
     private Double longitude;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
     @Column(name = "end_at")
     private LocalDateTime endAt;
 
@@ -74,17 +64,11 @@ public class Recruitment {
     @Column(name = "active")
     private boolean active;
 
-    @Column(name = "report_count")
-    private Integer reportCount;
 
     @Column(name = "sex_restriction")
     @Convert(converter = SexConverter.class)
     private Sex sexRestriction;
 
-    @PrePersist
-    public void createAt() {
-        this.createdAt = LocalDateTime.now();
-    }
 
     @Override
     public String toString() {
@@ -111,16 +95,18 @@ public class Recruitment {
             setFull(false);
     }
 
-    private void increaseReportCount() {
+    public void report() {
         this.reportCount++;
-        if (this.reportCount >= 5) {
-            author.increaseReportCount();
+        if (this.reportCount > Constant.REPORT_LIMIT) {
+            this.getAuthor().increaseReportCount();
             this.active = false;
+            this.reportCount = 0;
         }
     }
 
     public void addMember(Member member) {
-        if (this.author.equals(member)) // 작성자가 참여하려고 할 경우 종료
+        if (this.getAuthor().equals(member))
+            // 작성자가 탈퇴했거나 작성자가 참여하려고 할 경우 종료
             return;
         if (currentNumberOfPeople < totalNumberOfPeople) {
             this.members.add(member);
@@ -143,8 +129,8 @@ public class Recruitment {
         this.full = full;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void close() {
+        this.active = false;
     }
 
     public Sex getSexRestriction() {

@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider implements InitializingBean {
-    private String AUTHORIZATION_HEADER = "Authorization";
+    @Value("${jwt.header}")
+    private String AUTHORIZATION_HEADER;
     private static final String AUTHORITY_KEY = "roles";
     private final String secret;
     private static final long tokenValidTime = 1000 * 60 * 60;

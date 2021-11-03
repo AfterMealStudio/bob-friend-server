@@ -26,28 +26,17 @@ import javax.validation.Valid;
 @RequestMapping("api/")
 public class AuthenticationController {
     private final JwtTokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberService memberService;
-    @Value("${jwt.header}")
-    private String AUTHENTICATION_HEADER;
+
 
     @PostMapping("/signin")
-    public ResponseEntity authorize(@Valid @RequestBody MemberDto.Login loginDto) throws AuthenticationException, MemberNotVerifiedException {
-        if (!memberService.isExistByEmail(loginDto.getEmail())) {
-            throw new UsernameNotFoundException(loginDto.getEmail() + " is not a member");
-        }
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
-        Authentication authentication = authenticationManagerBuilder.getObject()
-                .authenticate(authenticationToken);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+    public ResponseEntity authorize(@Valid @RequestBody MemberDto.Login loginDto)
+            throws AuthenticationException, MemberNotVerifiedException {
+        Authentication authentication = memberService.signin(loginDto);
 
         String jwt = tokenProvider.createToken(authentication);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(AUTHENTICATION_HEADER, jwt);
-        return new ResponseEntity(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(new TokenDto(jwt), HttpStatus.OK);
     }
 
     @GetMapping("/validate")
