@@ -43,7 +43,7 @@ public class RecruitmentController {
 
     @GetMapping("/locations")
     public ResponseEntity getAllLocations() {
-        return ResponseEntity.ok(recruitmentService.findAllAvailableLocations());
+        return ResponseEntity.ok(recruitmentService.findAllLocations());
     }
 
 

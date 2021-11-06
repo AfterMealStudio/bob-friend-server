@@ -221,7 +221,7 @@ class RecruitmentControllerTest {
 
         addressDto.setCount(1);
 
-        given(recruitmentService.findAllAvailableLocations())
+        given(recruitmentService.findAllLocations())
                 .willReturn(Set.of(addressDto));
         mvc.perform(getRequestBuilder(
                         get("/recruitments/locations"))

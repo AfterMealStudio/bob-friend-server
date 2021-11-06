@@ -287,7 +287,7 @@ class RecruitmentServiceTest {
         List<Recruitment> recruitmentList = Arrays.asList(testRecruitment, recruitment);
         given(recruitmentRepository.findAll(pageRequest))
                 .willReturn(new PageImpl<>(recruitmentList));
-        Page<RecruitmentDto.Response> responseDtoList =
+        Page<RecruitmentDto.ResponseList> responseDtoList =
                 recruitmentService.findAllAvailableRecruitments(pageRequest);
 
         assertThat(responseDtoList.toList(),
@@ -295,7 +295,7 @@ class RecruitmentServiceTest {
                         .filter(r ->
                                 !r.hasMember(testMember) &&
                                         !r.getAuthor().equals(testMember))
-                        .map(r -> new RecruitmentDto.Response(r))
+                        .map(r -> new RecruitmentDto.ResponseList(r))
                         .collect(Collectors.toList())));
     }
 
@@ -448,6 +448,33 @@ class RecruitmentServiceTest {
                 recruitmentService.searchTitle(testRecruitment.getTitle(), pageRequest);
 
         assertThat(responsePage, equalTo(new PageImpl<>(collect)));
+    }
+
+    @Test
+    void recruitmetExpire() {
+        Recruitment recruitment = Recruitment.builder()
+                .id(1000L)
+                .title("title")
+                .content("content")
+                .author(testAuthor)
+                .members(new HashSet<>())
+                .comments(Set.of(testComment))
+                .totalNumberOfPeople(4)
+                .sexRestriction(Sex.FEMALE)
+                .restaurantName("testRestaurantName")
+                .restaurantAddress("testRestaurantAddress")
+                .latitude(0.0)
+                .longitude(0.0)
+                .createdAt(LocalDateTime.now())
+                .appointmentTime(LocalDateTime.now().plusHours(4))
+                .endAt(LocalDateTime.now())
+                .active(true)
+                .build();
+        when(recruitmentRepository.findById(recruitment.getId()))
+                .thenReturn(Optional.of(recruitment));
+        recruitmentService.findById(recruitment.getId());
+
+        assertThat(recruitment.isActive(), equalTo(false));
     }
 
 }
