@@ -82,9 +82,7 @@ class RecruitmentServiceTest {
                 .author(testAuthor)
                 .members(new HashSet<>())
                 .comments(Set.of(testComment))
-                .currentNumberOfPeople(1)
                 .totalNumberOfPeople(4)
-                .full(false)
                 .sexRestriction(Sex.FEMALE)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
@@ -227,7 +225,6 @@ class RecruitmentServiceTest {
                 .author(testAuthor)
                 .members(new HashSet<>(Arrays.asList(testMember)))
                 .comments(Set.of(testComment))
-                .currentNumberOfPeople(2)
                 .totalNumberOfPeople(3)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
@@ -236,7 +233,6 @@ class RecruitmentServiceTest {
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
-                .full(false)
                 .active(true)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember);
@@ -276,7 +272,6 @@ class RecruitmentServiceTest {
                 .content("")
                 .author(testAuthor)
                 .members(new HashSet<>(Arrays.asList(testMember)))
-                .currentNumberOfPeople(2)
                 .totalNumberOfPeople(3)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
@@ -285,7 +280,6 @@ class RecruitmentServiceTest {
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
-                .full(false)
                 .active(true)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember);
@@ -324,7 +318,6 @@ class RecruitmentServiceTest {
                 .author(testAuthor)
                 .members(new HashSet<>(Arrays.asList(testMember)))
                 .comments(Set.of(testComment))
-                .currentNumberOfPeople(2)
                 .totalNumberOfPeople(3)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
@@ -333,7 +326,6 @@ class RecruitmentServiceTest {
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
-                .full(false)
                 .active(true)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember);
@@ -394,10 +386,6 @@ class RecruitmentServiceTest {
                 )));
     }
 
-//    @Test
-//    void findAllAvailableLocations() {
-//
-//    }
 
 
     @Test

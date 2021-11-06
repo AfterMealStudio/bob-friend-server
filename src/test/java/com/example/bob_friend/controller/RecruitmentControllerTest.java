@@ -40,7 +40,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs
 class RecruitmentControllerTest {
-
     @Autowired
     MockMvc mvc;
     @Autowired
@@ -105,9 +104,7 @@ class RecruitmentControllerTest {
                 .author(testAuthor)
                 .members(new HashSet<>())
                 .comments(Set.of(testComment))
-                .currentNumberOfPeople(1)
                 .totalNumberOfPeople(4)
-                .full(false)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
                 .latitude(0.0)
@@ -416,7 +413,7 @@ class RecruitmentControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestParameters(
-                                parameterWithName("category").description("검색 분류"),
+                                parameterWithName("category").description("검색 분류(title, place, content)"),
                                 parameterWithName("keyword").description("검색어")
                         ),
                         requestHeaders(

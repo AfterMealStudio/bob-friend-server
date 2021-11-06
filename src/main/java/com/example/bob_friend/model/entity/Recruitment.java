@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -33,12 +34,6 @@ public class Recruitment extends Writing {
 
     @Column(name = "total_number_of_people")
     private Integer totalNumberOfPeople;
-
-    @Column(name = "current_number_of_people")
-    private Integer currentNumberOfPeople;
-
-    @Column(name = "full")
-    private boolean full;
 
     @Column(name = "restaurant_name")
     private String restaurantName;
@@ -83,17 +78,6 @@ public class Recruitment extends Writing {
         this.author = author;
     }
 
-    private void increaseCurrentNumberOfPeople() {
-        this.currentNumberOfPeople += 1;
-        if (currentNumberOfPeople >= totalNumberOfPeople)
-            setFull(true);
-    }
-
-    private void decreaseCurrentNumberOfPeople() {
-        this.currentNumberOfPeople -= 1;
-        if (currentNumberOfPeople < totalNumberOfPeople)
-            setFull(false);
-    }
 
     public void report() {
         this.reportCount++;
@@ -108,25 +92,27 @@ public class Recruitment extends Writing {
         if (this.getAuthor().equals(member))
             // 작성자가 탈퇴했거나 작성자가 참여하려고 할 경우 종료
             return;
-        if (currentNumberOfPeople < totalNumberOfPeople) {
+        if (getCurrentNumberOfPeople() < totalNumberOfPeople) {
             this.members.add(member);
-            increaseCurrentNumberOfPeople();
         } else {
             throw new RecruitmentIsFullException(this.id);
         }
     }
 
     public void removeMember(Member member) {
-        if (this.members.remove(member))
-            decreaseCurrentNumberOfPeople();
+        getMembers().remove(member);
     }
 
     public boolean hasMember(Member member) {
         return members.contains(member);
     }
 
-    public void setFull(boolean full) {
-        this.full = full;
+    public Integer getCurrentNumberOfPeople() {
+        return getMembers().size();
+    }
+
+    public boolean isFull() {
+        return getMembers().size() == getTotalNumberOfPeople();
     }
 
     public void close() {
@@ -137,7 +123,11 @@ public class Recruitment extends Writing {
         return sexRestriction;
     }
 
-    public void setSexRestriction(Sex sexRestriction) {
-        this.sexRestriction = sexRestriction;
+    @Override
+    public void setup() {
+        super.setup();
+        comments = new HashSet<>();
+        members = new HashSet<>();
+        active = true;
     }
 }
