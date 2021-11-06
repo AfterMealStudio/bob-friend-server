@@ -3,10 +3,8 @@ package com.example.bob_friend.service;
 import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
-import com.example.bob_friend.model.exception.MemberNotAllowedException;
-import com.example.bob_friend.model.exception.RecruitmentIsFullException;
-import com.example.bob_friend.model.exception.RecruitmentNotActiveException;
-import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
+import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.model.exception.*;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -149,6 +147,9 @@ public class RecruitmentService {
 
         Recruitment recruitment = getRecruitment(recruitmentId);
 
+        if (!checkSexRestriction(recruitment,currentMember))
+            throw new RestrictionFailedException(currentMember.getEmail());
+
         validateRecruitment(recruitment);
 
         if (recruitment.hasMember(currentMember))
@@ -210,4 +211,13 @@ public class RecruitmentService {
                 });
     }
 
+    private boolean checkSexRestriction(Recruitment recruitment,
+                                       Member member) {
+        Sex restriction = recruitment.getSexRestriction();
+        if (restriction.equals(Sex.NONE) ||
+                restriction.equals(member.getSex())) {
+            return true;
+        }
+        return false;
+    }
 }

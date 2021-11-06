@@ -85,6 +85,7 @@ class RecruitmentServiceTest {
                 .currentNumberOfPeople(1)
                 .totalNumberOfPeople(4)
                 .full(false)
+                .sexRestriction(Sex.FEMALE)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
                 .latitude(0.0)
