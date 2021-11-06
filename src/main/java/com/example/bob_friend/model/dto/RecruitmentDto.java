@@ -1,15 +1,12 @@
 package com.example.bob_friend.model.dto;
 
 import com.example.bob_friend.model.entity.Comment;
-import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
 import lombok.*;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,8 +42,6 @@ public class RecruitmentDto {
             return Recruitment.builder()
                     .title(this.title)
                     .content(this.content)
-                    .members(new HashSet<>())
-                    .currentNumberOfPeople(1)
                     .totalNumberOfPeople(this.totalNumberOfPeople)
                     .restaurantName(this.restaurantName)
                     .restaurantAddress(this.restaurantAddress)
@@ -54,8 +49,6 @@ public class RecruitmentDto {
                     .longitude(this.longitude)
                     .sexRestriction(this.sexRestriction)
                     .appointmentTime(this.appointmentTime)
-                    .active(true)
-                    .full(false)
                     .build();
         }
     }
@@ -64,104 +57,31 @@ public class RecruitmentDto {
     @ToString
     @Getter
     @Setter
-    @NoArgsConstructor
-    @EqualsAndHashCode
-    public static class Response {
-        private Long id;
-        private String title;
-        private String content;
-        private MemberDto.Preview author;
-        private Set<MemberDto.Preview> members;
-        private Integer amountOfComments;
+    @EqualsAndHashCode(callSuper = false)
+    public static class Response extends BaseResponse {
+
         private Set<CommentDto.Response> comments;
-        private Integer totalNumberOfPeople;
-        private Integer currentNumberOfPeople;
-        private Boolean full;
-        private String restaurantName;
-        private String restaurantAddress;
-        private Double latitude;
-        private Double longitude;
-        private Sex sexRestriction;
-        private LocalDateTime appointmentTime;
-        private LocalDate createdAt;
 
         public Response(Recruitment recruitment) {
-            this.id = recruitment.getId();
-            this.title = recruitment.getTitle();
-            this.content = recruitment.getContent();
-            this.author = new MemberDto.Preview(recruitment.getAuthor());
-            this.members = recruitment.getMembers().stream()
-                    .map(member -> new MemberDto.Preview(member))
-                    .collect(Collectors.toSet());
-            this.amountOfComments = recruitment.getComments().size();
+            super(recruitment);
             this.comments = recruitment.getComments().stream()
                     .map(CommentDto.Response::new)
                     .collect(Collectors.toSet());
-            this.currentNumberOfPeople = recruitment.getCurrentNumberOfPeople();
-            this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
-            this.full = recruitment.isFull();
-            this.restaurantName = recruitment.getRestaurantName();
-            this.restaurantAddress = recruitment.getRestaurantAddress();
-            this.latitude = recruitment.getLatitude();
-            this.longitude = recruitment.getLongitude();
-            this.appointmentTime = recruitment.getAppointmentTime();
-            this.sexRestriction = recruitment.getSexRestriction();
-            this.createdAt = recruitment.getCreatedAt().toLocalDate();
         }
+
     }
+
 
     @Getter
     @Setter
     @NoArgsConstructor
-    @EqualsAndHashCode
-    public static class ResponseList {
-        private Long id;
-        private String title;
-        private String content;
-        private MemberDto.Preview author;
-        private Set<MemberDto.Preview> members;
-        private Integer amountOfComments;
-        private Integer totalNumberOfPeople;
-        private Integer currentNumberOfPeople;
-        private Boolean full;
-        private String restaurantName;
-        private String restaurantAddress;
-        private Double latitude;
-        private Double longitude;
-        private Sex sexRestriction;
-        private LocalDateTime appointmentTime;
-        private LocalDate createdAt;
+    @EqualsAndHashCode(callSuper = false)
+    public static class ResponseList extends BaseResponse {
 
         public ResponseList(Recruitment recruitment) {
-            this.id = recruitment.getId();
-            this.title = recruitment.getTitle();
-            this.content = recruitment.getContent();
-            this.author = new MemberDto.Preview(recruitment.getAuthor());
-            this.members = recruitment.getMembers().stream()
-                    .map(member -> new MemberDto.Preview(member))
-                    .collect(Collectors.toSet());
-            this.amountOfComments = getAmountOfComments(recruitment);
-            this.currentNumberOfPeople = recruitment.getCurrentNumberOfPeople();
-            this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
-            this.full = recruitment.isFull();
-            this.restaurantName = recruitment.getRestaurantName();
-            this.restaurantAddress = recruitment.getRestaurantAddress();
-            this.latitude = recruitment.getLatitude();
-            this.longitude = recruitment.getLongitude();
-            this.appointmentTime = recruitment.getAppointmentTime();
-            this.sexRestriction = recruitment.getSexRestriction();
-            this.createdAt = recruitment.getCreatedAt().toLocalDate();
+            super(recruitment);
         }
 
-        private int getAmountOfComments(Recruitment recruitment) {
-            int amountOfReplies = 0;
-            Set<Comment> comments = recruitment.getComments();
-            for (Comment comment :
-                    comments) {
-                amountOfReplies += comment.getReplies().size();
-            }
-            return amountOfReplies + comments.size();
-        }
     }
 
 
@@ -195,4 +115,61 @@ public class RecruitmentDto {
             return Objects.hash(latitude, longitude, address);
         }
     }
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    private static class BaseResponse {
+        protected Long id;
+        protected String title;
+        protected String content;
+        protected MemberDto.Preview author;
+        protected Set<MemberDto.Preview> members;
+        protected Integer amountOfComments;
+
+        protected Integer totalNumberOfPeople;
+        protected Integer currentNumberOfPeople;
+        protected Boolean full;
+        protected String restaurantName;
+        protected String restaurantAddress;
+        protected Double latitude;
+        protected Double longitude;
+        protected Sex sexRestriction;
+        protected LocalDateTime appointmentTime;
+        protected LocalDate createdAt;
+
+        public BaseResponse(Recruitment recruitment) {
+            this.id = recruitment.getId();
+            this.title = recruitment.getTitle();
+            this.content = recruitment.getContent();
+            this.author = new MemberDto.Preview(recruitment.getAuthor());
+            this.members = recruitment.getMembers().stream()
+                    .map(member -> new MemberDto.Preview(member))
+                    .collect(Collectors.toSet());
+            this.amountOfComments = getAmountOfComments(recruitment);
+            this.currentNumberOfPeople = recruitment.getCurrentNumberOfPeople();
+            this.totalNumberOfPeople = recruitment.getTotalNumberOfPeople();
+            this.full = recruitment.isFull();
+            this.restaurantName = recruitment.getRestaurantName();
+            this.restaurantAddress = recruitment.getRestaurantAddress();
+            this.latitude = recruitment.getLatitude();
+            this.longitude = recruitment.getLongitude();
+            this.appointmentTime = recruitment.getAppointmentTime();
+            this.sexRestriction = recruitment.getSexRestriction();
+            this.createdAt = recruitment.getCreatedAt().toLocalDate();
+        }
+
+
+        private int getAmountOfComments(Recruitment recruitment) {
+            int amountOfReplies = 0;
+            Set<Comment> comments = recruitment.getComments();
+            for (Comment comment :
+                    comments) {
+                amountOfReplies += comment.getReplies().size();
+            }
+            return amountOfReplies + comments.size();
+        }
+    }
+
 }
