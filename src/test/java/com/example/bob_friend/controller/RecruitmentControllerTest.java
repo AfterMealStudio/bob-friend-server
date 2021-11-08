@@ -80,22 +80,24 @@ class RecruitmentControllerTest {
                 .active(true)
                 .build();
 
-        testComment = Comment.builder()
-                .id(1L)
-                .author(testAuthor)
-                .recruitment(testRecruitment)
-                .content("test comment")
-                .replies(new HashSet<>())
-                .createdAt(LocalDateTime.now())
-                .build();
-
         testReply = Reply.builder()
-                .id(1L)
+                .id(3L)
                 .author(testAuthor)
                 .comment(testComment)
                 .content("test reply")
                 .createdAt(LocalDateTime.now())
+                .reportCount(0)
                 .build();
+        testComment = Comment.builder()
+                .id(2L)
+                .author(testAuthor)
+                .recruitment(testRecruitment)
+                .content("test comment")
+                .replies(Set.of(testReply))
+                .createdAt(LocalDateTime.now())
+                .reportCount(0)
+                .build();
+
 
         testRecruitment = Recruitment.builder()
                 .id(1L)
@@ -112,7 +114,9 @@ class RecruitmentControllerTest {
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
+                .sexRestriction(Sex.NONE)
                 .active(true)
+                .reportCount(0)
                 .build();
         testRecruitment.addMember(testMember);
     }

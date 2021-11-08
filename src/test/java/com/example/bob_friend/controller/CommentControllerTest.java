@@ -98,6 +98,7 @@ public class CommentControllerTest {
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
                 .active(true)
+                .reportCount(0)
                 .build();
 
         testComment = Comment.builder()
@@ -106,6 +107,7 @@ public class CommentControllerTest {
                 .recruitment(testRecruitment)
                 .content("test comment")
                 .replies(new HashSet<>())
+                .reportCount(0)
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -114,6 +116,7 @@ public class CommentControllerTest {
                 .author(testAuthor)
                 .comment(testComment)
                 .content("test reply")
+                .reportCount(0)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
