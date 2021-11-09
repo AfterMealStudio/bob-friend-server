@@ -3,7 +3,6 @@ package com.example.bob_friend.service;
 import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
-import com.example.bob_friend.model.exception.MemberWithdrawalException;
 import com.example.bob_friend.repository.CommentRepository;
 import com.example.bob_friend.repository.MemberRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
@@ -187,14 +186,6 @@ public class MemberServiceTest {
 
         memberService.deleteById(testMember.getId());
 
-//        assertThrows(MemberWithdrawalException.class, () -> {
-//            recruitment.getAuthor();
-//                }
-//        );
-//        assertThrows(MemberWithdrawalException.class, () -> {
-//            comment.getAuthor();
-//                }
-//        );
 
         assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
         assertThat(comment.getAuthor().getEmail(), equalTo("unknown"));
