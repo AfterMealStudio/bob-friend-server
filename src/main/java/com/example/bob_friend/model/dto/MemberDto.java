@@ -57,7 +57,7 @@ public class MemberDto {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Response that = (Response) o;
-            return id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(nickname, that.nickname)  && Objects.equals(birth, that.birth) && sex == that.sex;
+            return id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(nickname, that.nickname) && Objects.equals(birth, that.birth) && sex == that.sex;
         }
 
         @Override
@@ -115,10 +115,7 @@ public class MemberDto {
         private String nickname;
 
         public Preview(Member member) {
-            if (member == null)
-                this.nickname = "unknown";
-            else
-                this.nickname = member.getNickname();
+            this.nickname = member.getNickname();
         }
     }
 

@@ -121,10 +121,12 @@ public class CommentServiceTest {
                 .thenReturn(java.util.Optional.ofNullable(testComment));
 
         commentService.deleteComment(testComment.getId());
-        assertThrows(MemberWithdrawalException.class, () -> {
-                    testComment.getAuthor();
-                }
-        );
+//        assertThrows(MemberWithdrawalException.class, () -> {
+//                    testComment.getAuthor();
+//                }
+//        );
+
+        assertThat(testComment.getAuthor().getEmail(), equalTo("unknown"));
 
         assertThat(testComment.getContent(), equalTo(null));
     }

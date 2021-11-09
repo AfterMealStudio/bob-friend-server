@@ -187,15 +187,17 @@ public class MemberServiceTest {
 
         memberService.deleteById(testMember.getId());
 
-        assertThrows(MemberWithdrawalException.class, () -> {
-            recruitment.getAuthor();
-                }
-        );
-        assertThrows(MemberWithdrawalException.class, () -> {
-            comment.getAuthor();
-                }
-        );
+//        assertThrows(MemberWithdrawalException.class, () -> {
+//            recruitment.getAuthor();
+//                }
+//        );
+//        assertThrows(MemberWithdrawalException.class, () -> {
+//            comment.getAuthor();
+//                }
+//        );
 
+        assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
+        assertThat(comment.getAuthor().getEmail(), equalTo("unknown"));
 
     }
 

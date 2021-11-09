@@ -33,8 +33,15 @@ public abstract class Writing {
 
 
     public Member getAuthor() {
-        if (author == null)
-            throw new MemberWithdrawalException();
+//        if (author == null)
+//            throw new MemberWithdrawalException();
+        if (author == null) {
+            return Member.builder()
+                    .nickname("unknown")
+                    .email("unknown")
+                    .active(false)
+                    .build();
+        }
         return author;
     }
 
