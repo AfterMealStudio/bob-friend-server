@@ -45,12 +45,5 @@ public class AuthenticationController {
         return ResponseEntity.ok(tokenProvider.validateToken(token));
     }
 
-    @ExceptionHandler(value = UsernameNotFoundException.class)
-    public ResponseEntity handleUsernameNotFound(UsernameNotFoundException e) {
-        return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-    @ExceptionHandler(value = AuthenticationException.class)
-    public ResponseEntity handleAuthenticationException(AuthenticationException e) {
-        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
+
 }

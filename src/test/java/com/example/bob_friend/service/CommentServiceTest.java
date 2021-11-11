@@ -5,7 +5,6 @@ import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.ReplyDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberNotAllowedException;
-import com.example.bob_friend.model.exception.MemberWithdrawalException;
 import com.example.bob_friend.repository.CommentRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import com.example.bob_friend.repository.ReplyRepository;
@@ -57,6 +56,7 @@ public class CommentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
 
         testRecruitment = Recruitment.builder()
@@ -65,9 +65,7 @@ public class CommentServiceTest {
                 .content("content")
                 .author(testAuthor)
                 .members(new HashSet<>())
-                .currentNumberOfPeople(1)
                 .totalNumberOfPeople(4)
-                .full(false)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
                 .latitude(0.0)
@@ -123,10 +121,8 @@ public class CommentServiceTest {
                 .thenReturn(java.util.Optional.ofNullable(testComment));
 
         commentService.deleteComment(testComment.getId());
-        assertThrows(MemberWithdrawalException.class, () -> {
-                    testComment.getAuthor();
-                }
-        );
+
+        assertThat(testComment.getAuthor().getEmail(), equalTo("unknown"));
 
         assertThat(testComment.getContent(), equalTo(null));
     }

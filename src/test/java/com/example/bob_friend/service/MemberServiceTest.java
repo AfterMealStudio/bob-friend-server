@@ -3,7 +3,6 @@ package com.example.bob_friend.service;
 import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
-import com.example.bob_friend.model.exception.MemberWithdrawalException;
 import com.example.bob_friend.repository.CommentRepository;
 import com.example.bob_friend.repository.MemberRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
@@ -158,9 +157,7 @@ public class MemberServiceTest {
                 .active(true)
                 .appointmentTime(LocalDateTime.now())
                 .totalNumberOfPeople(4)
-                .currentNumberOfPeople(1)
                 .members(new HashSet<>())
-                .full(false)
                 .sexRestriction(null)
                 .latitude(0.0)
                 .longitude(0.0)
@@ -180,8 +177,8 @@ public class MemberServiceTest {
                 .replies(new HashSet<>())
                 .build();
 
-        when(memberRepository.getMemberByEmail(any()))
-                .thenReturn(testMember);
+        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(testMember));
         when(recruitmentRepository.findAllByAuthor(any()))
                 .thenReturn(Arrays.asList(recruitment));
         when(commentRepository.findAllByAuthor(any()))
@@ -189,23 +186,17 @@ public class MemberServiceTest {
 
         memberService.deleteById(testMember.getId());
 
-        assertThrows(MemberWithdrawalException.class, () -> {
-            recruitment.getAuthor();
-                }
-        );
-        assertThrows(MemberWithdrawalException.class, () -> {
-            comment.getAuthor();
-                }
-        );
 
+        assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
+        assertThat(comment.getAuthor().getEmail(), equalTo("unknown"));
 
     }
 
     @Test
     void getCurrentMember() {
         login();
-        when(memberRepository.getMemberByEmail(testMember.getEmail()))
-                .thenReturn(testMember);
+        when(memberRepository.findMemberWithAuthoritiesByEmail(testMember.getEmail()))
+                .thenReturn(Optional.ofNullable(testMember));
         Member currentMember = memberService.getCurrentMember();
 
         assertThat(currentMember, equalTo(testMember));

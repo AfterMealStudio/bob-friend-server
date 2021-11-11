@@ -57,7 +57,7 @@ public class MemberDto {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Response that = (Response) o;
-            return id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(nickname, that.nickname)  && Objects.equals(birth, that.birth) && sex == that.sex;
+            return id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(nickname, that.nickname) && Objects.equals(birth, that.birth) && sex == that.sex;
         }
 
         @Override
@@ -90,10 +90,7 @@ public class MemberDto {
                     .password(passwordEncoder.encode(this.password))
                     .birth(this.birth)
                     .sex(this.sex)
-                    .reportCount(0)
-                    .accumulatedReports(0)
                     .agree(this.agree)
-                    .active(true)
                     .build();
         }
 
@@ -112,20 +109,22 @@ public class MemberDto {
     @Data
     @AllArgsConstructor
     public static class Preview {
+        private Long id;
         private String nickname;
+        private Double rating;
 
         public Preview(Member member) {
-            if (member == null)
-                this.nickname = "unknown";
-            else
-                this.nickname = member.getNickname();
+            this.id = member.getId();
+            this.nickname = member.getNickname();
+            this.rating = member.getRating();
         }
     }
 
     @Getter
     @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Delete {
-        private String email;
         private String password;
     }
 }

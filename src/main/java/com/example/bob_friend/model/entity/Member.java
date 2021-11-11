@@ -64,10 +64,11 @@ public class Member {
     @Column(name = "verified") // 이메일 인증 여부
     private boolean verified;
 
-    @PrePersist
-    public void createAt() {
-        this.createdAt = LocalDateTime.now();
-    }
+    @Column(name = "rating")
+    private Double rating;
+
+    @Column(name = "number_of_join")
+    private Integer numberOfJoin;
 
     @ElementCollection
     @JoinColumn(name = "authority")
@@ -85,6 +86,25 @@ public class Member {
     @Override
     public int hashCode() {
         return Objects.hash(id, email, sex, birth);
+    }
+
+    @PrePersist
+    public void setup() {
+        this.createdAt = LocalDateTime.now();
+        this.rating = 0.0;
+        this.numberOfJoin = 0;
+        this.reportCount = 0;
+        this.accumulatedReports = 0;
+        this.active = true;
+    }
+
+    public void setRating(Double rating) {
+        // 계산 로직 필요
+        this.rating = rating;
+    }
+
+    public Double getRating() {
+        return rating / 2;
     }
 
     public void setAuthorities(Set<Authority> authorities) {
@@ -124,6 +144,10 @@ public class Member {
 
     public void setVerified(boolean verified) {
         this.verified = verified;
+    }
+
+    public boolean isValid() {
+        return this.id >= 0;
     }
 }
 

@@ -66,6 +66,7 @@ public class CommentControllerTest {
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .rating(0.0)
                 .agree(true)
                 .active(true)
                 .build();
@@ -77,6 +78,7 @@ public class CommentControllerTest {
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .rating(0.0)
                 .agree(true)
                 .active(true)
                 .build();
@@ -87,9 +89,7 @@ public class CommentControllerTest {
                 .content("content")
                 .author(testAuthor)
                 .members(new HashSet<>())
-                .currentNumberOfPeople(1)
                 .totalNumberOfPeople(4)
-                .full(false)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
                 .latitude(0.0)
@@ -98,6 +98,7 @@ public class CommentControllerTest {
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
                 .active(true)
+                .reportCount(0)
                 .build();
 
         testComment = Comment.builder()
@@ -106,6 +107,7 @@ public class CommentControllerTest {
                 .recruitment(testRecruitment)
                 .content("test comment")
                 .replies(new HashSet<>())
+                .reportCount(0)
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -114,6 +116,7 @@ public class CommentControllerTest {
                 .author(testAuthor)
                 .comment(testComment)
                 .content("test reply")
+                .reportCount(0)
                 .createdAt(LocalDateTime.now())
                 .build();
     }

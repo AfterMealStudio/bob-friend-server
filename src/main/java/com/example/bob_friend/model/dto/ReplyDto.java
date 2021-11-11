@@ -31,12 +31,14 @@ public class ReplyDto {
         private Long id;
         private MemberDto.Preview author;
         private String content;
+        private Integer reportCount;
         private LocalDateTime createdAt;
 
         public Response(Reply reply) {
             this.id = reply.getId();
             this.author = new MemberDto.Preview(reply.getAuthor());
             this.content = reply.getContent();
+            this.reportCount = reply.getReportCount();
             this.createdAt = reply.getCreatedAt();
         }
     }

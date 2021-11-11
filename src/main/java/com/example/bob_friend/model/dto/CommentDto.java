@@ -40,6 +40,7 @@ public class CommentDto {
         private MemberDto.Preview author;
         private String content;
         private Set<ReplyDto.Response> replies;
+        private Integer reportCount;
         private LocalDateTime createdAt;
 
         public Response(Comment comment) {
@@ -49,6 +50,7 @@ public class CommentDto {
             this.replies = comment.getReplies().stream()
                     .map(reply -> new ReplyDto.Response(reply))
                     .collect(Collectors.toSet());
+            this.reportCount = comment.getReportCount();
             this.createdAt = comment.getCreatedAt();
         }
 

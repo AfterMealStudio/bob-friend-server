@@ -186,6 +186,16 @@ include::{snippets}/member/signin/http-request.adoc[]
 response::
 include::{snippets}/member/signin/http-response.adoc[]
 
+=== 회원 탈퇴
+request::
+include::{snippets}/member/delete/http-request.adoc[]
+header::
+include::{snippets}/member/delete/request-headers.adoc[]
+path-param::
+include::{snippets}/member/delete/path-parameters.adoc[]
+response::
+include::{snippets}/member/delete/http-response.adoc[]
+
 === 유저정보 조회(본인)
 request::
 include::{snippets}/member/getMyUserInfo/http-request.adoc[]

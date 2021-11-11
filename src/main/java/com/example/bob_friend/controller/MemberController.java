@@ -51,7 +51,10 @@ public class MemberController {
     }
 
     @DeleteMapping("/user/{memberId}")
-    public ResponseEntity deleteUserById(@PathVariable Long memberId) {
+    public ResponseEntity deleteUserById(
+            @PathVariable Long memberId,
+            @RequestBody MemberDto.Delete delete) {
+        memberService.checkPassword(delete);
         memberService.deleteById(memberId);
         return ResponseEntity.ok().build();
     }

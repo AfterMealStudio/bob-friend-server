@@ -40,7 +40,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs
 class RecruitmentControllerTest {
-
     @Autowired
     MockMvc mvc;
     @Autowired
@@ -66,6 +65,7 @@ class RecruitmentControllerTest {
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .rating(0.0)
                 .agree(true)
                 .active(true)
                 .build();
@@ -77,26 +77,29 @@ class RecruitmentControllerTest {
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .rating(0.0)
                 .agree(true)
                 .active(true)
                 .build();
 
-        testComment = Comment.builder()
-                .id(1L)
-                .author(testAuthor)
-                .recruitment(testRecruitment)
-                .content("test comment")
-                .replies(new HashSet<>())
-                .createdAt(LocalDateTime.now())
-                .build();
-
         testReply = Reply.builder()
-                .id(1L)
+                .id(3L)
                 .author(testAuthor)
                 .comment(testComment)
                 .content("test reply")
                 .createdAt(LocalDateTime.now())
+                .reportCount(0)
                 .build();
+        testComment = Comment.builder()
+                .id(2L)
+                .author(testAuthor)
+                .recruitment(testRecruitment)
+                .content("test comment")
+                .replies(Set.of(testReply))
+                .createdAt(LocalDateTime.now())
+                .reportCount(0)
+                .build();
+
 
         testRecruitment = Recruitment.builder()
                 .id(1L)
@@ -105,9 +108,7 @@ class RecruitmentControllerTest {
                 .author(testAuthor)
                 .members(new HashSet<>())
                 .comments(Set.of(testComment))
-                .currentNumberOfPeople(1)
                 .totalNumberOfPeople(4)
-                .full(false)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
                 .latitude(0.0)
@@ -115,7 +116,9 @@ class RecruitmentControllerTest {
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
+                .sexRestriction(Sex.NONE)
                 .active(true)
+                .reportCount(0)
                 .build();
         testRecruitment.addMember(testMember);
     }
@@ -224,7 +227,7 @@ class RecruitmentControllerTest {
 
         addressDto.setCount(1);
 
-        given(recruitmentService.findAllAvailableLocations())
+        given(recruitmentService.findAllLocations())
                 .willReturn(Set.of(addressDto));
         mvc.perform(getRequestBuilder(
                         get("/recruitments/locations"))
@@ -342,6 +345,7 @@ class RecruitmentControllerTest {
                 .password("1234")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .rating(0.0)
                 .agree(true)
                 .active(true)
                 .build();
@@ -416,7 +420,7 @@ class RecruitmentControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestParameters(
-                                parameterWithName("category").description("검색 분류"),
+                                parameterWithName("category").description("검색 분류(title, place, content)"),
                                 parameterWithName("keyword").description("검색어")
                         ),
                         requestHeaders(

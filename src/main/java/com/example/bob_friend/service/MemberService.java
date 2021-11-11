@@ -7,8 +7,8 @@ import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
 import com.example.bob_friend.model.exception.MemberNotAllowedException;
-import com.example.bob_friend.repository.MemberRepository;
 import com.example.bob_friend.repository.CommentRepository;
+import com.example.bob_friend.repository.MemberRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import com.example.bob_friend.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,12 +39,9 @@ public class MemberService {
 
     public Authentication signin(MemberDto.Login loginDto) {
         if (!isExistByEmail(loginDto.getEmail())) {
-            throw new UsernameNotFoundException(loginDto.getEmail() + " is not a member");
+            throw new UsernameNotFoundException(loginDto.getEmail());
         }
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
-        Authentication authentication = authenticationManagerBuilder.getObject()
-                .authenticate(authenticationToken);
+        Authentication authentication = getAuthentication(loginDto.getEmail(), loginDto.getPassword());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
@@ -87,10 +84,9 @@ public class MemberService {
     @Transactional
     public Member getCurrentMember() {
         String currentUsername = getCurrentUsername();
-        Member currentMember = memberRepository.getMemberByEmail(currentUsername);
+        Member currentMember = getMember(currentUsername);
         return currentMember;
     }
-
 
 
     @Transactional
@@ -99,6 +95,11 @@ public class MemberService {
         if (Integer.parseInt(code) == (member.hashCode())) {
             member.setVerified(true);
         }
+    }
+
+    public void checkPassword(MemberDto.Delete delete) {
+        Member currentMember = getCurrentMember();
+        getAuthentication(currentMember.getEmail(), delete.getPassword());
     }
 
     @Transactional
@@ -112,7 +113,7 @@ public class MemberService {
             recruitment.setAuthor(null);
         }
 
-        for (Comment comment:
+        for (Comment comment :
                 commentRepository.findAllByAuthor(currentMember)) {
             comment.clear();
         }
@@ -142,11 +143,11 @@ public class MemberService {
 
 
     private Member getMember(String currentUsername) {
-        return memberRepository.findMemberWithAuthoritiesByEmail(currentUsername).orElseThrow(
-                () -> {
-                    throw new UsernameNotFoundException(currentUsername);
-                }
-        );
+        return memberRepository.findMemberWithAuthoritiesByEmail(currentUsername)
+                .orElseThrow(() -> {
+                            throw new UsernameNotFoundException(currentUsername);
+                        }
+                );
     }
 
     private String getCurrentUsername() {
@@ -171,4 +172,12 @@ public class MemberService {
         return username;
     }
 
+
+    private Authentication getAuthentication(String email, String password) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(email, password);
+        Authentication authentication = authenticationManagerBuilder.getObject()
+                .authenticate(authenticationToken);
+        return authentication;
+    }
 }

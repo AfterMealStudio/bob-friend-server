@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/recruitments")
 public class RecruitmentController {
     private final RecruitmentService recruitmentService;
-    private final CommentService commentService;
 
 
     @GetMapping()
@@ -43,7 +42,7 @@ public class RecruitmentController {
 
     @GetMapping("/locations")
     public ResponseEntity getAllLocations() {
-        return ResponseEntity.ok(recruitmentService.findAllAvailableLocations());
+        return ResponseEntity.ok(recruitmentService.findAllLocations());
     }
 
 
@@ -75,13 +74,6 @@ public class RecruitmentController {
         return ResponseEntity.ok(createdRecruitment);
     }
 
-//    @PutMapping("/{recruitmentId}")
-//    public ResponseEntity updateRecruitment(
-//            @PathVariable Long recruitmentId,
-//            RecruitmentRequestDto incomingChanges) {
-//        RecruitmentResponseDto update = recruitmentService.update(recruitmentId, incomingChanges);
-//        return ResponseEntity.ok(update);
-//    }
 
     @DeleteMapping("/{recruitmentId}")
     public ResponseEntity deleteRecruitment(
@@ -97,7 +89,7 @@ public class RecruitmentController {
         return ResponseEntity.ok(join);
     }
 
-    @PutMapping("/{recruitmentId}/report")
+    @PatchMapping("/{recruitmentId}/report")
     public ResponseEntity report(@PathVariable Long recruitmentId) {
         recruitmentService.reportRecruitment(recruitmentId);
         return ResponseEntity.ok().build();

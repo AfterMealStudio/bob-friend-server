@@ -4,7 +4,7 @@ import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberNotAllowedException;
-import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
+import com.example.bob_friend.model.exception.AlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,6 +55,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
 
         testReply = Reply.builder()
@@ -82,9 +83,8 @@ class RecruitmentServiceTest {
                 .author(testAuthor)
                 .members(new HashSet<>())
                 .comments(Set.of(testComment))
-                .currentNumberOfPeople(1)
                 .totalNumberOfPeople(4)
-                .full(false)
+                .sexRestriction(Sex.FEMALE)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
                 .latitude(0.0)
@@ -158,7 +158,7 @@ class RecruitmentServiceTest {
 
 
     @Test
-    public void join() throws RecruitmentAlreadyJoined {
+    public void join() throws AlreadyJoined {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
@@ -166,6 +166,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
@@ -192,6 +193,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
@@ -217,6 +219,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
 
         Recruitment recruitment = Recruitment.builder()
@@ -226,7 +229,6 @@ class RecruitmentServiceTest {
                 .author(testAuthor)
                 .members(new HashSet<>(Arrays.asList(testMember)))
                 .comments(Set.of(testComment))
-                .currentNumberOfPeople(2)
                 .totalNumberOfPeople(3)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
@@ -235,7 +237,6 @@ class RecruitmentServiceTest {
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
-                .full(false)
                 .active(true)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember);
@@ -268,6 +269,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
         Recruitment recruitment = Recruitment.builder()
                 .id(1000L)
@@ -275,7 +277,6 @@ class RecruitmentServiceTest {
                 .content("")
                 .author(testAuthor)
                 .members(new HashSet<>(Arrays.asList(testMember)))
-                .currentNumberOfPeople(2)
                 .totalNumberOfPeople(3)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
@@ -284,7 +285,6 @@ class RecruitmentServiceTest {
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
-                .full(false)
                 .active(true)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember);
@@ -292,7 +292,7 @@ class RecruitmentServiceTest {
         List<Recruitment> recruitmentList = Arrays.asList(testRecruitment, recruitment);
         given(recruitmentRepository.findAll(pageRequest))
                 .willReturn(new PageImpl<>(recruitmentList));
-        Page<RecruitmentDto.Response> responseDtoList =
+        Page<RecruitmentDto.ResponseList> responseDtoList =
                 recruitmentService.findAllAvailableRecruitments(pageRequest);
 
         assertThat(responseDtoList.toList(),
@@ -300,7 +300,7 @@ class RecruitmentServiceTest {
                         .filter(r ->
                                 !r.hasMember(testMember) &&
                                         !r.getAuthor().equals(testMember))
-                        .map(r -> new RecruitmentDto.Response(r))
+                        .map(r -> new RecruitmentDto.ResponseList(r))
                         .collect(Collectors.toList())));
     }
 
@@ -315,6 +315,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
         Recruitment recruitment = Recruitment.builder()
                 .id(1000L)
@@ -323,7 +324,6 @@ class RecruitmentServiceTest {
                 .author(testAuthor)
                 .members(new HashSet<>(Arrays.asList(testMember)))
                 .comments(Set.of(testComment))
-                .currentNumberOfPeople(2)
                 .totalNumberOfPeople(3)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
@@ -332,7 +332,6 @@ class RecruitmentServiceTest {
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
-                .full(false)
                 .active(true)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember);
@@ -393,10 +392,6 @@ class RecruitmentServiceTest {
                 )));
     }
 
-//    @Test
-//    void findAllAvailableLocations() {
-//
-//    }
 
 
     @Test
@@ -420,6 +415,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
         when(memberService.getCurrentMember())
                 .thenReturn(testMember);
@@ -459,6 +455,33 @@ class RecruitmentServiceTest {
                 recruitmentService.searchTitle(testRecruitment.getTitle(), pageRequest);
 
         assertThat(responsePage, equalTo(new PageImpl<>(collect)));
+    }
+
+    @Test
+    void recruitmetExpire() {
+        Recruitment recruitment = Recruitment.builder()
+                .id(1000L)
+                .title("title")
+                .content("content")
+                .author(testAuthor)
+                .members(new HashSet<>())
+                .comments(Set.of(testComment))
+                .totalNumberOfPeople(4)
+                .sexRestriction(Sex.FEMALE)
+                .restaurantName("testRestaurantName")
+                .restaurantAddress("testRestaurantAddress")
+                .latitude(0.0)
+                .longitude(0.0)
+                .createdAt(LocalDateTime.now())
+                .appointmentTime(LocalDateTime.now().plusHours(4))
+                .endAt(LocalDateTime.now())
+                .active(true)
+                .build();
+        when(recruitmentRepository.findById(recruitment.getId()))
+                .thenReturn(Optional.of(recruitment));
+        recruitmentService.findById(recruitment.getId());
+
+        assertThat(recruitment.isActive(), equalTo(false));
     }
 
 }

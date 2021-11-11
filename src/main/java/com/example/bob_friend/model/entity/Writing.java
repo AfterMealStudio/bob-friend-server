@@ -1,7 +1,8 @@
 package com.example.bob_friend.model.entity;
 
-import com.example.bob_friend.model.exception.MemberWithdrawalException;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -32,9 +33,23 @@ public abstract class Writing {
     protected LocalDateTime createdAt;
 
 
+    @Transient
+    public String getDiscriminatorValue() {
+        DiscriminatorValue discriminatorValue = this.getClass().getAnnotation(DiscriminatorValue.class);
+        return discriminatorValue.value();
+    }
+
+
     public Member getAuthor() {
-        if (author == null)
-            throw new MemberWithdrawalException();
+        if (author == null) {
+            return Member.builder()
+                    .id(-1)
+                    .nickname("unknown")
+                    .email("unknown")
+                    .rating(0.0)
+                    .active(false)
+                    .build();
+        }
         return author;
     }
 
