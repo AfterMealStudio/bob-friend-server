@@ -43,8 +43,10 @@ public abstract class Writing {
     public Member getAuthor() {
         if (author == null) {
             return Member.builder()
+                    .id(-1)
                     .nickname("unknown")
                     .email("unknown")
+                    .rating(0.0)
                     .active(false)
                     .build();
         }

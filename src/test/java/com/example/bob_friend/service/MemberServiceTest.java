@@ -177,8 +177,8 @@ public class MemberServiceTest {
                 .replies(new HashSet<>())
                 .build();
 
-        when(memberRepository.getMemberByEmail(any()))
-                .thenReturn(testMember);
+        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(testMember));
         when(recruitmentRepository.findAllByAuthor(any()))
                 .thenReturn(Arrays.asList(recruitment));
         when(commentRepository.findAllByAuthor(any()))
@@ -195,8 +195,8 @@ public class MemberServiceTest {
     @Test
     void getCurrentMember() {
         login();
-        when(memberRepository.getMemberByEmail(testMember.getEmail()))
-                .thenReturn(testMember);
+        when(memberRepository.findMemberWithAuthoritiesByEmail(testMember.getEmail()))
+                .thenReturn(Optional.ofNullable(testMember));
         Member currentMember = memberService.getCurrentMember();
 
         assertThat(currentMember, equalTo(testMember));

@@ -122,8 +122,9 @@ public class MemberDto {
 
     @Getter
     @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Delete {
-        private String email;
         private String password;
     }
 }

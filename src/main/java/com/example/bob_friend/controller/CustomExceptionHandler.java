@@ -3,6 +3,8 @@ package com.example.bob_friend.controller;
 import com.example.bob_friend.model.exception.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestValueException;
@@ -39,6 +41,16 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(value = MissingRequestValueException.class)
     public ResponseEntity handleMissingValueException(MissingRequestValueException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = UsernameNotFoundException.class)
+    public ResponseEntity handleUsernameNotFound(UsernameNotFoundException e) {
+        return new ResponseEntity(e.getMessage() + " is not a member", HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = AuthenticationException.class)
+    public ResponseEntity handleAuthenticationException(AuthenticationException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

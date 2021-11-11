@@ -13,7 +13,7 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
 
     Page<Recruitment> findAllByRestaurantAddress(String restaurantAddress, Pageable pageable);
 
-    Page<Recruitment> findAllByAuthor(Member member, Pageable pageable);
+    Page<Recruitment> findAllByAuthor(Member author, Pageable pageable);
     List<Recruitment> findAllByAuthor(Member author);
 
     Page<Recruitment> findAllByTitleContaining(String keyword, Pageable pageable);
