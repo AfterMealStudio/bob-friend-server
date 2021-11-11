@@ -166,6 +166,13 @@ public class RecruitmentService {
         Member currentMember = memberService.getCurrentMember();
 
         Recruitment recruitment = getRecruitment(recruitmentId);
+        Member author = recruitment.getAuthor();
+        if (!author.isValid())
+            throw new RecruitmentNotActiveException(recruitmentId);
+
+        if (currentMember.equals(author)) {
+            throw new AlreadyJoined(currentMember.getNickname());
+        }
 
         if (!checkSexRestriction(recruitment, currentMember))
             throw new RestrictionFailedException(currentMember.getEmail());

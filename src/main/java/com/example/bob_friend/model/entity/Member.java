@@ -145,5 +145,9 @@ public class Member {
     public void setVerified(boolean verified) {
         this.verified = verified;
     }
+
+    public boolean isValid() {
+        return this.id >= 0;
+    }
 }
 

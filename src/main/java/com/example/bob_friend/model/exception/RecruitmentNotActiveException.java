@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class RecruitmentNotActiveException extends CustomException {
     public RecruitmentNotActiveException(Long recruitmentId) {
-        super(recruitmentId + " is not active");
+        super("Recruitmet "+ recruitmentId + " is not active");
     }
 
     @Override

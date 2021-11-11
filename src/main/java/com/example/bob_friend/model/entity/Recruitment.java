@@ -127,7 +127,7 @@ public class Recruitment extends Writing {
     public void setup() {
         super.setup();
         comments = new HashSet<>();
-        members = new HashSet<>();
+        members = Set.of(author);
         active = true;
         endAt = getAppointmentTime().plusDays(1);
     }

@@ -4,7 +4,7 @@ import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberNotAllowedException;
-import com.example.bob_friend.model.exception.RecruitmentAlreadyJoined;
+import com.example.bob_friend.model.exception.AlreadyJoined;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -158,7 +158,7 @@ class RecruitmentServiceTest {
 
 
     @Test
-    public void join() throws RecruitmentAlreadyJoined {
+    public void join() throws AlreadyJoined {
         Member testMember = Member.builder()
                 .id(1)
                 .email("testMember@test.com")
