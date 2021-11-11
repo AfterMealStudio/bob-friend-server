@@ -56,6 +56,7 @@ public class CommentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
 
         testRecruitment = Recruitment.builder()

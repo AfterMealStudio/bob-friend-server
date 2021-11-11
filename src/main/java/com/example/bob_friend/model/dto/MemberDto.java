@@ -90,10 +90,7 @@ public class MemberDto {
                     .password(passwordEncoder.encode(this.password))
                     .birth(this.birth)
                     .sex(this.sex)
-                    .reportCount(0)
-                    .accumulatedReports(0)
                     .agree(this.agree)
-                    .active(true)
                     .build();
         }
 
@@ -112,10 +109,14 @@ public class MemberDto {
     @Data
     @AllArgsConstructor
     public static class Preview {
+        private Long id;
         private String nickname;
+        private Double rating;
 
         public Preview(Member member) {
+            this.id = member.getId();
             this.nickname = member.getNickname();
+            this.rating = member.getRating();
         }
     }
 

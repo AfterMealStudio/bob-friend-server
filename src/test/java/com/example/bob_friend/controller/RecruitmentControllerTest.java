@@ -65,6 +65,7 @@ class RecruitmentControllerTest {
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .rating(0.0)
                 .agree(true)
                 .active(true)
                 .build();
@@ -76,6 +77,7 @@ class RecruitmentControllerTest {
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .rating(0.0)
                 .agree(true)
                 .active(true)
                 .build();
@@ -343,6 +345,7 @@ class RecruitmentControllerTest {
                 .password("1234")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .rating(0.0)
                 .agree(true)
                 .active(true)
                 .build();

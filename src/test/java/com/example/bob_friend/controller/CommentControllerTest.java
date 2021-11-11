@@ -66,6 +66,7 @@ public class CommentControllerTest {
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .rating(0.0)
                 .agree(true)
                 .active(true)
                 .build();
@@ -77,6 +78,7 @@ public class CommentControllerTest {
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
+                .rating(0.0)
                 .agree(true)
                 .active(true)
                 .build();
@@ -87,9 +89,7 @@ public class CommentControllerTest {
                 .content("content")
                 .author(testAuthor)
                 .members(new HashSet<>())
-//                .currentNumberOfPeople(1)
                 .totalNumberOfPeople(4)
-//                .full(false)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
                 .latitude(0.0)

@@ -55,6 +55,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
 
         testReply = Reply.builder()
@@ -165,6 +166,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
@@ -191,6 +193,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
@@ -216,6 +219,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
 
         Recruitment recruitment = Recruitment.builder()
@@ -265,6 +269,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
         Recruitment recruitment = Recruitment.builder()
                 .id(1000L)
@@ -310,6 +315,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
         Recruitment recruitment = Recruitment.builder()
                 .id(1000L)
@@ -409,6 +415,7 @@ class RecruitmentServiceTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
+                .rating(0.0)
                 .build();
         when(memberService.getCurrentMember())
                 .thenReturn(testMember);
