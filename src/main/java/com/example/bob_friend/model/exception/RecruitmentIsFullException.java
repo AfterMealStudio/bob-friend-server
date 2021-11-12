@@ -9,6 +9,6 @@ public class RecruitmentIsFullException extends CustomException {
 
     @Override
     public HttpStatus getHttpStatus() {
-        return HttpStatus.INSUFFICIENT_STORAGE;
+        return HttpStatus.CONFLICT;
     }
 }

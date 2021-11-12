@@ -431,4 +431,22 @@ class RecruitmentControllerTest {
     }
 
 
+    @Test
+    void reportRecruitment() throws Exception {
+        mvc.perform(getRequestBuilder(
+                        patch("/recruitments/{recruitmentId}/report",
+                                1)))
+                .andExpect(status().isOk())
+                .andDo(document("recruitment/report-recruitment",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId").description("약속 번호")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
+    }
+
 }

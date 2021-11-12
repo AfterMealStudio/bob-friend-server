@@ -89,6 +89,25 @@ include::{snippets}/recruitment/delete-recruitment/http-response.adoc[]
 path-parameter::
 include::{snippets}/recruitment/delete-recruitment/path-parameters.adoc[]
 
+=== 검색
+request::
+include::{snippets}/recruitment/search-recruitment/http-request.adoc[]
+header::
+include::{snippets}/recruitment/search-recruitment/request-headers.adoc[]
+parameter::
+include::{snippets}/recruitment/search-recruitment/request-parameters.adoc[]
+response::
+include::{snippets}/recruitment/search-recruitment/http-response.adoc[]
+
+=== 신고하기
+request::
+include::{snippets}/recruitment/report-recruitment/http-request.adoc[]
+header::
+include::{snippets}/recruitment/report-recruitment/request-headers.adoc[]
+path-param::
+include::{snippets}/recruitment/report-recruitment/path-parameters.adoc[]
+response::
+include::{snippets}/recruitment/report-recruitment/http-response.adoc[]
 
 === 댓글
 ==== 댓글 생성
@@ -163,15 +182,6 @@ include::{snippets}/comment/reply/report-reply/path-parameters.adoc[]
 response::
 include::{snippets}/comment/reply/report-reply/http-response.adoc[]
 
-=== 검색
-request::
-include::{snippets}/recruitment/search-recruitment/http-request.adoc[]
-header::
-include::{snippets}/recruitment/search-recruitment/request-headers.adoc[]
-parameter::
-include::{snippets}/recruitment/search-recruitment/request-parameters.adoc[]
-response::
-include::{snippets}/recruitment/search-recruitment/http-response.adoc[]
 
 == Member
 === 회원가입
