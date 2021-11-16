@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -23,7 +24,7 @@ public abstract class Writing {
     @JoinColumn(name = "member_id")
     protected Member author;
 
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "MEDIUMTEXT")
     protected String content;
 
     @Column(name = "report_count")
@@ -32,6 +33,8 @@ public abstract class Writing {
     @Column(name = "created_at")
     protected LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "writing", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    protected List<Report> reports;
 
     @Transient
     public String getDiscriminatorValue() {

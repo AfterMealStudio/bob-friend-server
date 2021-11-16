@@ -11,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -64,6 +65,8 @@ public class Recruitment extends Writing {
     @Convert(converter = SexConverter.class)
     private Sex sexRestriction;
 
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Report> reports;
 
     @Override
     public String toString() {

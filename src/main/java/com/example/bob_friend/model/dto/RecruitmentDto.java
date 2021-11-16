@@ -136,6 +136,7 @@ public class RecruitmentDto {
         protected Double latitude;
         protected Double longitude;
         protected Sex sexRestriction;
+        protected Integer reportCount;
         protected LocalDateTime appointmentTime;
         protected LocalDate createdAt;
 
@@ -158,6 +159,7 @@ public class RecruitmentDto {
             this.appointmentTime = recruitment.getAppointmentTime();
             this.sexRestriction = recruitment.getSexRestriction();
             this.createdAt = recruitment.getCreatedAt().toLocalDate();
+            this.reportCount = recruitment.getReportCount();
         }
 
 
