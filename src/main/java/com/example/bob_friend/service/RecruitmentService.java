@@ -1,6 +1,7 @@
 package com.example.bob_friend.service;
 
 import com.example.bob_friend.model.dto.RecruitmentDto;
+import com.example.bob_friend.model.dto.SearchCondition;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,13 +34,10 @@ public class RecruitmentService {
 
     @Transactional
     public Page<RecruitmentDto.ResponseList> findAll(Pageable pageable) {
-        return new PageImpl<>(
-                recruitmentRepository.findAll(pageable).stream()
-                        .map(this::checkAppointmentTime)
-                        .filter(Recruitment::isActive)
-                        .collect(Collectors.toList()))
-                .map(RecruitmentDto.ResponseList::new);
+        Page<Recruitment> all = recruitmentRepository.findAll(pageable);
+        return all.map(RecruitmentDto.ResponseList::new);
     }
+
 
     @Transactional
     public RecruitmentDto.Response createRecruitment(RecruitmentDto.Request recruitmentRequestDto) {
@@ -62,29 +61,14 @@ public class RecruitmentService {
 
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllByRestaurantNameAndRestaurantAddress(
-            String restaurantName,
-            String restaurantAddress,
+    public Page<RecruitmentDto.ResponseList> findAllByRestaurant(
+            SearchCondition searchCondition,
             Pageable pageable) {
-        List<RecruitmentDto.ResponseList> collect = recruitmentRepository
-                .findAllByRestaurantNameAndRestaurantAddress(restaurantName,
-                        restaurantAddress, pageable).stream()
+        return recruitmentRepository
+                .findAllByRestaurant(searchCondition,
+                        pageable)
                 .map(recruitment -> new RecruitmentDto.ResponseList(
-                        checkAppointmentTime(recruitment)))
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(collect);
-    }
-
-
-    @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllByRestaurantAddress(String restaurantAddress, Pageable pageable) {
-        List<RecruitmentDto.ResponseList> collect = recruitmentRepository
-                .findAllByRestaurantAddress(restaurantAddress, pageable).stream()
-                .map(recruitment -> new RecruitmentDto.ResponseList(
-                        checkAppointmentTime(recruitment)))
-                .collect(Collectors.toList());
-        return new PageImpl<>(collect);
+                        checkAppointmentTime(recruitment)));
     }
 
 
@@ -167,7 +151,7 @@ public class RecruitmentService {
 
         Recruitment recruitment = getRecruitment(recruitmentId);
         Member author = recruitment.getAuthor();
-        if (!author.isValid())
+        if (!author.isValid() || !recruitment.isActive())
             throw new RecruitmentNotActiveException(recruitmentId);
 
         if (currentMember.equals(author)) {
@@ -176,8 +160,6 @@ public class RecruitmentService {
 
         if (!checkSexRestriction(recruitment, currentMember))
             throw new RestrictionFailedException(currentMember.getEmail());
-
-        validateRecruitment(recruitment);
 
         if (recruitment.hasMember(currentMember))
             recruitment.removeMember(currentMember);
@@ -189,42 +171,43 @@ public class RecruitmentService {
 
 
     public Page<RecruitmentDto.Response> searchTitle(String keyword, Pageable pageable) {
-        List<RecruitmentDto.Response> collect = recruitmentRepository
-                .findAllByTitleContaining(keyword, pageable)
-                .stream().map(RecruitmentDto.Response::new)
-                .collect(Collectors.toList());
-        return new PageImpl<>(collect);
+        return recruitmentRepository
+                .searchByTitle(keyword, pageable)
+                .map(RecruitmentDto.Response::new);
     }
 
+
     public Page<RecruitmentDto.Response> searchContent(String keyword, Pageable pageable) {
-        List<RecruitmentDto.Response> collect = recruitmentRepository
-                .findAllByContentContaining(keyword, pageable)
-                .stream().map(RecruitmentDto.Response::new)
-                .collect(Collectors.toList());
-        return new PageImpl<>(collect);
+        return recruitmentRepository
+                .searchByContent(keyword, pageable)
+                .map(RecruitmentDto.Response::new);
     }
 
     public Page<RecruitmentDto.Response> searchRestaurant(String keyword, Pageable pageable) {
-        List<RecruitmentDto.Response> collect = recruitmentRepository
-                .findAllByRestaurantNameContaining(keyword, pageable)
-                .stream().map(RecruitmentDto.Response::new)
-                .collect(Collectors.toList());
-        return new PageImpl<>(collect);
+        return recruitmentRepository
+                .searchByRestaurant(keyword, pageable)
+                .map(RecruitmentDto.Response::new);
     }
 
+    public Page<RecruitmentDto.Response> searchAppointmentTime(String start, String end, Pageable pageable) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+        LocalDateTime startTime = LocalDateTime.parse(start, formatter);
+        LocalDateTime endTime = LocalDateTime.parse(end, formatter);
+        return recruitmentRepository.searchByAppointmentTime(
+                        startTime, endTime, pageable)
+                .map(RecruitmentDto.Response::new);
+    }
+
+    public Page<RecruitmentDto.Response> searchByAllCondition(String keyword, Pageable pageable) {
+        return recruitmentRepository
+                .searchByAll(keyword, pageable)
+                .map(RecruitmentDto.Response::new);
+    }
 
     public void reportRecruitment(Long recruitmentId) {
         Recruitment recruitment = getRecruitment(recruitmentId);
-        Member member = recruitment.getAuthor();
+        Member member = memberService.getCurrentMember();
         reportService.reportWriting(member, recruitment);
-    }
-
-
-    private void validateRecruitment(Recruitment recruitment) {
-        if (recruitment.isFull())
-            throw new RecruitmentIsFullException(recruitment.getId());
-        if (!recruitment.isActive())
-            throw new RecruitmentNotActiveException(recruitment.getId());
     }
 
 

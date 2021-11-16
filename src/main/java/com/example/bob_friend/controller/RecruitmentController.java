@@ -1,14 +1,16 @@
 package com.example.bob_friend.controller;
 
 import com.example.bob_friend.model.dto.RecruitmentDto;
+import com.example.bob_friend.model.dto.SearchCondition;
 import com.example.bob_friend.model.exception.RecruitmentIsFullException;
 import com.example.bob_friend.model.exception.RecruitmentNotActiveException;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
-import com.example.bob_friend.service.CommentService;
 import com.example.bob_friend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,21 +23,10 @@ public class RecruitmentController {
 
     @GetMapping()
     public ResponseEntity getAllRecruitment(
-            @RequestParam(value = "restaurantName", required = false) String restaurantName,
-            @RequestParam(value = "restaurantAddress", required = false) String restaurantAddress,
-            Pageable pageable) {
-        Page<RecruitmentDto.ResponseList> responseDtoList = null;
-        if (restaurantName == null) {
-            if (restaurantAddress == null) {
-                responseDtoList = recruitmentService.findAll(pageable);
-            } else {
-                responseDtoList = recruitmentService
-                        .findAllByRestaurantAddress(restaurantAddress, pageable);
-            }
-        } else {
-            responseDtoList = recruitmentService
-                    .findAllByRestaurantNameAndRestaurantAddress(restaurantName, restaurantAddress, pageable);
-        }
+            SearchCondition searchCondition,
+            @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<RecruitmentDto.ResponseList> responseDtoList = recruitmentService
+                .findAllByRestaurant(searchCondition, pageable);
         return ResponseEntity.ok(responseDtoList);
     }
 
@@ -98,31 +89,39 @@ public class RecruitmentController {
 
     @GetMapping("/search")
     public ResponseEntity searchRecruitment(
-            @RequestParam(defaultValue = "title") Category category,
-            @RequestParam String keyword,
-            Pageable pageable) {
+            @RequestParam(defaultValue = "title", name = "category") Category category,
+            SearchCondition searchCondition,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        Page<RecruitmentDto.Response> searchResult = null;
-
-        switch (category) {
-            case time:
-                break;
-            case place:
-                searchResult = recruitmentService.searchRestaurant(keyword, pageable);
-                break;
-            case title:
-                searchResult = recruitmentService.searchTitle(keyword, pageable);
-                break;
-            case content:
-                searchResult = recruitmentService.searchContent(keyword, pageable);
-                break;
-        }
+        Page<RecruitmentDto.Response> searchResult = getResponses(category, searchCondition, pageable);
 
         return ResponseEntity.ok(searchResult);
     }
 
+    private Page<RecruitmentDto.Response> getResponses(Category category, SearchCondition searchCondition, Pageable pageable) {
+        Page<RecruitmentDto.Response> searchResult = null;
+
+        switch (category) {
+            case time:
+                searchResult = recruitmentService.searchAppointmentTime(searchCondition.getStart(), searchCondition.getEnd(), pageable);
+                break;
+            case place:
+                searchResult = recruitmentService.searchRestaurant(searchCondition.getKeyword(), pageable);
+                break;
+            case title:
+                searchResult = recruitmentService.searchTitle(searchCondition.getKeyword(), pageable);
+                break;
+            case content:
+                searchResult = recruitmentService.searchContent(searchCondition.getKeyword(), pageable);
+                break;
+            case all:
+                searchResult = recruitmentService.searchByAllCondition(searchCondition.getKeyword(), pageable);
+                break;
+        }
+        return searchResult;
+    }
 
     private enum Category {
-        title, content, place, time
+        title, content, place, time, all
     }
 }

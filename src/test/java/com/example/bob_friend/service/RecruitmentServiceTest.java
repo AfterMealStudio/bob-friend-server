@@ -2,6 +2,7 @@ package com.example.bob_friend.service;
 
 import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.RecruitmentDto;
+import com.example.bob_friend.model.dto.SearchCondition;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberNotAllowedException;
 import com.example.bob_friend.model.exception.AlreadyJoined;
@@ -103,9 +104,11 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findById(testRecruitment.getId()))
                 .willReturn(Optional.ofNullable(testRecruitment));
 
-        RecruitmentDto.Response byId = recruitmentService.findById(testRecruitment.getId());
+        RecruitmentDto.Response byId = recruitmentService
+                .findById(testRecruitment.getId());
 
-        RecruitmentDto.Response dtoFromEntity = new RecruitmentDto.Response(testRecruitment);
+        RecruitmentDto.Response dtoFromEntity =
+                new RecruitmentDto.Response(testRecruitment);
 
         assertThat(byId, equalTo(dtoFromEntity));
     }
@@ -355,14 +358,15 @@ class RecruitmentServiceTest {
     @Test
     void findAllByRestaurantAddress() {
         PageRequest pageRequest = PageRequest.of(0, 1);
-        when(recruitmentRepository.findAllByRestaurantAddress(
+        when(recruitmentRepository.findAllByRestaurant(
                 any(), any()
         )).thenReturn(new PageImpl<>(Arrays.asList(testRecruitment)));
 
         String restaurantAddress = "restaurantAddress";
-
+        SearchCondition searchCondition = new SearchCondition();
+        searchCondition.setRestaurantAddress(restaurantAddress);
         Page<RecruitmentDto.ResponseList> restaurantList = recruitmentService
-                .findAllByRestaurantAddress(restaurantAddress, pageRequest);
+                .findAllByRestaurant(searchCondition, pageRequest);
 
         assertThat(restaurantList.toList(),
                 equalTo(Arrays.asList(
@@ -373,17 +377,19 @@ class RecruitmentServiceTest {
     @Test
     void findAllByRestaurantNameAndAddress() {
         PageRequest pageRequest = PageRequest.of(0, 1);
-        when(recruitmentRepository.findAllByRestaurantNameAndRestaurantAddress(
-                any(), any(), any()
+        when(recruitmentRepository.findAllByRestaurant(
+                any(), any()
         )).thenReturn(new PageImpl<>(Arrays.asList(testRecruitment)));
 
         String restaurantName = "restaurantName";
         String restaurantAddress = "restaurantAddress";
 
+        SearchCondition searchCondition = new SearchCondition();
+        searchCondition.setRestaurantName(restaurantName);
+        searchCondition.setRestaurantAddress(restaurantAddress);
         Page<RecruitmentDto.ResponseList> restaurantList = recruitmentService
-                .findAllByRestaurantNameAndRestaurantAddress(
-                        restaurantName,
-                        restaurantAddress,
+                .findAllByRestaurant(
+                        searchCondition,
                         pageRequest);
 
         assertThat(restaurantList.toList(),
@@ -441,10 +447,8 @@ class RecruitmentServiceTest {
 
     @Test
     void search() {
-        // search 메소드는 비슷한 구조에 호출하는 메소드 하나만 다르기 때문에
-        // 테스트 하나로 충분한듯
         List<Recruitment> recruitments = Arrays.asList(testRecruitment);
-        when(recruitmentRepository.findAllByTitleContaining(any(), any()))
+        when(recruitmentRepository.searchByTitle(any(), any()))
                 .thenReturn(new PageImpl<>(recruitments));
         PageRequest pageRequest = PageRequest.of(0, 1);
 
@@ -457,8 +461,9 @@ class RecruitmentServiceTest {
         assertThat(responsePage, equalTo(new PageImpl<>(collect)));
     }
 
+
     @Test
-    void recruitmetExpire() {
+    void recruitmentExpire() {
         Recruitment recruitment = Recruitment.builder()
                 .id(1000L)
                 .title("title")
@@ -474,6 +479,7 @@ class RecruitmentServiceTest {
                 .longitude(0.0)
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
+                // 약속 시간이 종료시간보다 뒤일 경우
                 .endAt(LocalDateTime.now())
                 .active(true)
                 .build();
@@ -483,5 +489,4 @@ class RecruitmentServiceTest {
 
         assertThat(recruitment.isActive(), equalTo(false));
     }
-
 }

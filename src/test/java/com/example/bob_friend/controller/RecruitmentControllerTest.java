@@ -31,6 +31,8 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -130,7 +132,7 @@ class RecruitmentControllerTest {
 
         PageImpl<RecruitmentDto.ResponseList> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
-        given(recruitmentService.findAll(any()))
+        given(recruitmentService.findAllByRestaurant(any(),any()))
                 .willReturn(responsePage);
 
         mvc.perform(getRequestBuilder(
@@ -159,7 +161,7 @@ class RecruitmentControllerTest {
         String testRestaurantAddress = "testRestaurantAddress";
         PageImpl<RecruitmentDto.ResponseList> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
-        given(recruitmentService.findAllByRestaurantAddress(any(), any()))
+        given(recruitmentService.findAllByRestaurant(any(), any()))
                 .willReturn(responsePage);
         mvc.perform(getRequestBuilder(
                         get("/recruitments"))
@@ -191,8 +193,7 @@ class RecruitmentControllerTest {
         String testRestaurantAddress = "testRestaurantAddress";
 
         given(recruitmentService
-                .findAllByRestaurantNameAndRestaurantAddress(
-                        any(),
+                .findAllByRestaurant(
                         any(),
                         any()))
                 .willReturn(responsePage);
@@ -209,9 +210,9 @@ class RecruitmentControllerTest {
                         getDocumentResponse(),
                         requestParameters(
                                 parameterWithName("restaurantName")
-                                        .description("식당 이름"),
+                                        .description("식당 이름").optional(),
                                 parameterWithName("restaurantAddress")
-                                        .description("식당 주소")
+                                        .description("식당 주소").optional()
                         ),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION)
@@ -229,6 +230,7 @@ class RecruitmentControllerTest {
 
         given(recruitmentService.findAllLocations())
                 .willReturn(Set.of(addressDto));
+
         mvc.perform(getRequestBuilder(
                         get("/recruitments/locations"))
                 )
@@ -241,8 +243,13 @@ class RecruitmentControllerTest {
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION)
                                         .description("토큰")
-                        )
-                ));
+                        ),
+                        responseFields(
+                                fieldWithPath("[].latitude").description("위도"),
+                                fieldWithPath("[].longitude").description("경도"),
+                                fieldWithPath("[].address").description("주소"),
+                                fieldWithPath("[].count").description("해당 좌표에 존재하는 약속의 수")
+                        )));
     }
 
     @Test
@@ -420,7 +427,7 @@ class RecruitmentControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestParameters(
-                                parameterWithName("category").description("검색 분류(title, place, content)"),
+                                parameterWithName("category").description("검색 분류(title, place, content, time)"),
                                 parameterWithName("keyword").description("검색어")
                         ),
                         requestHeaders(
