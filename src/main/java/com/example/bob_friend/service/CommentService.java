@@ -41,12 +41,7 @@ public class CommentService {
             Long recruitmentId) {
         Comment comment = commentRequestDto.convertToEntity();
         Member currentMember = memberService.getCurrentMember();
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
-                .orElseThrow(
-                        () -> {
-                            throw new RecruitmentNotFoundException(recruitmentId);
-                        }
-                );
+        Recruitment recruitment = getRecruitment(recruitmentId);
         comment.setAuthor(currentMember);
         comment.setRecruitment(recruitment);
         return new CommentDto.Response(commentRepository.save(comment));
@@ -91,14 +86,14 @@ public class CommentService {
 
     public void reportComment(Long commentId) {
         Comment comment = getComment(commentId);
-        Member author = comment.getAuthor();
-        reportService.reportWriting(author, comment);
+        Member member = memberService.getCurrentMember();
+        reportService.reportWriting(member, comment);
     }
 
     public void reportReply(Long replyId) {
         Reply reply = getReply(replyId);
-        Member author = reply.getAuthor();
-        reportService.reportWriting(author, reply);
+        Member member = memberService.getCurrentMember();
+        reportService.reportWriting(member, reply);
     }
 
     private Comment getComment(Long commentId) {
@@ -112,6 +107,13 @@ public class CommentService {
         return replyRepository.findById(replyId)
                 .orElseThrow(() -> {
                     throw new ReplyNotFoundException(replyId);
+                });
+    }
+
+    private Recruitment getRecruitment(Long recruitmentId) {
+        return recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> {
+                    throw new RecruitmentNotFoundException(recruitmentId);
                 });
     }
 }
