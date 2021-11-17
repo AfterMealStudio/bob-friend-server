@@ -20,6 +20,10 @@ include::{snippets}/recruitment/create-recruitment/http-response.adoc[]
 //response field description::
 //include::{snippets}/create-recruitment/response-fields.adoc[]
 === 한 건 조회
+```
+url 파라미터로 입력된 id에 해당하는 약속을 한 건 조회한다. 약속에 포함된 댓글, 대댓글도 함께 조회한다.
+```
+
 request::
 include::{snippets}/recruitment/get-one-recruitment/http-request.adoc[]
 header::
@@ -32,6 +36,11 @@ include::{snippets}/recruitment/get-one-recruitment/path-parameters.adoc[]
 //include::{snippets}/get-one-recruitment/response-fields.adoc[]
 
 === 전체 조회
+```
+전체조회는 Page 객체를 반환한다. content 필드에 조회 결과가 약속들의 배열 형태([])로 주어진다. 각 약속은 한 건 조회와는 달리 댓글, 대댓글을 포함하지 않고, 댓글의 개수(댓글의 개수 + 대댓글의 개수)만 포함한다. Page객체는 첫 번째 페이지인지를 나타내는 first, 마지막 페이지인지를 나타내는 last 필드를 가진다(마지막 페이지일 경우 last가 true).
+```
+
+
 request::
 include::{snippets}/recruitment/get-all-recruitments/http-request.adoc[]
 header::
@@ -39,9 +48,21 @@ include::{snippets}/recruitment/get-all-recruitments/request-headers.adoc[]
 response::
 include::{snippets}/recruitment/get-all-recruitments/http-response.adoc[]
 
+
+
+=== 전제 조회 필터링
 ```
-전체조회는 Page 객체를 반환한다. Page객체는 첫 번째 페이지인지를 나타내는 first, 마지막 페이지인지를 나타내는 last 필드를 가진다(마지막 페이지일 경우 last가 true).
+전체 조회는 type 이라는 파라미터를 입력해 결과를 필터링 할 수 있다. type 파라미터는 owned, joined, available, all 4가지가 있다. 각각 자신이 생성한 약속, 현재 참여가 가능한 약속, 자신이 참여한 약속, 모든 약속을 의미한다. type이 all이면 type을 입력하지 않은 것과 같다.
+
+아래의 예는 자신이 생성한 약속을 조회한다(type=owned).
 ```
+
+request::
+include::{snippets}/recruitment/get-all-recruitments-my/http-request.adoc[]
+header::
+include::{snippets}/recruitment/get-all-recruitments-my/request-headers.adoc[]
+response::
+include::{snippets}/recruitment/get-all-recruitments-my/http-response.adoc[]
 
 ==== 약속이 있는 위치 전체 조회
 request::
@@ -62,16 +83,18 @@ include::{snippets}/recruitment/get-all-recruitments-locations/http-response.ado
 //include::{snippets}/recruitment/get-all-recruitments-by-address/http-response.adoc[]
 
 ==== 주소와 식당이름으로 약속 조회
+```
+파라미터인 restaurantName과 restaurantAddress는 생략할 수 있다. 파라미터로 restaurantName=restaurant만 입력할 경우 식당 이름이 "restaurantName"인 결과들을 반환하고,
+restaurantName=restaurant&restaurantAddress=restaurantAddress를 입력할 경우 식당이름이 restaurant이고, 주소가 restaurantAddress인 약속들을 반환한다. 파라미터를 입력하지 않을 경우 모든 약속들을 반환한다.
+```
+
 request::
 include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-request.adoc[]
 header::
 include::{snippets}/recruitment/get-all-recruitments-by-restaurant/request-headers.adoc[]
 parameter::
 include::{snippets}/recruitment/get-all-recruitments-by-restaurant/request-parameters.adoc[]
-```
-파라미터인 restaurantName과 restaurantAddress는 생략할 수 있다. 파라미터로 ?restaurantName=restaurant만 입력할 경우 식당 이름이 "restaurantName"인 결과들을 반환하고,
-?restaurantName=restaurant&restaurantAddress=restaurantAddress를 입력할 경우 식당이름이 restaurant이고, 주소가 restaurantAddress인 약속들을 반환한다. 파라미터를 입력하지 않을 경우 모든 약속들을 반환한다.
-```
+
 
 response::
 include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-response.adoc[]
@@ -109,6 +132,10 @@ response::
 include::{snippets}/recruitment/search-recruitment/http-response.adoc[]
 
 === 신고하기
+```
+한 사용자는 하나의 게시물(약속, 댓글, 대댓글)을 한 번만 신고할 수 있다. 일정 횟수 이상 신고받은 게시물은 내용이 지워지고(약속의 경우 마감처리됨) 작성자에게 신고가 누적된다. 일정 횟수 이상 신고가 누적된 사용자는 이용이 일정 기간 정지된다.
+```
+
 request::
 include::{snippets}/recruitment/report-recruitment/http-request.adoc[]
 header::
@@ -117,6 +144,22 @@ path-param::
 include::{snippets}/recruitment/report-recruitment/path-parameters.adoc[]
 response::
 include::{snippets}/recruitment/report-recruitment/http-response.adoc[]
+
+
+=== 마감하기
+```
+해당 약속의 작성자만 약속을 마감할 수 있다. 마감된 약속은 참여하거나 참여를 취소할 수 없고, 전체 조회 시 조회되지 않는다.
+```
+
+request::
+include::{snippets}/recruitment/close-recruitment/http-request.adoc[]
+header::
+include::{snippets}/recruitment/close-recruitment/request-headers.adoc[]
+path-param::
+include::{snippets}/recruitment/close-recruitment/path-parameters.adoc[]
+response::
+include::{snippets}/recruitment/close-recruitment/http-response.adoc[]
+
 
 === 댓글
 ==== 댓글 생성

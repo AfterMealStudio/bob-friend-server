@@ -2,7 +2,7 @@ package com.example.bob_friend.service;
 
 import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.RecruitmentDto;
-import com.example.bob_friend.model.dto.SearchCondition;
+import com.example.bob_friend.model.dto.Condition;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberNotAllowedException;
 import com.example.bob_friend.model.exception.AlreadyJoined;
@@ -357,7 +357,7 @@ class RecruitmentServiceTest {
         )).thenReturn(new PageImpl<>(Arrays.asList(testRecruitment)));
 
         String restaurantAddress = "restaurantAddress";
-        SearchCondition searchCondition = new SearchCondition();
+        Condition.Search searchCondition = new Condition.Search();
         searchCondition.setRestaurantAddress(restaurantAddress);
         Page<RecruitmentDto.ResponseList> restaurantList = recruitmentService
                 .findAllByRestaurant(searchCondition, pageRequest);
@@ -378,7 +378,7 @@ class RecruitmentServiceTest {
         String restaurantName = "restaurantName";
         String restaurantAddress = "restaurantAddress";
 
-        SearchCondition searchCondition = new SearchCondition();
+        Condition.Search searchCondition = new Condition.Search();
         searchCondition.setRestaurantName(restaurantName);
         searchCondition.setRestaurantAddress(restaurantAddress);
         Page<RecruitmentDto.ResponseList> restaurantList = recruitmentService
@@ -455,32 +455,4 @@ class RecruitmentServiceTest {
         assertThat(responsePage, equalTo(new PageImpl<>(collect)));
     }
 
-
-    @Test
-    void recruitmentExpire() {
-        Recruitment recruitment = Recruitment.builder()
-                .id(1000L)
-                .title("title")
-                .content("content")
-                .author(testAuthor)
-                .members(new HashSet<>())
-                .comments(Set.of(testComment))
-                .totalNumberOfPeople(4)
-                .sexRestriction(Sex.FEMALE)
-                .restaurantName("testRestaurantName")
-                .restaurantAddress("testRestaurantAddress")
-                .latitude(0.0)
-                .longitude(0.0)
-                .createdAt(LocalDateTime.now())
-                .appointmentTime(LocalDateTime.now().plusHours(4))
-                // 약속 시간이 종료시간보다 뒤일 경우
-                .endAt(LocalDateTime.now())
-                .active(true)
-                .build();
-        when(recruitmentRepository.findById(recruitment.getId()))
-                .thenReturn(Optional.of(recruitment));
-        recruitmentService.findById(recruitment.getId());
-
-        assertThat(recruitment.isActive(), equalTo(false));
-    }
 }

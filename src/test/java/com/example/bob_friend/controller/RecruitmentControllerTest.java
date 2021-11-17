@@ -150,8 +150,37 @@ class RecruitmentControllerTest {
                                         .description("토큰")
                         )
                 ));
-
     }
+
+    @Test
+    void getAllRecruitment_my() throws Exception {
+        RecruitmentDto.ResponseList responseDto1 =
+                new RecruitmentDto.ResponseList(testRecruitment);
+
+        PageImpl<RecruitmentDto.ResponseList> responsePage =
+                new PageImpl<>(Arrays.asList(responseDto1));
+
+        when(recruitmentService.findMyRecruitments(any()))
+                .thenReturn(responsePage);
+
+        mvc.perform(getRequestBuilder(
+                        get("/recruitments"))
+                        .param("type","owned")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(responsePage)
+                ))
+                .andDo(document("recruitment/get-all-recruitments-my",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("토큰")
+                        )
+                ));
+    }
+
 
     @Test
     void getAllRecruitments_restaurantAddress() throws Exception {
@@ -456,4 +485,21 @@ class RecruitmentControllerTest {
                 ));
     }
 
+    @Test
+    void closeRecruitment() throws Exception {
+        mvc.perform(getRequestBuilder(
+                        patch("/recruitments/{recruitmentId}/close",
+                                1)))
+                .andExpect(status().isOk())
+                .andDo(document("recruitment/close-recruitment",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId").description("약속 번호")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
+    }
 }

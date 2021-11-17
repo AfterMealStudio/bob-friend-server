@@ -1,6 +1,6 @@
 package com.example.bob_friend.repository;
 
-import com.example.bob_friend.model.dto.SearchCondition;
+import com.example.bob_friend.model.dto.Condition;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import org.springframework.data.domain.Page;
@@ -25,7 +25,7 @@ public interface RecruitmentCustomRepository {
 
     Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable);
 
-    Page<Recruitment> findAllByRestaurant(SearchCondition searchCondition, Pageable pageable);
+    Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable);
 
     Page<Recruitment> findAllByAuthor(Member author, Pageable pageable);
 

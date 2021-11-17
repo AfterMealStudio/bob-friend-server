@@ -1,7 +1,7 @@
 package com.example.bob_friend.service;
 
 import com.example.bob_friend.model.dto.RecruitmentDto;
-import com.example.bob_friend.model.dto.SearchCondition;
+import com.example.bob_friend.model.dto.Condition;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
@@ -60,7 +60,7 @@ public class RecruitmentService {
 
     @Transactional
     public Page<RecruitmentDto.ResponseList> findAllByRestaurant(
-            SearchCondition searchCondition,
+            Condition.Search searchCondition,
             Pageable pageable) {
         return recruitmentRepository
                 .findAllByRestaurant(searchCondition, pageable)
@@ -81,9 +81,7 @@ public class RecruitmentService {
         Map<RecruitmentDto.Address, Integer> addressMap = new HashMap();
 
         Iterator<Recruitment> iterator =
-                recruitmentRepository.findAll().stream()
-                        .map(this::checkAppointmentTime)
-                        .filter(recruitment -> recruitment.isActive())
+                recruitmentRepository.findAllByActiveTrue()
                         .iterator();
         while (iterator.hasNext()) {
             Recruitment recruitment = iterator.next();

@@ -1,7 +1,7 @@
 package com.example.bob_friend.controller;
 
 import com.example.bob_friend.model.dto.RecruitmentDto;
-import com.example.bob_friend.model.dto.SearchCondition;
+import com.example.bob_friend.model.dto.Condition;
 import com.example.bob_friend.model.exception.RecruitmentIsFullException;
 import com.example.bob_friend.model.exception.RecruitmentNotActiveException;
 import com.example.bob_friend.model.exception.RecruitmentNotFoundException;
@@ -23,12 +23,31 @@ public class RecruitmentController {
 
     @GetMapping()
     public ResponseEntity getAllRecruitment(
-            SearchCondition searchCondition,
+            Condition.SearchType type,
+            Condition.Search searchCondition,
             @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<RecruitmentDto.ResponseList> responseDtoList = recruitmentService
-                .findAllByRestaurant(searchCondition, pageable);
+        Page<RecruitmentDto.ResponseList> responseDtoList = null;
+        if (type==null) type = Condition.SearchType.all;
+        switch (type) {
+            case owned: // 자기가 작성한
+                responseDtoList = recruitmentService
+                        .findMyRecruitments(pageable);
+                break;
+            case joined:// 자기가 참여한
+                responseDtoList = recruitmentService
+                        .findAllJoinedRecruitments(pageable);
+                break;
+            case available:// 참여 가능한
+                responseDtoList = recruitmentService
+                        .findAllAvailableRecruitments(pageable);
+                break;
+            case all: // 전체
+                responseDtoList = recruitmentService
+                        .findAllByRestaurant(searchCondition, pageable);
+        }
         return ResponseEntity.ok(responseDtoList);
     }
+
 
 
     @GetMapping("/locations")
@@ -44,25 +63,17 @@ public class RecruitmentController {
         return ResponseEntity.ok(recruitmentResponseDto);
     }
 
-    @GetMapping("/my")
-    public ResponseEntity getMyRecruitment(Pageable pageable) {
-        Page<RecruitmentDto.ResponseList> myRecruitments =
-                recruitmentService.findMyRecruitments(pageable);
-        return ResponseEntity.ok(myRecruitments);
-    }
-
-    @GetMapping("/my/joined")
-    public ResponseEntity getMyJoinedRecruitment(Pageable pageable) {
-        Page<RecruitmentDto.ResponseList> allJoinedRecruitments =
-                recruitmentService.findAllJoinedRecruitments(pageable);
-        return ResponseEntity.ok(allJoinedRecruitments);
-    }
-
-    @PostMapping()
+    @PostMapping
     public ResponseEntity createRecruitment(
             @RequestBody RecruitmentDto.Request recruitmentRequestDto) {
         RecruitmentDto.Response createdRecruitment = recruitmentService.createRecruitment(recruitmentRequestDto);
         return ResponseEntity.ok(createdRecruitment);
+    }
+
+    @PatchMapping("/{recruitmentId}/close")
+    public ResponseEntity closeRecruitment(@PathVariable Long recruitmentId) {
+        recruitmentService.closeRecruitment(recruitmentId);
+        return ResponseEntity.ok().build();
     }
 
 
@@ -89,8 +100,8 @@ public class RecruitmentController {
 
     @GetMapping("/search")
     public ResponseEntity searchRecruitment(
-            @RequestParam(defaultValue = "title", name = "category") Category category,
-            SearchCondition searchCondition,
+            @RequestParam(defaultValue = "title", name = "category") Condition.SearchCategory category,
+            Condition.Search searchCondition,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
 
         Page<RecruitmentDto.Response> searchResult = getResponses(category, searchCondition, pageable);
@@ -98,7 +109,7 @@ public class RecruitmentController {
         return ResponseEntity.ok(searchResult);
     }
 
-    private Page<RecruitmentDto.Response> getResponses(Category category, SearchCondition searchCondition, Pageable pageable) {
+    private Page<RecruitmentDto.Response> getResponses(Condition.SearchCategory category, Condition.Search searchCondition, Pageable pageable) {
         Page<RecruitmentDto.Response> searchResult = null;
 
         switch (category) {
@@ -121,7 +132,4 @@ public class RecruitmentController {
         return searchResult;
     }
 
-    private enum Category {
-        title, content, place, time, all
-    }
 }

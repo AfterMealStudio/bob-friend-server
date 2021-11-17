@@ -1,6 +1,6 @@
 package com.example.bob_friend.repository;
 
-import com.example.bob_friend.model.dto.SearchCondition;
+import com.example.bob_friend.model.dto.Condition;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.querydsl.core.types.Predicate;
@@ -76,7 +76,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     }
 
     @Override
-    public Page<Recruitment> findAllByRestaurant(SearchCondition searchCondition, Pageable pageable) {
+    public Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
                 eqRestaurantName(searchCondition.getRestaurantName()),
                 eqRestaurantAddress(searchCondition.getRestaurantAddress())
@@ -93,10 +93,11 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable) {
-        return getPageFromStatement(pageable, ()->new Predicate[]{
+        return getPageFromStatement(pageable, () -> new Predicate[]{
                 recruitment.members.contains(currentMember)
         });
     }
+
 
     private Page<Recruitment> getPageFromStatement(Pageable pageable, StatementStrategy statementStrategy) {
         BooleanExpression[] booleanExpression = (BooleanExpression[]) statementStrategy.makeBooleanExpression();
