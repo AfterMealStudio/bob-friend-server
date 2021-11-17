@@ -15,10 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -29,14 +26,14 @@ public class RecruitmentService {
 
     @Transactional
     public RecruitmentDto.Response findById(Long recruitmentId) {
-        Recruitment recruitment = checkAppointmentTime(getRecruitment(recruitmentId));
+        Recruitment recruitment = getRecruitment(recruitmentId);
         return new RecruitmentDto.Response(recruitment);
     }
 
     @Transactional
     public Page<RecruitmentDto.ResponseList> findAll(Pageable pageable) {
-        Page<Recruitment> all = recruitmentRepository.findAll(pageable);
-        return all.map(RecruitmentDto.ResponseList::new);
+        return recruitmentRepository.findAll(pageable)
+                .map(RecruitmentDto.ResponseList::new);
     }
 
 
@@ -67,8 +64,7 @@ public class RecruitmentService {
             Pageable pageable) {
         return recruitmentRepository
                 .findAllByRestaurant(searchCondition, pageable)
-                .map(recruitment -> new RecruitmentDto.ResponseList(
-                        checkAppointmentTime(recruitment)));
+                .map(RecruitmentDto.ResponseList::new);
     }
 
 
@@ -77,8 +73,7 @@ public class RecruitmentService {
         Member currentMember = memberService.getCurrentMember();
         return recruitmentRepository
                 .findAllAvailable(currentMember, pageable)
-                .map(recruitment -> new RecruitmentDto.ResponseList(
-                        checkAppointmentTime(recruitment)));
+                .map(RecruitmentDto.ResponseList::new);
     }
 
     @Transactional
@@ -108,16 +103,14 @@ public class RecruitmentService {
     public Page<RecruitmentDto.ResponseList> findAllJoinedRecruitments(Pageable pageable) {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllJoined(author, pageable)
-                .map(recruitment -> new RecruitmentDto.ResponseList(
-                        checkAppointmentTime(recruitment)));
+                .map(RecruitmentDto.ResponseList::new);
     }
 
     @Transactional
     public Page<RecruitmentDto.ResponseList> findMyRecruitments(Pageable pageable) {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllByAuthor(author, pageable)
-                .map(recruitment -> new RecruitmentDto.ResponseList(
-                        checkAppointmentTime(recruitment)));
+                .map(RecruitmentDto.ResponseList::new);
     }
 
     @Transactional
@@ -197,6 +190,15 @@ public class RecruitmentService {
         Recruitment recruitment = getRecruitment(recruitmentId);
         Member member = memberService.getCurrentMember();
         reportService.reportWriting(member, recruitment);
+    }
+
+    @Transactional
+    public void expireRecruitment() {
+        List<Recruitment> allByActiveTrue = recruitmentRepository.findAllByActiveTrue();
+        for (Recruitment recruitment :
+                allByActiveTrue) {
+            checkAppointmentTime(recruitment);
+        }
     }
 
 
