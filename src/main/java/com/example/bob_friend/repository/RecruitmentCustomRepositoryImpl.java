@@ -1,7 +1,9 @@
 package com.example.bob_friend.repository;
 
 import com.example.bob_friend.model.dto.SearchCondition;
+import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,52 +26,84 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> searchByTitle(String keyword, Pageable pageable) {
-        BooleanExpression like = recruitment.title.like(keyword);
-        return getRecruitments(pageable, like);
+        return getPageFromStatement(pageable, () -> new Predicate[]{
+                recruitment.title.like(keyword)
+        });
     }
 
     @Override
     public Page<Recruitment> searchByContent(String keyword, Pageable pageable) {
-        BooleanExpression like = recruitment.content.like(keyword);
-        return getRecruitments(pageable, like);
+        return getPageFromStatement(pageable, () -> new Predicate[]{
+                recruitment.content.like(keyword)
+        });
     }
 
     @Override
     public Page<Recruitment> searchByRestaurant(String keyword, Pageable pageable) {
-        BooleanExpression like = recruitment.restaurantName.like(keyword);
-        return getRecruitments(pageable, like);
+        return getPageFromStatement(pageable, () -> new Predicate[]{
+                recruitment.restaurantName.like(keyword)
+        });
     }
 
     @Override
     public Page<Recruitment> searchByAppointmentTime(LocalDateTime start, LocalDateTime end, Pageable pageable) {
-        BooleanExpression between = recruitment.appointmentTime.between(start, end);
-        return getRecruitments(pageable, between);
+        return getPageFromStatement(pageable, () -> new Predicate[]{
+                recruitment.appointmentTime.between(start, end)
+        });
     }
 
     @Override
     public Page<Recruitment> searchByAll(String keyword, Pageable pageable) {
-        BooleanExpression booleanExpression =
-                recruitment.title.like(keyword).or(
-                        recruitment.content.like(keyword).or(
-                                recruitment.restaurantName.like(keyword)
-                        )
-                );
-        return getRecruitments(pageable, booleanExpression);
+        return getPageFromStatement(pageable, () -> new Predicate[]{
+                        recruitment.title.like(keyword).or(
+                                recruitment.content.like(keyword).or(
+                                        recruitment.restaurantName.like(keyword)
+                                ))
+                }
+        );
     }
 
-    public Page<Recruitment> findAllByRestaurant(SearchCondition searchCondition, Pageable pageable) {
-        JPAQuery<Recruitment> query = getActiveRecruitments()
-                .where(
-                        eqRestaurantName(searchCondition.getRestaurantName()),
-                        eqRestaurantAddress(searchCondition.getRestaurantAddress())
-                );
-        return getPage(pageable, query);
+    @Override
+    public Page<Recruitment> findAllByAuthor(Member author, Pageable pageable) {
+        return getPageFromStatement(pageable, () -> new Predicate[]{
+                recruitment.author.eq(author)
+        });
     }
-
 
     @Override
     public Page<Recruitment> findAll(Pageable pageable) {
-        JPAQuery<Recruitment> query = getActiveRecruitments();
+        return getPageFromStatement(pageable, null);
+    }
+
+    @Override
+    public Page<Recruitment> findAllByRestaurant(SearchCondition searchCondition, Pageable pageable) {
+        return getPageFromStatement(pageable, () -> new Predicate[]{
+                eqRestaurantName(searchCondition.getRestaurantName()),
+                eqRestaurantAddress(searchCondition.getRestaurantAddress())
+        });
+    }
+
+    @Override
+    public Page<Recruitment> findAllAvailable(Member currentMember, Pageable pageable) {
+        return getPageFromStatement(pageable, () -> new Predicate[]{
+                recruitment.author.ne(currentMember),
+                recruitment.members.contains(currentMember).not()
+        });
+    }
+
+    @Override
+    public Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable) {
+        return getPageFromStatement(pageable, ()->new Predicate[]{
+                recruitment.members.contains(currentMember)
+        });
+    }
+
+    private Page<Recruitment> getPageFromStatement(Pageable pageable, StatementStrategy statementStrategy) {
+        BooleanExpression[] booleanExpression = (BooleanExpression[]) statementStrategy.makeBooleanExpression();
+        JPAQuery<Recruitment> query = getActiveRecruitments()
+                .where(
+                        booleanExpression
+                );
         return getPage(pageable, query);
     }
 
@@ -84,11 +118,6 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         return recruitment.restaurantAddress.eq(restaurantAddress);
     }
 
-    private Page<Recruitment> getRecruitments(Pageable pageable, BooleanExpression booleanExpression) {
-        JPAQuery<Recruitment> query = getActiveRecruitments()
-                .where(booleanExpression);
-        return getPage(pageable, query);
-    }
 
     private Page getPage(Pageable pageable, JPAQuery<Recruitment> where) {
         List list = where

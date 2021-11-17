@@ -242,11 +242,12 @@ class RecruitmentServiceTest {
                 .endAt(LocalDateTime.now().plusDays(1))
                 .active(true)
                 .build();
+
         when(memberService.getCurrentMember()).thenReturn(testMember);
         PageRequest pageRequest = PageRequest.of(0, 1);
 
         List<Recruitment> recruitmentList = Arrays.asList(testRecruitment, recruitment);
-        given(recruitmentRepository.findAll(pageRequest))
+        given(recruitmentRepository.findAllJoined(any(),any()))
                 .willReturn(new PageImpl<>(recruitmentList));
 
         Page<RecruitmentDto.ResponseList> responseDtoList =
@@ -254,9 +255,6 @@ class RecruitmentServiceTest {
 
         assertThat(responseDtoList.toList(),
                 equalTo(recruitmentList.stream()
-                        .filter(r ->
-                                r.hasMember(testMember) ||
-                                        r.getAuthor().equals(testMember))
                         .map(r -> new RecruitmentDto.ResponseList(r))
                         .collect(Collectors.toList())));
     }
@@ -279,7 +277,8 @@ class RecruitmentServiceTest {
                 .title("addedRecruitment")
                 .content("")
                 .author(testAuthor)
-                .members(new HashSet<>(Arrays.asList(testMember)))
+                .members(new HashSet<>())
+                .comments(new HashSet<>())
                 .totalNumberOfPeople(3)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
@@ -292,19 +291,14 @@ class RecruitmentServiceTest {
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember);
         PageRequest pageRequest = PageRequest.of(0, 1);
-        List<Recruitment> recruitmentList = Arrays.asList(testRecruitment, recruitment);
-        given(recruitmentRepository.findAll(pageRequest))
+        List<Recruitment> recruitmentList = Arrays.asList(recruitment);
+        given(recruitmentRepository.findAllAvailable(any(),any()))
                 .willReturn(new PageImpl<>(recruitmentList));
         Page<RecruitmentDto.ResponseList> responseDtoList =
                 recruitmentService.findAllAvailableRecruitments(pageRequest);
 
         assertThat(responseDtoList.toList(),
-                equalTo(recruitmentList.stream()
-                        .filter(r ->
-                                !r.hasMember(testMember) &&
-                                        !r.getAuthor().equals(testMember))
-                        .map(r -> new RecruitmentDto.ResponseList(r))
-                        .collect(Collectors.toList())));
+                equalTo(Arrays.asList(new RecruitmentDto.ResponseList(recruitment))));
     }
 
 
