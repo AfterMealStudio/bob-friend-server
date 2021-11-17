@@ -57,6 +57,7 @@ class RecruitmentServiceTest {
                 .birth(LocalDate.now())
                 .active(true)
                 .rating(0.0)
+                .numberOfJoin(0)
                 .build();
 
         testReply = Reply.builder()
@@ -83,7 +84,7 @@ class RecruitmentServiceTest {
                 .content("content")
                 .author(testAuthor)
                 .members(new HashSet<>())
-                .comments(Set.of(testComment))
+                .comments(List.of(testComment))
                 .totalNumberOfPeople(4)
                 .sexRestriction(Sex.FEMALE)
                 .restaurantName("testRestaurantName")
@@ -170,6 +171,7 @@ class RecruitmentServiceTest {
                 .birth(LocalDate.now())
                 .active(true)
                 .rating(0.0)
+                .numberOfJoin(0)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
@@ -197,6 +199,7 @@ class RecruitmentServiceTest {
                 .birth(LocalDate.now())
                 .active(true)
                 .rating(0.0)
+                .numberOfJoin(0)
                 .build();
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
@@ -223,6 +226,7 @@ class RecruitmentServiceTest {
                 .birth(LocalDate.now())
                 .active(true)
                 .rating(0.0)
+                .numberOfJoin(0)
                 .build();
 
         Recruitment recruitment = Recruitment.builder()
@@ -231,7 +235,7 @@ class RecruitmentServiceTest {
                 .content("")
                 .author(testAuthor)
                 .members(new HashSet<>(Arrays.asList(testMember)))
-                .comments(Set.of(testComment))
+                .comments(List.of(testComment))
                 .totalNumberOfPeople(3)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
@@ -271,6 +275,7 @@ class RecruitmentServiceTest {
                 .birth(LocalDate.now())
                 .active(true)
                 .rating(0.0)
+                .numberOfJoin(0)
                 .build();
         Recruitment recruitment = Recruitment.builder()
                 .id(1000L)
@@ -278,7 +283,7 @@ class RecruitmentServiceTest {
                 .content("")
                 .author(testAuthor)
                 .members(new HashSet<>())
-                .comments(new HashSet<>())
+                .comments(new LinkedList<>())
                 .totalNumberOfPeople(3)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
@@ -313,6 +318,7 @@ class RecruitmentServiceTest {
                 .birth(LocalDate.now())
                 .active(true)
                 .rating(0.0)
+                .numberOfJoin(0)
                 .build();
         Recruitment recruitment = Recruitment.builder()
                 .id(1000L)
@@ -320,7 +326,7 @@ class RecruitmentServiceTest {
                 .content("")
                 .author(testAuthor)
                 .members(new HashSet<>(Arrays.asList(testMember)))
-                .comments(Set.of(testComment))
+                .comments(List.of(testComment))
                 .totalNumberOfPeople(3)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")

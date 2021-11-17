@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.example.bob_friend.document.ApiDocumentUtils.*;
@@ -68,6 +69,7 @@ class RecruitmentControllerTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .rating(0.0)
+                .numberOfJoin(0)
                 .agree(true)
                 .active(true)
                 .build();
@@ -80,6 +82,7 @@ class RecruitmentControllerTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .rating(0.0)
+                .numberOfJoin(0)
                 .agree(true)
                 .active(true)
                 .build();
@@ -109,7 +112,7 @@ class RecruitmentControllerTest {
                 .content("content")
                 .author(testAuthor)
                 .members(new HashSet<>())
-                .comments(Set.of(testComment))
+                .comments(List.of(testComment))
                 .totalNumberOfPeople(4)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
@@ -382,6 +385,7 @@ class RecruitmentControllerTest {
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .rating(0.0)
+                .numberOfJoin(0)
                 .agree(true)
                 .active(true)
                 .build();

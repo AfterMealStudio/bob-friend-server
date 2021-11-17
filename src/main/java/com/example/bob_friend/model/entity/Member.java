@@ -102,13 +102,13 @@ public class Member {
         this.active = true;
     }
 
-    public void setRating(Double rating) {
-        // 계산 로직 필요
-        this.rating = rating;
+    public void setRating(Double score) {
+        numberOfJoin++;
+        this.rating += score;
     }
 
     public Double getRating() {
-        return rating / 2;
+        return Double.valueOf(Math.round(rating * 2 / Math.max(1, numberOfJoin) / 2));
     }
 
     public void setAuthorities(Set<Authority> authorities) {

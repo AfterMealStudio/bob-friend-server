@@ -57,6 +57,7 @@ public class CommentServiceTest {
                 .birth(LocalDate.now())
                 .active(true)
                 .rating(0.0)
+                .numberOfJoin(0)
                 .build();
 
         testRecruitment = Recruitment.builder()

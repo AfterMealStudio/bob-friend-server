@@ -10,9 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @SuperBuilder
@@ -55,7 +53,7 @@ public class Recruitment extends Writing {
     private LocalDateTime appointmentTime;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recruitment")
-    private Set<Comment> comments;
+    private List<Comment> comments;
 
     @Column(name = "active")
     private boolean active;
@@ -129,7 +127,7 @@ public class Recruitment extends Writing {
     @Override
     public void setup() {
         super.setup();
-        comments = new HashSet<>();
+        comments = new LinkedList<>();
         members = Set.of(author);
         active = true;
         endAt = getAppointmentTime().plusDays(1);

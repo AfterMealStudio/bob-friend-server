@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -165,7 +166,7 @@ public class RecruitmentDto {
 
         private int getAmountOfComments(Recruitment recruitment) {
             int amountOfReplies = 0;
-            Set<Comment> comments = recruitment.getComments();
+            List<Comment> comments = recruitment.getComments();
             for (Comment comment :
                     comments) {
                 amountOfReplies += comment.getReplies().size();
