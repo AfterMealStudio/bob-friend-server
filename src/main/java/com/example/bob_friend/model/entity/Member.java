@@ -1,10 +1,7 @@
 package com.example.bob_friend.model.entity;
 
 import com.example.bob_friend.model.Constant;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -71,8 +68,6 @@ public class Member {
     @Column(name = "number_of_join")
     private Integer numberOfJoin;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Report> reports;
 
     @ElementCollection
     @JoinColumn(name = "authority")
@@ -108,6 +103,7 @@ public class Member {
     }
 
     public Double getRating() {
+        if (rating==null || numberOfJoin==null) return 0.0;
         return Double.valueOf(Math.round(rating * 2 / Math.max(1, numberOfJoin) / 2));
     }
 
@@ -152,6 +148,13 @@ public class Member {
 
     public boolean isValid() {
         return this.id >= 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                '}';
     }
 }
 

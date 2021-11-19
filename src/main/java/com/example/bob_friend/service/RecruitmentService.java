@@ -1,12 +1,14 @@
 package com.example.bob_friend.service;
 
-import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.dto.Condition;
+import com.example.bob_friend.model.dto.RecruitmentDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
 import com.example.bob_friend.model.exception.*;
+import com.example.bob_friend.repository.RecruitmentMemberRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
+import com.example.bob_friend.repository.WritingReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,8 @@ import java.util.*;
 public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
     private final ReportService reportService;
+    private final WritingReportRepository reportRepository;
+    private final RecruitmentMemberRepository recruitmentMemberRepository;
     private final MemberService memberService;
 
     @Transactional
@@ -48,12 +52,14 @@ public class RecruitmentService {
 
 
     @Transactional
-    public void delete(Long recruitmentId) {
+    public void deleteRecruitment(Long recruitmentId) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
-        if (currentMember.equals(recruitment.getAuthor()))
-            recruitmentRepository.deleteById(recruitmentId);
-        else
+        if (currentMember.equals(recruitment.getAuthor())) {
+//            recruitmentMemberRepository.deleteAllByRecruitment(recruitment);
+            reportRepository.deleteAllByWriting(recruitment);
+            recruitmentRepository.delete(recruitment);
+        } else
             throw new MemberNotAllowedException(currentMember.getEmail());
     }
 
@@ -201,10 +207,14 @@ public class RecruitmentService {
 
 
     private Recruitment getRecruitment(Long recruitmentId) {
-        return recruitmentRepository.findById(recruitmentId)
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> {
                     throw new RecruitmentNotFoundException(recruitmentId);
                 });
+        if (!recruitment.isActive()) {
+            throw new RecruitmentNotActiveException(recruitmentId);
+        }
+        return recruitment;
     }
 
     private boolean checkSexRestriction(Recruitment recruitment,

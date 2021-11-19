@@ -13,6 +13,7 @@ import com.example.bob_friend.model.exception.ReplyNotFoundException;
 import com.example.bob_friend.repository.CommentRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import com.example.bob_friend.repository.ReplyRepository;
+import com.example.bob_friend.repository.WritingReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class CommentService {
     private final ReplyRepository replyRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final ReportService reportService;
+    private final WritingReportRepository reportRepository;
     private final MemberService memberService;
 
     public List<CommentDto.Response> getAllCommentByRecruitmentId(Long recruitmentId) {
@@ -52,6 +54,7 @@ public class CommentService {
         Member author = memberService.getCurrentMember();
         Comment comment = getComment(commentId);
         if (comment.getAuthor().equals(author)) {
+            reportRepository.deleteAllByWriting(comment);
             comment.clear();
         } else {
             throw new MemberNotAllowedException(author.getNickname());
@@ -77,6 +80,7 @@ public class CommentService {
         Member author = memberService.getCurrentMember();
         Reply reply = getReply(replyId);
         if (reply.getAuthor().equals(author)) {
+            reportRepository.deleteAllByWriting(reply);
             replyRepository.delete(reply);
         } else {
             throw new MemberNotAllowedException(author.getNickname());

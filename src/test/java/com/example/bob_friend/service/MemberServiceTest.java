@@ -3,10 +3,7 @@ package com.example.bob_friend.service;
 import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.entity.*;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
-import com.example.bob_friend.repository.CommentRepository;
-import com.example.bob_friend.repository.MemberRepository;
-import com.example.bob_friend.repository.RecruitmentRepository;
-import com.example.bob_friend.repository.ReplyRepository;
+import com.example.bob_friend.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,6 +44,8 @@ public class MemberServiceTest {
     PasswordEncoder passwordEncoder;
     @Mock
     EmailService emailService;
+    @Mock
+    WritingReportRepository reportRepository;
     @InjectMocks
     MemberService memberService;
     Member testMember;

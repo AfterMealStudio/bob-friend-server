@@ -407,7 +407,7 @@ class RecruitmentServiceTest {
         when(recruitmentRepository.findById(any()))
                 .thenReturn(Optional.empty());
         assertThrows(RecruitmentNotFoundException.class, () -> {
-            recruitmentService.delete(testRecruitment.getId());
+            recruitmentService.deleteRecruitment(testRecruitment.getId());
         });
     }
 
@@ -429,7 +429,7 @@ class RecruitmentServiceTest {
                 .thenReturn(Optional.ofNullable(testRecruitment));
 
         assertThrows(MemberNotAllowedException.class, () -> {
-            recruitmentService.delete(testRecruitment.getId());
+            recruitmentService.deleteRecruitment(testRecruitment.getId());
         });
     }
 

@@ -7,4 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface WritingReportRepository extends JpaRepository<Report, Long> {
     boolean existsByMemberAndWriting(Member member, Writing writing);
+
+    void deleteAllByWriting(Writing writing);
+
+    void deleteAllByMember(Member member);
+
 }

@@ -7,11 +7,8 @@ import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
 import com.example.bob_friend.model.exception.MemberNotAllowedException;
-import com.example.bob_friend.repository.CommentRepository;
-import com.example.bob_friend.repository.MemberRepository;
-import com.example.bob_friend.repository.RecruitmentRepository;
-import com.example.bob_friend.repository.ReplyRepository;
-import lombok.RequiredArgsConstructor;
+import com.example.bob_friend.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -25,16 +22,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
-@RequiredArgsConstructor
 @Service
 public class MemberService {
-    private final MemberRepository memberRepository;
-    private final RecruitmentRepository recruitmentRepository;
-    private final ReplyRepository replyRepository;
-    private final CommentRepository commentRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private RecruitmentRepository recruitmentRepository;
+    @Autowired
+    private ReplyRepository replyRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private WritingReportRepository reportRepository;
+    @Autowired
+    private AuthenticationManagerBuilder authenticationManagerBuilder;
 
 
     public Authentication signin(MemberDto.Login loginDto) {
@@ -107,6 +112,8 @@ public class MemberService {
         Member currentMember = getCurrentMember();
         if (currentMember.getId() != memberId)
             throw new MemberNotAllowedException(currentMember.getNickname());
+
+        reportRepository.deleteAllByMember(currentMember);
 
         for (Recruitment recruitment :
                 recruitmentRepository.findAllByAuthor(currentMember)) {

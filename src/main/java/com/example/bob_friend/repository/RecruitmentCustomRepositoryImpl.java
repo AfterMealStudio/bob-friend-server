@@ -8,6 +8,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -22,6 +23,7 @@ import static com.example.bob_friend.model.entity.QRecruitment.recruitment;
 @RequiredArgsConstructor
 @Repository
 public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomRepository {
+    @Autowired
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -100,7 +102,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
 
     private Page<Recruitment> getPageFromStatement(Pageable pageable, StatementStrategy statementStrategy) {
-        BooleanExpression[] booleanExpression = (BooleanExpression[]) statementStrategy.makeBooleanExpression();
+        Predicate[] booleanExpression = statementStrategy.makeBooleanExpression();
         JPAQuery<Recruitment> query = getActiveRecruitments()
                 .where(
                         booleanExpression

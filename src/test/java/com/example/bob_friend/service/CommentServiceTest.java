@@ -8,6 +8,7 @@ import com.example.bob_friend.model.exception.MemberNotAllowedException;
 import com.example.bob_friend.repository.CommentRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import com.example.bob_friend.repository.ReplyRepository;
+import com.example.bob_friend.repository.WritingReportRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,8 @@ public class CommentServiceTest {
     ReplyRepository replyRepository;
     @Mock
     RecruitmentRepository recruitmentRepository;
+    @Mock
+    WritingReportRepository reportRepository;
     @Mock
     MemberService memberService;
     @InjectMocks

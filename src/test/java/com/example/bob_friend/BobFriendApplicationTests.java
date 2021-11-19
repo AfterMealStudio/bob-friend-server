@@ -10,12 +10,4 @@ class BobFriendApplicationTests {
 
     @Autowired
     RecruitmentService recruitmentService;
-
-    @Test
-    void contextLoads() {
-    }
-
-    public void getAll() {
-
-    }
 }

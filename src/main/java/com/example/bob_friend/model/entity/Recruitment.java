@@ -25,7 +25,7 @@ public class Recruitment extends Writing {
     @Column(name = "title")
     private String title;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany()
     @JoinTable(name = "recruitment_member",
             joinColumns = {@JoinColumn(name = "recruitment_id", referencedColumnName = "recruitment_id")},
             inverseJoinColumns = @JoinColumn(name = "member_id", referencedColumnName = "member_id"))
@@ -63,15 +63,14 @@ public class Recruitment extends Writing {
     @Convert(converter = SexConverter.class)
     private Sex sexRestriction;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Report> reports;
 
     @Override
     public String toString() {
         return "Recruitment{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
+                "title='" + this.getTitle() + '\'' +
+                ", members=" + this.getMembers() +
+                ", id=" + id +
+                ", author=" + this.getAuthor() +
                 '}';
     }
 

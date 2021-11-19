@@ -80,7 +80,7 @@ public class RecruitmentController {
     @DeleteMapping("/{recruitmentId}")
     public ResponseEntity deleteRecruitment(
             @PathVariable Long recruitmentId) {
-        recruitmentService.delete(recruitmentId);
+        recruitmentService.deleteRecruitment(recruitmentId);
         return ResponseEntity.ok().build();
     }
 
