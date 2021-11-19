@@ -1,5 +1,6 @@
 package com.example.bob_friend.controller;
 
+import com.example.bob_friend.model.dto.ErrorResponse;
 import com.example.bob_friend.model.exception.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +15,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class CustomExceptionHandler {
 
+
+    private ErrorResponse getErrorResponse(String message, Class<? extends Throwable> throwable) {
+        return new ErrorResponse(message, throwable.getSimpleName());
+    }
+
     @ExceptionHandler(value = CustomException.class)
     public ResponseEntity handleCustomException(CustomException e) {
-        return new ResponseEntity(e.getMessage(), e.getHttpStatus());
+
+        return new ResponseEntity(getErrorResponse(e.getMessage(), e.getClass()), e.getHttpStatus());
     }
 
     @ExceptionHandler(value = NumberFormatException.class)
     public ResponseEntity handleNumberFormatException(NumberFormatException e) {
         String message = "input is not valid : "+ e.getMessage();
-        return new ResponseEntity(message, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(getErrorResponse(message, e.getClass()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -35,22 +42,22 @@ public class CustomExceptionHandler {
             message.append(", input : ");
             message.append(error.getRejectedValue());
         }
-        return new ResponseEntity(message.toString(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(getErrorResponse(message.toString(),e.getClass()), HttpStatus.BAD_REQUEST);
     }
 
 
     @ExceptionHandler(value = MissingRequestValueException.class)
     public ResponseEntity handleMissingValueException(MissingRequestValueException e) {
-        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(getErrorResponse(e.getMessage(), e.getClass()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = UsernameNotFoundException.class)
     public ResponseEntity handleUsernameNotFound(UsernameNotFoundException e) {
-        return new ResponseEntity(e.getMessage() + " is not a member", HttpStatus.NOT_FOUND);
+        return new ResponseEntity(getErrorResponse(e.getMessage() + " is not a member", e.getClass()) , HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = AuthenticationException.class)
     public ResponseEntity handleAuthenticationException(AuthenticationException e) {
-        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(getErrorResponse(e.getMessage(), e.getClass()), HttpStatus.BAD_REQUEST);
     }
 }
