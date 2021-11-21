@@ -27,43 +27,49 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<Recruitment> searchByTitle(String keyword, Pageable pageable) {
+    public Page<Recruitment> searchByTitle(Condition.Search search, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
-                recruitment.title.contains(keyword)
+                recruitment.title.contains(search.getKeyword()),
+                betweenTime(search.getStart(), search.getEnd())
         });
     }
 
     @Override
-    public Page<Recruitment> searchByContent(String keyword, Pageable pageable) {
+    public Page<Recruitment> searchByContent(Condition.Search search, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
-                recruitment.content.contains(keyword)
+                recruitment.content.contains(search.getKeyword()),
+                betweenTime(search.getStart(), search.getEnd())
         });
     }
 
     @Override
-    public Page<Recruitment> searchByRestaurant(String keyword, Pageable pageable) {
+    public Page<Recruitment> searchByRestaurant(Condition.Search search, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
-                recruitment.restaurantName.contains(keyword)
+                recruitment.restaurantName.contains(search.getKeyword()),
+                betweenTime(search.getStart(), search.getEnd())
         });
     }
 
-    @Override
-    public Page<Recruitment> searchByAppointmentTime(LocalDateTime start, LocalDateTime end, Pageable pageable) {
-        return getPageFromStatement(pageable, () -> new Predicate[]{
-                recruitment.appointmentTime.between(start, end)
-        });
-    }
+
+//    @Override
+//    public Page<Recruitment> searchByAppointmentTime(LocalDateTime start, LocalDateTime end, Pageable pageable) {
+//        return getPageFromStatement(pageable, () -> new Predicate[]{
+//                betweenTime(start, end)
+//        });
+//    }
 
     @Override
-    public Page<Recruitment> searchByAll(String keyword, Pageable pageable) {
+    public Page<Recruitment> searchByAll(Condition.Search search, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
-                        recruitment.title.contains(keyword).or(
-                                recruitment.content.contains(keyword).or(
-                                        recruitment.restaurantName.contains(keyword)
-                                ))
+                        recruitment.title.contains(search.getKeyword()).or(
+                                recruitment.content.contains(search.getKeyword()).or(
+                                        recruitment.restaurantName.contains(search.getKeyword())
+                                )),
+                        betweenTime(search.getStart(), search.getEnd())
                 }
         );
     }
+
 
     @Override
     public Page<Recruitment> findAllByAuthor(Member author, Pageable pageable) {
@@ -114,6 +120,12 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     private BooleanExpression eqRestaurantName(String restaurantName) {
         if (!StringUtils.hasLength(restaurantName)) return null;
         return recruitment.restaurantName.eq(restaurantName);
+    }
+
+    private BooleanExpression betweenTime(LocalDateTime start, LocalDateTime end) {
+        if (start == null) return null;
+        if (end == null) return null;
+        return recruitment.appointmentTime.between(start, end);
     }
 
     private BooleanExpression eqRestaurantAddress(String restaurantAddress) {

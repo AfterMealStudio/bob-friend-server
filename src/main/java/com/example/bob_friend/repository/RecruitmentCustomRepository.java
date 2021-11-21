@@ -9,15 +9,13 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 
 public interface RecruitmentCustomRepository {
-    Page<Recruitment> searchByTitle(String keyword, Pageable pageable);
+    Page<Recruitment> searchByTitle(Condition.Search search, Pageable pageable);
 
-    Page<Recruitment> searchByContent(String keyword, Pageable pageable);
+    Page<Recruitment> searchByContent(Condition.Search search, Pageable pageable);
 
-    Page<Recruitment> searchByRestaurant(String keyword, Pageable pageable);
+    Page<Recruitment> searchByRestaurant(Condition.Search search, Pageable pageable);
 
-    Page<Recruitment> searchByAppointmentTime(LocalDateTime start, LocalDateTime end, Pageable pageable);
-
-    Page<Recruitment> searchByAll(String keyword, Pageable pageable);
+    Page<Recruitment> searchByAll(Condition.Search search, Pageable pageable);
 
     Page<Recruitment> findAll(Pageable pageable);
 

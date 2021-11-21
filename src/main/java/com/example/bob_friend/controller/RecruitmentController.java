@@ -23,11 +23,11 @@ public class RecruitmentController {
 
     @GetMapping()
     public ResponseEntity getAllRecruitment(
-            Condition.SearchType type,
+            @RequestParam(name = "type", defaultValue = "all") Condition.SearchType type,
             Condition.Search searchCondition,
             @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.ASC) Pageable pageable) {
         Page<RecruitmentDto.ResponseList> responseDtoList = null;
-        if (type==null) type = Condition.SearchType.all;
+
         switch (type) {
             case owned: // 자기가 작성한
                 responseDtoList = recruitmentService
@@ -111,22 +111,18 @@ public class RecruitmentController {
 
     private Page<RecruitmentDto.Response> getResponses(Condition.SearchCategory category, Condition.Search searchCondition, Pageable pageable) {
         Page<RecruitmentDto.Response> searchResult = null;
-
         switch (category) {
-            case time:
-                searchResult = recruitmentService.searchAppointmentTime(searchCondition.getStart(), searchCondition.getEnd(), pageable);
-                break;
             case place:
-                searchResult = recruitmentService.searchRestaurant(searchCondition.getKeyword(), pageable);
+                searchResult = recruitmentService.searchRestaurant(searchCondition, pageable);
                 break;
             case title:
-                searchResult = recruitmentService.searchTitle(searchCondition.getKeyword(), pageable);
+                searchResult = recruitmentService.searchTitle(searchCondition, pageable);
                 break;
             case content:
-                searchResult = recruitmentService.searchContent(searchCondition.getKeyword(), pageable);
+                searchResult = recruitmentService.searchContent(searchCondition, pageable);
                 break;
             case all:
-                searchResult = recruitmentService.searchByAllCondition(searchCondition.getKeyword(), pageable);
+                searchResult = recruitmentService.searchByAllCondition(searchCondition, pageable);
                 break;
         }
         return searchResult;

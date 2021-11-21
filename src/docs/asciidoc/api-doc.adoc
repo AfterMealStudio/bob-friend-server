@@ -122,6 +122,12 @@ path-parameter::
 include::{snippets}/recruitment/delete-recruitment/path-parameters.adoc[]
 
 === 검색
+```
+검색 카테고리는 title, content, place, all 4가지가 있다. 순서대로 약속의 제목, 내용, 식당이름을 나타내며, all일 경우 모든 카테고리를 같은 키워드로 검색한 결과를 반환한다. 카테고리의 기본값은 all이다.
+파라미터로 시간을 입력할 경우(start, end) 두 개의 시간 사이에 있는 결과를 반환한다. 시간은 "yyyyMMddHHmm" 꼴로 입력한다.
+ex) start = 202111211739 & end = 202111130000
+```
+
 request::
 include::{snippets}/recruitment/search-recruitment/http-request.adoc[]
 header::
@@ -131,7 +137,7 @@ include::{snippets}/recruitment/search-recruitment/request-parameters.adoc[]
 response::
 include::{snippets}/recruitment/search-recruitment/http-response.adoc[]
 
-=== 신고하기
+=== 신고
 ```
 한 사용자는 하나의 게시물(약속, 댓글, 대댓글)을 한 번만 신고할 수 있다. 일정 횟수 이상 신고받은 게시물은 내용이 지워지고(약속의 경우 마감처리됨) 작성자에게 신고가 누적된다. 일정 횟수 이상 신고가 누적된 사용자는 이용이 일정 기간 정지된다.
 ```
@@ -146,7 +152,7 @@ response::
 include::{snippets}/recruitment/report-recruitment/http-response.adoc[]
 
 
-=== 마감하기
+=== 마감
 ```
 해당 약속의 작성자만 약속을 마감할 수 있다. 마감된 약속은 참여하거나 참여를 취소할 수 없고, 전체 조회 시 조회되지 않는다.
 ```

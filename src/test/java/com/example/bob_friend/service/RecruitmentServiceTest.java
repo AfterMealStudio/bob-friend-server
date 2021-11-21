@@ -455,8 +455,10 @@ class RecruitmentServiceTest {
         List<RecruitmentDto.Response> collect = recruitments.stream()
                 .map(RecruitmentDto.Response::new)
                 .collect(Collectors.toList());
+        Condition.Search search = new Condition.Search();
+        search.setKeyword(testRecruitment.getTitle());
         Page<RecruitmentDto.Response> responsePage =
-                recruitmentService.searchTitle(testRecruitment.getTitle(), pageRequest);
+                recruitmentService.searchTitle(search, pageRequest);
 
         assertThat(responsePage, equalTo(new PageImpl<>(collect)));
     }

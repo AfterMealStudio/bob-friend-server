@@ -156,39 +156,40 @@ public class RecruitmentService {
     }
 
 
-    public Page<RecruitmentDto.Response> searchTitle(String keyword, Pageable pageable) {
+    public Page<RecruitmentDto.Response> searchTitle(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
-                .searchByTitle(keyword, pageable)
+                .searchByTitle(search, pageable)
                 .map(RecruitmentDto.Response::new);
     }
 
 
-    public Page<RecruitmentDto.Response> searchContent(String keyword, Pageable pageable) {
+    public Page<RecruitmentDto.Response> searchContent(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
-                .searchByContent(keyword, pageable)
+                .searchByContent(search, pageable)
                 .map(RecruitmentDto.Response::new);
     }
 
-    public Page<RecruitmentDto.Response> searchRestaurant(String keyword, Pageable pageable) {
+    public Page<RecruitmentDto.Response> searchRestaurant(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
-                .searchByRestaurant(keyword, pageable)
+                .searchByRestaurant(search, pageable)
                 .map(RecruitmentDto.Response::new);
     }
 
-    public Page<RecruitmentDto.Response> searchAppointmentTime(String start, String end, Pageable pageable) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-        LocalDateTime startTime = LocalDateTime.parse(start, formatter);
-        LocalDateTime endTime = LocalDateTime.parse(end, formatter);
-        return recruitmentRepository.searchByAppointmentTime(
-                        startTime, endTime, pageable)
-                .map(RecruitmentDto.Response::new);
-    }
+//    public Page<RecruitmentDto.Response> searchAppointmentTime(String start, String end, Pageable pageable) {
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+//        LocalDateTime startTime = LocalDateTime.parse(start, formatter);
+//        LocalDateTime endTime = LocalDateTime.parse(end, formatter);
+//        return recruitmentRepository.searchByAppointmentTime(
+//                        startTime, endTime, pageable)
+//                .map(RecruitmentDto.Response::new);
+//    }
 
-    public Page<RecruitmentDto.Response> searchByAllCondition(String keyword, Pageable pageable) {
+    public Page<RecruitmentDto.Response> searchByAllCondition(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
-                .searchByAll(keyword, pageable)
+                .searchByAll(search, pageable)
                 .map(RecruitmentDto.Response::new);
     }
+
 
     public void reportRecruitment(Long recruitmentId) {
         Recruitment recruitment = getRecruitment(recruitmentId);
@@ -232,4 +233,6 @@ public class RecruitmentService {
             recruitment.close();
         return recruitment;
     }
+
+
 }

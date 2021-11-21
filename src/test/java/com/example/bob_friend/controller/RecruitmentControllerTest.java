@@ -460,7 +460,7 @@ class RecruitmentControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestParameters(
-                                parameterWithName("category").description("검색 분류(title, place, content, time)"),
+                                parameterWithName("category").description("검색 분류(all, title, place, content)"),
                                 parameterWithName("keyword").description("검색어")
                         ),
                         requestHeaders(
