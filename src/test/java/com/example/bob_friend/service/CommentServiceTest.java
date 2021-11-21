@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -80,15 +81,6 @@ public class CommentServiceTest {
                 .active(true)
                 .build();
 
-        testComment = Comment.builder()
-                .id(1L)
-                .author(testAuthor)
-                .recruitment(testRecruitment)
-                .content("test comment")
-                .replies(new HashSet<>())
-                .createdAt(LocalDateTime.now())
-                .build();
-
         testReply = Reply.builder()
                 .id(1L)
                 .author(testAuthor)
@@ -96,6 +88,15 @@ public class CommentServiceTest {
                 .content("test reply")
                 .createdAt(LocalDateTime.now())
                 .build();
+        testComment = Comment.builder()
+                .id(1L)
+                .author(testAuthor)
+                .recruitment(testRecruitment)
+                .content("test comment")
+                .replies(Set.of(testReply))
+                .createdAt(LocalDateTime.now())
+                .build();
+
     }
 
     @Test
@@ -185,6 +186,25 @@ public class CommentServiceTest {
 
 
     @Test
+    void deleteReplyTest() {
+        testReply = Reply.builder()
+                .id(1L)
+                .author(testAuthor)
+                .comment(testComment)
+                .content("test reply")
+                .createdAt(LocalDateTime.now())
+                .build();
+        when(memberService.getCurrentMember())
+                .thenReturn(testAuthor);
+
+        when(replyRepository.findById(any()))
+                .thenReturn(java.util.Optional.ofNullable(testReply));
+
+        commentService.deleteReply(testReply.getId());
+
+    }
+
+    @Test
     void deleteReplyTest_fail_memberNotAllowed() {
         Member member = Member.builder()
                 .id(2L).build();
@@ -197,7 +217,5 @@ public class CommentServiceTest {
                     commentService.deleteReply(testReply.getId());
                 }
         );
-
-
     }
 }

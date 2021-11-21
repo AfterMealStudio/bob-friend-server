@@ -2,13 +2,11 @@ package com.example.bob_friend.model.entity;
 
 import com.example.bob_friend.model.Constant;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter

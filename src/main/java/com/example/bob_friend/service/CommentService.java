@@ -55,7 +55,10 @@ public class CommentService {
         Comment comment = getComment(commentId);
         if (comment.getAuthor().equals(author)) {
             reportRepository.deleteAllByWriting(comment);
-            comment.clear();
+            if (comment.getReplies().size() > 0) // 대댓글이 달려있으면 내용만 삭제
+                comment.clear();
+            else
+                commentRepository.delete(comment);
         } else {
             throw new MemberNotAllowedException(author.getNickname());
         }
@@ -80,8 +83,13 @@ public class CommentService {
         Member author = memberService.getCurrentMember();
         Reply reply = getReply(replyId);
         if (reply.getAuthor().equals(author)) {
-            reportRepository.deleteAllByWriting(reply);
+            reportRepository.deleteAllByWriting(reply); // 신고 내역 삭제
             replyRepository.delete(reply);
+            Comment comment = reply.getComment();
+            if (!comment.getAuthor().isValid() &&
+                    comment.getReplies().size() <= 1) {// 원 댓글이 삭제된 상태이고 대댓글이 하나도 남지 않았다면 원 댓글 db에서 삭제
+                commentRepository.delete(comment);
+            }
         } else {
             throw new MemberNotAllowedException(author.getNickname());
         }
