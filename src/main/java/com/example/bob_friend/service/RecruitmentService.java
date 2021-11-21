@@ -6,7 +6,6 @@ import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
 import com.example.bob_friend.model.exception.*;
-import com.example.bob_friend.repository.RecruitmentMemberRepository;
 import com.example.bob_friend.repository.RecruitmentRepository;
 import com.example.bob_friend.repository.WritingReportRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -25,7 +23,6 @@ public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
     private final ReportService reportService;
     private final WritingReportRepository reportRepository;
-    private final RecruitmentMemberRepository recruitmentMemberRepository;
     private final MemberService memberService;
 
     @Transactional
@@ -137,7 +134,7 @@ public class RecruitmentService {
 
         Recruitment recruitment = getRecruitment(recruitmentId);
         Member author = recruitment.getAuthor();
-        if (!author.isValid() || !recruitment.isActive())
+        if (author.isUnknown() || !recruitment.isActive())
             throw new RecruitmentNotActiveException(recruitmentId);
 
         if (currentMember.equals(author)) {

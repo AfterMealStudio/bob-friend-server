@@ -23,7 +23,6 @@ import static com.example.bob_friend.model.entity.QRecruitment.recruitment;
 @RequiredArgsConstructor
 @Repository
 public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomRepository {
-    @Autowired
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override

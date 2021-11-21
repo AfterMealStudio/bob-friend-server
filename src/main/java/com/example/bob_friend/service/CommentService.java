@@ -86,7 +86,7 @@ public class CommentService {
             reportRepository.deleteAllByWriting(reply); // 신고 내역 삭제
             replyRepository.delete(reply);
             Comment comment = reply.getComment();
-            if (!comment.getAuthor().isValid() &&
+            if (comment.getAuthor().isUnknown() &&
                     comment.getReplies().size() <= 1) {// 원 댓글이 삭제된 상태이고 대댓글이 하나도 남지 않았다면 원 댓글 db에서 삭제
                 commentRepository.delete(comment);
             }
