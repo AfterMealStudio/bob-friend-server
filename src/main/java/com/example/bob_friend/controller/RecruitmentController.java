@@ -100,7 +100,7 @@ public class RecruitmentController {
 
     @GetMapping("/search")
     public ResponseEntity searchRecruitment(
-            @RequestParam(defaultValue = "title", name = "category") Condition.SearchCategory category,
+            @RequestParam(defaultValue = "all", name = "category") Condition.SearchCategory category,
             Condition.Search searchCondition,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
 
