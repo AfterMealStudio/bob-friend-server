@@ -1,12 +1,14 @@
 package com.example.bob_friend.model.entity;
 
 import com.example.bob_friend.model.Constant;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -60,7 +62,7 @@ public class Member {
     private LocalDate reportEnd;
 
     @Column(name = "verified") // 이메일 인증 여부
-    private boolean verified;
+    private boolean emailVerified;
 
     @Column(name = "rating")
     private Double rating;
@@ -138,16 +140,22 @@ public class Member {
                                 this.accumulatedReports);
     }
 
-    public boolean isVerified() {
-        return verified;
+    public boolean isEmailVerified() {
+        return emailVerified;
     }
 
-    public void setVerified(boolean verified) {
-        this.verified = verified;
+    public void emailVerify() {
+        this.emailVerified = true;
     }
 
-    public boolean isValid() {
-        return this.id >= 0;
+    public boolean isUnknown() {
+        return this.id < 0;
+    }
+
+    public void validateIfSuspension() {
+        if (reportEnd != null && LocalDate.now().isAfter(reportEnd)) {
+            setActive();
+        }
     }
 
     @Override

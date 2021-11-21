@@ -140,9 +140,9 @@ public class MemberServiceTest {
     @Test
     @DisplayName(value = "check_member_with_code")
     void checkMemberWithCodeTest() {
-        when(memberRepository.getMemberByEmail(any())).thenReturn(testMember);
+        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.ofNullable(testMember));
         memberService.checkMemberWithCode(testMember.getEmail(), String.valueOf(testMember.hashCode()));
-        assertTrue(testMember.isVerified());
+        assertTrue(testMember.isEmailVerified());
     }
 
 

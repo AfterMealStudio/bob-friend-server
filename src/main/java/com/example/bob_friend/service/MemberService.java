@@ -8,7 +8,7 @@ import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.exception.MemberDuplicatedException;
 import com.example.bob_friend.model.exception.MemberNotAllowedException;
 import com.example.bob_friend.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -22,24 +22,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
+@RequiredArgsConstructor
 @Service
 public class MemberService {
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private RecruitmentRepository recruitmentRepository;
-    @Autowired
-    private ReplyRepository replyRepository;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private EmailService emailService;
-    @Autowired
-    private WritingReportRepository reportRepository;
-    @Autowired
-    private AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final MemberRepository memberRepository;
+    private final RecruitmentRepository recruitmentRepository;
+    private final ReplyRepository replyRepository;
+    private final CommentRepository commentRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+    private final WritingReportRepository reportRepository;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
 
     public Authentication signin(MemberDto.Login loginDto) {
@@ -96,9 +89,10 @@ public class MemberService {
 
     @Transactional
     public void checkMemberWithCode(String email, String code) {
-        Member member = memberRepository.getMemberByEmail(email);
+        Member member = memberRepository.findMemberByEmail(email)
+                .orElseThrow(()->new UsernameNotFoundException(email));
         if (Integer.parseInt(code) == (member.hashCode())) {
-            member.setVerified(true);
+            member.emailVerify();
         }
     }
 
