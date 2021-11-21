@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -61,13 +62,14 @@ public class RecruitmentDto {
     @EqualsAndHashCode(callSuper = false)
     public static class Response extends BaseResponse {
 
-        private Set<CommentDto.Response> comments;
+        private List<CommentDto.Response> comments;
 
         public Response(Recruitment recruitment) {
             super(recruitment);
             this.comments = recruitment.getComments().stream()
                     .map(CommentDto.Response::new)
-                    .collect(Collectors.toSet());
+                    .sorted(Comparator.comparing(t -> t.getCreatedAt()))
+                    .collect(Collectors.toList());
         }
 
     }

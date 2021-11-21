@@ -29,21 +29,21 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     @Override
     public Page<Recruitment> searchByTitle(String keyword, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
-                recruitment.title.like(keyword)
+                recruitment.title.contains(keyword)
         });
     }
 
     @Override
     public Page<Recruitment> searchByContent(String keyword, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
-                recruitment.content.like(keyword)
+                recruitment.content.contains(keyword)
         });
     }
 
     @Override
     public Page<Recruitment> searchByRestaurant(String keyword, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
-                recruitment.restaurantName.like(keyword)
+                recruitment.restaurantName.contains(keyword)
         });
     }
 
@@ -57,9 +57,9 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     @Override
     public Page<Recruitment> searchByAll(String keyword, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
-                        recruitment.title.like(keyword).or(
-                                recruitment.content.like(keyword).or(
-                                        recruitment.restaurantName.like(keyword)
+                        recruitment.title.contains(keyword).or(
+                                recruitment.content.contains(keyword).or(
+                                        recruitment.restaurantName.contains(keyword)
                                 ))
                 }
         );
@@ -74,7 +74,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> findAll(Pageable pageable) {
-        return getPageFromStatement(pageable, null);
+        return getPageFromStatement(pageable, () -> new Predicate[]{});
     }
 
     @Override
