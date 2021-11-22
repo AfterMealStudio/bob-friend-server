@@ -3,12 +3,12 @@ package com.example.bob_friend.repository;
 import com.example.bob_friend.model.dto.Condition;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Recruitment;
+import com.example.bob_friend.model.entity.Sex;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -93,8 +93,12 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     @Override
     public Page<Recruitment> findAllAvailable(Member currentMember, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
+                recruitment.totalNumberOfPeople.gt(recruitment.members.size()),
                 recruitment.author.ne(currentMember),
-                recruitment.members.contains(currentMember).not()
+                recruitment.members.contains(currentMember).not(),
+                recruitment.sexRestriction.eq(currentMember.getSex()).or(
+                        recruitment.sexRestriction.eq(Sex.NONE)
+                )
         });
     }
 
