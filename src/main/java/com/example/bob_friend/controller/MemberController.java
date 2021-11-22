@@ -59,5 +59,11 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-
+    @PostMapping("/user/{nickname}/score")
+    public ResponseEntity rateMember(
+            @PathVariable String nickname,
+            @RequestBody MemberDto.Rate rate) {
+        memberService.rateMember(nickname, rate);
+        return ResponseEntity.ok().build();
+    }
 }

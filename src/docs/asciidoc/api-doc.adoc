@@ -41,6 +41,12 @@ include::{snippets}/recruitment/get-one-recruitment/path-parameters.adoc[]
 ```
 
 
+```
+요청 시 sort 파라미터를 통해 Page 객체를 정렬할 수 있다. 'sort=정렬 기준이 되는 필드, 방향' 형식으로 입력 할 수 있다. 기본 값은 작성시간 기준 오름차순이다.
+ex) sort=appointmentTime,asc    약속시간 기준 오름차순
+    sort=createdAt,desc         작성시간 기준 내림차순
+```
+
 request::
 include::{snippets}/recruitment/get-all-recruitments/http-request.adoc[]
 header::
@@ -50,7 +56,7 @@ include::{snippets}/recruitment/get-all-recruitments/http-response.adoc[]
 
 
 
-=== 전제 조회 필터링
+==== 전제 조회 필터링
 ```
 전체 조회는 type 이라는 파라미터를 입력해 결과를 필터링 할 수 있다. type 파라미터는 owned, joined, available, all 4가지가 있다. 각각 자신이 생성한 약속, 현재 참여가 가능한 약속, 자신이 참여한 약속, 모든 약속을 의미한다. type이 all이면 type을 입력하지 않은 것과 같다.
 
@@ -303,3 +309,16 @@ path-param::
 include::{snippets}/member/check-nickname/path-parameters.adoc[]
 response::
 include::{snippets}/member/check-nickname/http-response.adoc[]
+
+
+=== 멤버 평점
+```
+멤버의 평점은 멤버 객체의 rating 필드에 나타나며 0.5 단위로 반올림된다.
+```
+
+request::
+include::{snippets}/member/rate/http-request.adoc[]
+path-param::
+include::{snippets}/member/rate/path-parameters.adoc[]
+response::
+include::{snippets}/member/rate/http-response.adoc[]

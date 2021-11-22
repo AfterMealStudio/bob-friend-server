@@ -37,6 +37,7 @@ public class MemberDto {
         private Sex sex;
         private Integer reportCount;
         private Integer accumulatedReports;
+        private Double rating;
         private boolean agree;
         private boolean active;
 
@@ -48,6 +49,7 @@ public class MemberDto {
             this.sex = member.getSex();
             this.reportCount = member.getReportCount();
             this.accumulatedReports = member.getAccumulatedReports();
+            this.rating = member.getRating();
             this.agree = member.isAgree();
             this.active = member.isActive();
         }
@@ -125,6 +127,14 @@ public class MemberDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Delete {
+        @NotNull(message = "must not be null")
         private String password;
+    }
+
+    @Getter
+    @Setter
+    public static class Rate {
+        @NotNull(message = "must not be null")
+        private Double score;
     }
 }

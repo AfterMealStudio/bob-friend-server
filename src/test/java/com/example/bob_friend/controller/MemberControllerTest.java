@@ -15,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,9 +26,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,6 +61,8 @@ class MemberControllerTest {
                 .agree(true)
                 .active(true)
                 .emailVerified(false)
+                .rating(0.0)
+                .numberOfJoin(0)
                 .build();
     }
 
@@ -153,9 +154,7 @@ class MemberControllerTest {
         MemberDto.Delete delete = new MemberDto.Delete(testMember.getPassword());
         mvc.perform(getRequestBuilder(
                         delete("/api/user/{userId}", testMember.getId()))
-                        .content(objectMapper.writeValueAsString(delete))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(delete)))
                 .andExpect(status().isOk())
                 .andDo(document("member/delete",
                         getDocumentRequest(),
@@ -167,6 +166,25 @@ class MemberControllerTest {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )
                 ));
+    }
+
+    @Test
+    void rateMemberTest() throws Exception {
+        MemberDto.Rate rate = new MemberDto.Rate();
+        rate.setScore(3.2);
+        mvc.perform(getRequestBuilder(
+                        post("/api/user/{nickname}/score", testMember.getNickname()))
+                        .content(objectMapper.writeValueAsString(rate)))
+                .andExpect(status().isOk())
+                .andDo(document("member/rate",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("nickname").description("닉네임")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )));
     }
 
 }

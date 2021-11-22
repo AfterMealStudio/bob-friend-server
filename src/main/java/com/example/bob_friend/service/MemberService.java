@@ -39,7 +39,8 @@ public class MemberService {
         if (!isExistByEmail(loginDto.getEmail())) {
             throw new UsernameNotFoundException(loginDto.getEmail());
         }
-        Authentication authentication = getAuthentication(loginDto.getEmail(), loginDto.getPassword());
+        Authentication authentication = getAuthentication(loginDto.getEmail(),
+                loginDto.getPassword());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
@@ -90,7 +91,7 @@ public class MemberService {
     @Transactional
     public void checkMemberWithCode(String email, String code) {
         Member member = memberRepository.findMemberByEmail(email)
-                .orElseThrow(()->new UsernameNotFoundException(email));
+                .orElseThrow(() -> new UsernameNotFoundException(email));
         if (Integer.parseInt(code) == (member.hashCode())) {
             member.emailVerify();
         }
@@ -142,6 +143,22 @@ public class MemberService {
                 memberRepository.existsMemberByNickname(nickname));
     }
 
+    @Transactional
+    public MemberDto.Response rateMember(String nickname, MemberDto.Rate rate) {
+        Member member = getMemberByNickname(nickname);
+        Double score = rate.getScore();
+        member.addRating(score);
+        return new MemberDto.Response(member);
+    }
+
+    private Member getMemberByNickname(String nickname) {
+        return memberRepository.findMemberByNickname(nickname)
+                .orElseThrow(() -> {
+                            throw new UsernameNotFoundException(
+                                    nickname + " not found");
+                        }
+                );
+    }
 
     private Member getMember(String currentUsername) {
         return memberRepository.findMemberWithAuthoritiesByEmail(currentUsername)

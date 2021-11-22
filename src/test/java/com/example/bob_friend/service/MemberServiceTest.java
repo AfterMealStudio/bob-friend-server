@@ -58,6 +58,8 @@ public class MemberServiceTest {
                 .sex(Sex.FEMALE)
                 .reportCount(0)
                 .accumulatedReports(0)
+                .rating(0.0)
+                .numberOfJoin(0)
                 .authorities(Collections.singleton(Authority.ROLE_USER))
                 .agree(true)
                 .active(true)
@@ -89,6 +91,8 @@ public class MemberServiceTest {
                 .sex(Sex.FEMALE)
                 .reportCount(0)
                 .accumulatedReports(0)
+                .rating(0.0)
+                .numberOfJoin(0)
                 .authorities(Collections.singleton(Authority.ROLE_USER))
                 .agree(true)
                 .active(true)
@@ -196,6 +200,19 @@ public class MemberServiceTest {
         Member currentMember = memberService.getCurrentMember();
 
         assertThat(currentMember, equalTo(testMember));
+    }
+
+
+    @Test
+    void rateMemberTest() {
+        when(memberRepository.findMemberByNickname(testMember.getNickname()))
+                .thenReturn(Optional.ofNullable(testMember));
+        MemberDto.Rate rate = new MemberDto.Rate();
+        rate.setScore(3.0);
+        MemberDto.Response response =
+                memberService.rateMember(testMember.getNickname(), rate);
+
+        assertThat(response.getRating(), equalTo(rate.getScore()));
     }
 
 

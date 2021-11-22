@@ -99,14 +99,13 @@ public class Member {
         this.active = true;
     }
 
-    public void setRating(Double score) {
+    public void addRating(Double score) {
         numberOfJoin++;
         this.rating += score;
     }
 
     public Double getRating() {
-        if (rating==null || numberOfJoin==null) return 0.0;
-        return Double.valueOf(Math.round(rating * 2 / Math.max(1, numberOfJoin) / 2));
+        return Math.round(rating * 2 / Double.valueOf(Math.max(1, numberOfJoin))) / 2.0;
     }
 
     public void setAuthorities(Set<Authority> authorities) {
