@@ -68,7 +68,7 @@ public class RecruitmentDto {
             super(recruitment);
             this.comments = recruitment.getComments().stream()
                     .map(CommentDto.Response::new)
-                    .sorted(Comparator.comparing(t -> t.getCreatedAt()))
+                    .sorted(Comparator.comparing(CommentDto.Response::getCreatedAt))
                     .collect(Collectors.toList());
         }
 

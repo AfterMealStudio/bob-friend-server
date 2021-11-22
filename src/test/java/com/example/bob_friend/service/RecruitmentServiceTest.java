@@ -73,7 +73,7 @@ class RecruitmentServiceTest {
                 .author(testAuthor)
                 .recruitment(testRecruitment)
                 .content("test comment")
-                .replies(Set.of(testReply))
+                .replies(List.of(testReply))
                 .createdAt(LocalDateTime.now())
                 .build();
 

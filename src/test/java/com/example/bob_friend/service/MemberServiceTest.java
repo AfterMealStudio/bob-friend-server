@@ -18,10 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -173,7 +170,7 @@ public class MemberServiceTest {
                 .recruitment(recruitment)
                 .createdAt(LocalDateTime.now())
                 .author(testMember)
-                .replies(new HashSet<>())
+                .replies(new LinkedList<>())
                 .build();
 
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))

@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import static com.example.bob_friend.document.ApiDocumentUtils.*;
@@ -108,7 +109,7 @@ public class CommentControllerTest {
                 .author(testAuthor)
                 .recruitment(testRecruitment)
                 .content("test comment")
-                .replies(new HashSet<>())
+                .replies(new LinkedList<>())
                 .reportCount(0)
                 .createdAt(LocalDateTime.now())
                 .build();

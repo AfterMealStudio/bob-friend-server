@@ -100,7 +100,7 @@ class RecruitmentControllerTest {
                 .author(testAuthor)
                 .recruitment(testRecruitment)
                 .content("test comment")
-                .replies(Set.of(testReply))
+                .replies(List.of(testReply))
                 .createdAt(LocalDateTime.now())
                 .reportCount(0)
                 .build();

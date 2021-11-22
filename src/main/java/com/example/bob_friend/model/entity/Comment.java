@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -26,7 +27,7 @@ public class Comment extends Writing {
 
     @OneToMany(targetEntity = Reply.class)
     @JoinColumn(name = "comment_id")
-    private Set<Reply> replies;
+    private List<Reply> replies;
 
 
     public void setAuthor(Member author) {

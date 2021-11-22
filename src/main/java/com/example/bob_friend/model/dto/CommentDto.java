@@ -5,9 +5,7 @@ import com.example.bob_friend.model.entity.Reply;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CommentDto {
@@ -27,7 +25,7 @@ public class CommentDto {
         public Comment convertToEntity() {
             return Comment.builder()
                     .content(content)
-                    .replies(new HashSet<>())
+                    .replies(new LinkedList<>())
                     .build();
         }
     }
@@ -39,7 +37,7 @@ public class CommentDto {
         private Long id;
         private MemberDto.Preview author;
         private String content;
-        private Set<ReplyDto.Response> replies;
+        private List<ReplyDto.Response> replies;
         private Integer reportCount;
         private LocalDateTime createdAt;
 
@@ -48,8 +46,9 @@ public class CommentDto {
             this.author = new MemberDto.Preview(comment.getAuthor());
             this.content = comment.getContent();
             this.replies = comment.getReplies().stream()
-                    .map(reply -> new ReplyDto.Response(reply))
-                    .collect(Collectors.toSet());
+                    .map(ReplyDto.Response::new)
+                    .sorted(Comparator.comparing(ReplyDto.Response::getCreatedAt))
+                    .collect(Collectors.toList());
             this.reportCount = comment.getReportCount();
             this.createdAt = comment.getCreatedAt();
         }
