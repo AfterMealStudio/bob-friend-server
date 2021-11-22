@@ -5,6 +5,10 @@ import com.example.bob_friend.model.entity.Recruitment;
 import com.example.bob_friend.model.entity.Sex;
 import lombok.*;
 
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -15,17 +19,28 @@ import java.util.stream.Collectors;
 
 public class RecruitmentDto {
 
-    @Data
+    @Getter
+    @Setter
     @NoArgsConstructor
     public static class Request {
+        @NotBlank
         private String title;
+        @NotNull
         private String content;
+        @Min(2)
         private Integer totalNumberOfPeople;
+        @NotBlank
         private String restaurantName;
+        @NotBlank
         private String restaurantAddress;
+
         private Double latitude;
         private Double longitude;
+
+        @NotNull
         private Sex sexRestriction;
+
+        @FutureOrPresent
         private LocalDateTime appointmentTime;
 
         public Request(Recruitment recruitment) {

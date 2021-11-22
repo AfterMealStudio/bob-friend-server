@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class CommentController {
     @PostMapping()
     public ResponseEntity createComment(
             @PathVariable Long recruitmentId,
-            @RequestBody CommentDto.Request commentRequestDto) {
+            @Valid @RequestBody CommentDto.Request commentRequestDto) {
         CommentDto.Response comment =
                 commentService.createComment(
                         commentRequestDto, recruitmentId);
@@ -48,7 +49,7 @@ public class CommentController {
     @PostMapping("/{commentId}/replies")
     public ResponseEntity createReplyToComment(
             @PathVariable Long commentId,
-            @RequestBody ReplyDto.Request replyDto) {
+            @Valid @RequestBody ReplyDto.Request replyDto) {
         ReplyDto.Response reply =
                 commentService.createReply(commentId, replyDto);
 

@@ -5,7 +5,7 @@ import com.example.bob_friend.model.entity.Sex;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -17,9 +17,9 @@ public class MemberDto {
     @AllArgsConstructor
     public static class Login {
 
-        @NotNull(message = "must be not null")
+        @NotNull
         private String email;
-        @NotNull(message = "must not be null")
+        @NotBlank
         private String password;
     }
 
@@ -75,14 +75,17 @@ public class MemberDto {
     @AllArgsConstructor
     @ToString
     public static class Signup {
-        @NotNull(message = "must not be null")
+        @Email
         private String email;
-
+        @NotBlank
         private String nickname;
-        @NotNull(message = "must not be null")
+        @NotBlank
         private String password;
+        @NotNull
         private Sex sex;
+        @Past
         private LocalDate birth;
+        @NotNull
         private boolean agree;
 
         public Member convertToEntityWithPasswordEncoder(PasswordEncoder passwordEncoder) {
@@ -127,14 +130,14 @@ public class MemberDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Delete {
-        @NotNull(message = "must not be null")
+        @NotBlank
         private String password;
     }
 
     @Getter
     @Setter
     public static class Rate {
-        @NotNull(message = "must not be null")
+        @Min(0)
         private Double score;
     }
 }

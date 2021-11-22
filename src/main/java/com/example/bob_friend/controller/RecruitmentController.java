@@ -14,6 +14,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/recruitments")
@@ -65,7 +67,7 @@ public class RecruitmentController {
 
     @PostMapping
     public ResponseEntity createRecruitment(
-            @RequestBody RecruitmentDto.Request recruitmentRequestDto) {
+            @Valid @RequestBody RecruitmentDto.Request recruitmentRequestDto) {
         RecruitmentDto.Response createdRecruitment = recruitmentService.createRecruitment(recruitmentRequestDto);
         return ResponseEntity.ok(createdRecruitment);
     }

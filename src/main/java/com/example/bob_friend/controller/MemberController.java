@@ -53,7 +53,7 @@ public class MemberController {
     @DeleteMapping("/user/{memberId}")
     public ResponseEntity deleteUserById(
             @PathVariable Long memberId,
-            @RequestBody MemberDto.Delete delete) {
+            @Valid @RequestBody MemberDto.Delete delete) {
         memberService.checkPassword(delete);
         memberService.deleteById(memberId);
         return ResponseEntity.ok().build();
@@ -62,7 +62,7 @@ public class MemberController {
     @PostMapping("/user/{nickname}/score")
     public ResponseEntity rateMember(
             @PathVariable String nickname,
-            @RequestBody MemberDto.Rate rate) {
+            @Valid @RequestBody MemberDto.Rate rate) {
         memberService.rateMember(nickname, rate);
         return ResponseEntity.ok().build();
     }

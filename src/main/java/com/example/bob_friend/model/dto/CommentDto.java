@@ -1,11 +1,14 @@
 package com.example.bob_friend.model.dto;
 
 import com.example.bob_friend.model.entity.Comment;
-import com.example.bob_friend.model.entity.Reply;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class CommentDto {
@@ -15,6 +18,7 @@ public class CommentDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
+        @NotBlank
         private String content;
 
 
