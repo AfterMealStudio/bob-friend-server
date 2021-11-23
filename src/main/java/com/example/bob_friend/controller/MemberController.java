@@ -1,7 +1,7 @@
 package com.example.bob_friend.controller;
 
 import com.example.bob_friend.model.dto.MemberDto;
-import com.example.bob_friend.model.exception.MemberDuplicatedException;
+import com.example.bob_friend.service.AuthService;
 import com.example.bob_friend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +16,12 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 public class MemberController {
     private final MemberService memberService;
+    private final AuthService authService;
 
     @GetMapping("")
     public ResponseEntity verifyEmail(@RequestParam String email, @RequestParam String code) {
         memberService.checkMemberWithCode(email, code);
         return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/signup")
-    public ResponseEntity signup(@Valid @RequestBody MemberDto.Signup memberSignupDto) throws MemberDuplicatedException {
-        return ResponseEntity.ok(memberService.signup(memberSignupDto));
     }
 
     @GetMapping("/email/{email}")
@@ -54,7 +50,7 @@ public class MemberController {
     public ResponseEntity deleteUserById(
             @PathVariable Long memberId,
             @Valid @RequestBody MemberDto.Delete delete) {
-        memberService.checkPassword(delete);
+        authService.checkPassword(delete);
         memberService.deleteById(memberId);
         return ResponseEntity.ok().build();
     }

@@ -1,5 +1,6 @@
 package com.example.bob_friend.jwt;
 
+import com.example.bob_friend.model.dto.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -27,8 +30,6 @@ public class JwtTokenProvider implements InitializingBean {
     private String AUTHORIZATION_HEADER;
     private static final String AUTHORITY_KEY = "roles";
     private final String secret;
-    private static final long tokenValidTime = 1000 * 60 * 60;
-
     private Key key;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secret) {
@@ -41,18 +42,31 @@ public class JwtTokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(Authentication authentication) {
+    public TokenDto createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-        long validTime = (new Date()).getTime() + tokenValidTime;
 
-        return Jwts.builder()
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime accessTokenValidTime = now.plusDays(1);
+        LocalDateTime refreshTokenValidTime = now.plusDays(30);
+
+        String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITY_KEY, authorities)
-                .setExpiration(new Date(validTime))
+                .setExpiration(Date.from(accessTokenValidTime.toInstant(ZoneOffset.UTC)))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+
+        String refreshToken = Jwts.builder()
+                .setExpiration(Date.from(refreshTokenValidTime.toInstant(ZoneOffset.UTC)))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        return TokenDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     public Authentication getAuthentication(String token) {
@@ -78,6 +92,7 @@ public class JwtTokenProvider implements InitializingBean {
             return false;
         }
     }
+
     public String resolveToken(HttpServletRequest request) {
         return request.getHeader(AUTHORIZATION_HEADER);
     }

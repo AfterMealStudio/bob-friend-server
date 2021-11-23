@@ -39,6 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/email/**/",
                         "/api/validate/**/",
                         "/api/",
+                        "/api/reissue",
                         "/docs/api-doc.html").permitAll()
                 .anyRequest().hasRole("USER")
 

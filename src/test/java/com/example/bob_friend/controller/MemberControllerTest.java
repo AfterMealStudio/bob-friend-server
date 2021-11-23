@@ -3,6 +3,7 @@ package com.example.bob_friend.controller;
 import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Sex;
+import com.example.bob_friend.service.AuthService;
 import com.example.bob_friend.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,8 @@ class MemberControllerTest {
     MockMvc mvc;
     @Autowired
     ObjectMapper objectMapper;
-
+    @MockBean
+    AuthService authService;
     @MockBean
     MemberService memberService;
 

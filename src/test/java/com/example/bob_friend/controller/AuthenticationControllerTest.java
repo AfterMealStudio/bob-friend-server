@@ -5,7 +5,7 @@ import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.dto.TokenDto;
 import com.example.bob_friend.model.entity.Member;
 import com.example.bob_friend.model.entity.Sex;
-import com.example.bob_friend.service.MemberService;
+import com.example.bob_friend.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ public class AuthenticationControllerTest {
     @Autowired
     AuthenticationManagerBuilder authenticationManagerBuilder;
     @MockBean
-    MemberService memberService;
+    AuthService authService;
     @Autowired
     MockMvc mvc;
     @Autowired
@@ -66,10 +66,12 @@ public class AuthenticationControllerTest {
                 .emailVerified(false)
                 .build();
     }
+
+
     @Test
     public void signin() throws Exception {
-        when(memberService.isExistByEmail(any())).thenReturn(true);
-        when(tokenProvider.createToken(any())).thenReturn("jwt-token-example");
+        TokenDto tokenDto = new TokenDto("jwt-access-token-example", "jwt-refresh-token-example");
+        when(authService.signin(any())).thenReturn(tokenDto);
 
         MemberDto.Login login = MemberDto.Login.builder()
                 .email(testMember.getEmail())
@@ -82,13 +84,37 @@ public class AuthenticationControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(
-                        new TokenDto("jwt-token-example")
+                        tokenDto
                 )))
 
-                .andDo(document("member/signin",
+                .andDo(document("auth/signin",
                         getDocumentRequest(),
                         getDocumentResponse())
                 );
+    }
 
+    @Test
+    void reissueTest() throws Exception {
+        TokenDto tokenDto = TokenDto.builder()
+                .accessToken("new-access-token-example")
+                .refreshToken("new-5refresh-token-example")
+                .build();
+        when(authService.reissue(any()))
+                .thenReturn(tokenDto);
+        mvc.perform(post("/api/reissue")
+                        .content(objectMapper.writeValueAsString(
+                                TokenDto.builder()
+                                        .accessToken("old-access-token")
+                                        .refreshToken("old-refresh-token")
+                                        .build()
+                        ))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(tokenDto)))
+                .andDo(document("auth/reissue",
+                        getDocumentRequest(),
+                        getDocumentResponse()));
     }
 }
