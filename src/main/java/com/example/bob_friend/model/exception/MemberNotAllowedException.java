@@ -9,6 +9,6 @@ public class MemberNotAllowedException extends CustomException{
 
     @Override
     public HttpStatus getHttpStatus() {
-        return HttpStatus.UNAUTHORIZED;
+        return HttpStatus.FORBIDDEN;
     }
 }
