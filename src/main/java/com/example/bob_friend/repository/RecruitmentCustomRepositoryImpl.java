@@ -50,13 +50,6 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     }
 
 
-//    @Override
-//    public Page<Recruitment> searchByAppointmentTime(LocalDateTime start, LocalDateTime end, Pageable pageable) {
-//        return getPageFromStatement(pageable, () -> new Predicate[]{
-//                betweenTime(start, end)
-//        });
-//    }
-
     @Override
     public Page<Recruitment> searchByAll(Condition.Search search, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
@@ -94,28 +87,42 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     public Page<Recruitment> findAllAvailable(Member currentMember, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
                 recruitment.totalNumberOfPeople.gt(recruitment.members.size()),
-                recruitment.author.ne(currentMember),
+                recruitment.author.ne(currentMember),// not equal
                 recruitment.members.contains(currentMember).not(),
                 recruitment.sexRestriction.eq(currentMember.getSex()).or(
                         recruitment.sexRestriction.eq(Sex.NONE)
-                )
+                ),
+                betweenAgeRestrictionRange(currentMember)
         });
+    }
+
+    private BooleanExpression betweenAgeRestrictionRange(Member currentMember) {
+        BooleanExpression restrictExist = recruitment.ageRestrictionStart.loe(currentMember.getAge())// less or equal
+                .and(recruitment.ageRestrictionEnd.goe(currentMember.getAge()));
+        BooleanExpression restrictNotExist = recruitment.ageRestrictionStart.isNull()
+                .and(recruitment.ageRestrictionEnd.isNull());
+        return restrictExist.or(restrictNotExist);// greater or equal
     }
 
     @Override
     public Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable) {
-        return getPageFromStatement(pageable, () -> new Predicate[]{
-                recruitment.members.contains(currentMember)
-        });
+//        return getPageFromStatement(pageable, () -> new Predicate[]{
+//                recruitment.members.contains(currentMember)
+//        });
+        BooleanExpression booleanExpression = recruitment.members.contains(currentMember);
+        JPAQuery<Recruitment> query =
+                jpaQueryFactory.selectFrom(recruitment)
+                        .where(booleanExpression);
+        return getPage(pageable, query);
     }
 
 
     private Page<Recruitment> getPageFromStatement(Pageable pageable, StatementStrategy statementStrategy) {
         Predicate[] booleanExpression = statementStrategy.makeBooleanExpression();
-        JPAQuery<Recruitment> query = getActiveRecruitments()
-                .where(
-                        booleanExpression
-                );
+        JPAQuery<Recruitment> query =
+                jpaQueryFactory.selectFrom(recruitment)
+                        .where(recruitment.active.eq(true))
+                        .where(booleanExpression);
         return getPage(pageable, query);
     }
 
@@ -142,12 +149,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        return PageableExecutionUtils.getPage(list, pageable, () -> where.fetchCount());
+        return PageableExecutionUtils.getPage(list, pageable, where::fetchCount);
     }
 
-    private JPAQuery<Recruitment> getActiveRecruitments() {
-        return jpaQueryFactory.selectFrom(recruitment).where(
-                recruitment.active.eq(true)
-        );
-    }
 }

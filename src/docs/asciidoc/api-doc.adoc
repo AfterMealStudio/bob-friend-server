@@ -1,5 +1,5 @@
 = RESTful Notes API Guide
-:doctype:
+:doctype: book
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
@@ -8,10 +8,68 @@
 :sectlinks:
 :sectanchors:
 
+[[overview]]
+= 개요
+
+[[overview-http-verbs]]
+== HTTP Methods
+
+본 REST API에서 사용하는 HTTP 동사(verbs)는 가능한한 표준 HTTP와 REST 규약을 따릅니다.
+
+|===
+| 동사 | 용례
+
+| `GET`
+| 리소스를 가져올 때 사용
+
+| `POST`
+| 새 리소스를 만들 때 사용
+
+| `PUT`
+| 기존 리소스를 수정할 때 사용
+
+| `PATCH`
+| 기존 리소스의 일부를 수정할 때 사용
+
+| `DELETE`
+| 기존 리소스를 삭제할 떄 사용
+|===
+
+[[overview-http-status-codes]]
+== HTTP 상태 코드
+
+|===
+| 상태 코드 | 용례
+
+| `200 OK`
+| 요청을 성공적으로 처리함
+
+| `400 Bad Request`
+| 잘못된 요청을 보낸 경우. 응답 본문에 오류에 대한 정보가 담겨있다
+
+| `401 Unauthorized`
+| 사용자가 인증되지 않음
+
+| `403 Forbidden`
+| 사용자에게 요청 권한이 없음
+
+| `404 Not Found`
+| 요청한 리소스가 없음
+
+| `409 Conflict`
+| 요청한 정보가 중복됨
+
+|===
 
 [[api]]
 == Recruitment
 === 생성
+
+[source]
+----
+다른 사용자가 참여할 수 있는 약속을 생성한다. 약속은 약속시간을 가지며, 약속시간이 지난 약속은 마감된다. 약속은 참여 제한을 가질 수 있다. 참여 제한은 성별, 연령 두 가지이며, 성별 제한은 sexRestriction, 연령 제한은 ageRestrictionStart, ageRestrictionEnd 필드에 나타난다.
+----
+
 request::
 include::{snippets}/recruitment/create-recruitment/http-request.adoc[]
 header::
@@ -21,9 +79,11 @@ include::{snippets}/recruitment/create-recruitment/http-response.adoc[]
 //response field description::
 //include::{snippets}/create-recruitment/response-fields.adoc[]
 === 한 건 조회
-```
+
+[source]
+----
 url 파라미터로 입력된 id에 해당하는 약속을 한 건 조회한다. 약속에 포함된 댓글, 대댓글도 함께 조회한다.
-```
+----
 
 request::
 include::{snippets}/recruitment/get-one-recruitment/http-request.adoc[]
@@ -37,16 +97,18 @@ include::{snippets}/recruitment/get-one-recruitment/path-parameters.adoc[]
 //include::{snippets}/get-one-recruitment/response-fields.adoc[]
 
 === 전체 조회
-```
+
+[source]
+----
 전체조회는 Page 객체를 반환한다. content 필드에 조회 결과가 약속들의 배열 형태([])로 주어진다. 각 약속은 한 건 조회와는 달리 댓글, 대댓글을 포함하지 않고, 댓글의 개수(댓글의 개수 + 대댓글의 개수)만 포함한다. Page객체는 첫 번째 페이지인지를 나타내는 first, 마지막 페이지인지를 나타내는 last 필드를 가진다(마지막 페이지일 경우 last가 true).
-```
+----
 
-
-```
+[source]
+----
 요청 시 sort 파라미터를 통해 Page 객체를 정렬할 수 있다. 'sort=정렬 기준이 되는 필드, 방향' 형식으로 입력 할 수 있다. 기본 값은 작성시간 기준 오름차순이다.
 ex) sort=appointmentTime,asc    약속시간 기준 오름차순
     sort=createdAt,desc         작성시간 기준 내림차순
-```
+----
 
 request::
 include::{snippets}/recruitment/get-all-recruitments/http-request.adoc[]
@@ -58,11 +120,13 @@ include::{snippets}/recruitment/get-all-recruitments/http-response.adoc[]
 
 
 ==== 전제 조회 필터링
-```
+
+[source]
+----
 전체 조회는 type 이라는 파라미터를 입력해 결과를 필터링 할 수 있다. type 파라미터는 owned, joined, available, all 4가지가 있다. 각각 자신이 생성한 약속, 현재 참여가 가능한 약속, 자신이 참여한 약속, 모든 약속을 의미한다. type이 all이면 type을 입력하지 않은 것과 같다.
 
 아래의 예는 자신이 생성한 약속을 조회한다(type=owned).
-```
+----
 
 request::
 include::{snippets}/recruitment/get-all-recruitments-my/http-request.adoc[]
@@ -79,21 +143,14 @@ include::{snippets}/recruitment/get-all-recruitments-locations/request-headers.a
 response::
 include::{snippets}/recruitment/get-all-recruitments-locations/http-response.adoc[]
 
-//==== 주소로 약속 조회
-//request::
-//include::{snippets}/recruitment/get-all-recruitments-by-address/http-request.adoc[]
-//header::
-//include::{snippets}/recruitment/get-all-recruitments-by-address/request-headers.adoc[]
-//parameter::
-//include::{snippets}/recruitment/get-all-recruitments-by-address/request-parameters.adoc[]
-//response::
-//include::{snippets}/recruitment/get-all-recruitments-by-address/http-response.adoc[]
 
 ==== 주소와 식당이름으로 약속 조회
-```
+
+[source]
+----
 파라미터인 restaurantName과 restaurantAddress는 생략할 수 있다. 파라미터로 restaurantName=restaurant만 입력할 경우 식당 이름이 "restaurantName"인 결과들을 반환하고,
 restaurantName=restaurant&restaurantAddress=restaurantAddress를 입력할 경우 식당이름이 restaurant이고, 주소가 restaurantAddress인 약속들을 반환한다. 파라미터를 입력하지 않을 경우 모든 약속들을 반환한다.
-```
+----
 
 request::
 include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-request.adoc[]
@@ -107,9 +164,11 @@ response::
 include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-response.adoc[]
 
 === 참여
-```
-이미 참여한 멤버가 요청을 보내면 해당 약속에서 제외됨
-```
+
+[source]
+----
+이미 참여한 멤버가 요청을 보내면 해당 약속에서 제외된다. 약속에는 참여 제한(성별, 연령)이 있을 수 있다. 성별 제한은 sexRestriction 필드에 나타나며 MALE,FEMALE,NONE 의 값을 가질 수 있다. 연령 제한은 ageRestrictionStart, ageRestrictionEnd 필드에 나타나며, 나이가 두 값 사이인 사용자만 약속에 참여할 수 있다. ageRestrictionStart와 ageRestrictionEnd가 null일 경우 연령 제한이 없는 약속이다.
+----
 request::
 include::{snippets}/recruitment/join-recruitment/http-request.adoc[]
 header::
@@ -130,11 +189,13 @@ path-parameter::
 include::{snippets}/recruitment/delete-recruitment/path-parameters.adoc[]
 
 === 검색
-```
+
+[source]
+----
 검색 카테고리는 title, content, place, all 4가지가 있다. 순서대로 약속의 제목, 내용, 식당이름을 나타내며, all일 경우 모든 카테고리를 같은 키워드로 검색한 결과를 반환한다. 카테고리의 기본값은 all이다.
 파라미터로 시간을 입력할 경우(start, end) 두 개의 시간 사이에 있는 결과를 반환한다. 시간은 "yyyyMMddHHmm" 꼴로 입력한다.
 ex) start = 202111211739 & end = 202111130000
-```
+----
 
 request::
 include::{snippets}/recruitment/search-recruitment/http-request.adoc[]
@@ -146,9 +207,11 @@ response::
 include::{snippets}/recruitment/search-recruitment/http-response.adoc[]
 
 === 신고
-```
+
+[source]
+----
 한 사용자는 하나의 게시물(약속, 댓글, 대댓글)을 한 번만 신고할 수 있다. 일정 횟수 이상 신고받은 게시물은 내용이 지워지고(약속의 경우 마감처리됨) 작성자에게 신고가 누적된다. 일정 횟수 이상 신고가 누적된 사용자는 이용이 일정 기간 정지된다.
-```
+----
 
 request::
 include::{snippets}/recruitment/report-recruitment/http-request.adoc[]
@@ -161,9 +224,11 @@ include::{snippets}/recruitment/report-recruitment/http-response.adoc[]
 
 
 === 마감
-```
+
+[source]
+----
 해당 약속의 작성자만 약속을 마감할 수 있다. 마감된 약속은 참여하거나 참여를 취소할 수 없고, 전체 조회 시 조회되지 않는다. 약속시간이 지난 약속은 작성자가 직접 마감하지 않아도 자동으로 마감된다(1분에 한 번씩 마감 시킴).
-```
+----
 
 request::
 include::{snippets}/recruitment/close-recruitment/http-request.adoc[]
@@ -188,9 +253,11 @@ response::
 include::{snippets}/comment/create-comment/http-response.adoc[]
 
 ==== 댓글 삭제
-```
+
+[source]
+----
 대댓글이 달려있는 댓글은 내용과 작성자가 null이 되고, 대댓글이 달려있지 않은 댓글은 바로 삭제된다.
-```
+----
 request::
 include::{snippets}/comment/delete-comment/http-request.adoc[]
 header::
@@ -260,18 +327,22 @@ response::
 include::{snippets}/member/signup/http-response.adoc[]
 
 === 로그인
-```
+
+[source]
+----
 인증을 위한 액세스 토큰과 토큰 재발급을 위한 리프레시 토큰을 반환한다.
-```
+----
 request::
 include::{snippets}/member/signin/http-request.adoc[]
 response::
 include::{snippets}/member/signin/http-response.adoc[]
 
 === 토큰 재발급
-```
+
+[source]
+----
 만료된 액세스 토큰과 리프레시 토큰을 받아서 재발급한다. 리프레시 토큰이 만료된 경우 재로그인 해야한다.
-```
+----
 
 request::
 include::{snippets}/auth/reissue/http-request.adoc[]
@@ -310,9 +381,11 @@ response::
 include::{snippets}/member/getUserInfo/http-response.adoc[]
 
 === 이메일 중복 체크
-```
+
+[source]
+----
 중복된 이메일이 존재할 경우 true
-```
+----
 
 request::
 include::{snippets}/member/check-email/http-request.adoc[]
@@ -322,9 +395,12 @@ response::
 include::{snippets}/member/check-email/http-response.adoc[]
 
 === 닉네임 중복 체크
-```
+
+[source]
+----
 중복된 닉네임이 존재할 경우 true
-```
+----
+
 request::
 include::{snippets}/member/check-nickname/http-request.adoc[]
 path-param::
@@ -334,9 +410,11 @@ include::{snippets}/member/check-nickname/http-response.adoc[]
 
 
 === 멤버 평점
-```
+
+[source]
+----
 멤버의 평점은 멤버 객체의 rating 필드에 나타나며 0.5 단위로 반올림된다.
-```
+----
 
 request::
 include::{snippets}/member/rate/http-request.adoc[]

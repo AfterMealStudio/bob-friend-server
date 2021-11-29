@@ -141,6 +141,10 @@ public class RecruitmentService {
             throw new AlreadyJoined(currentMember.getNickname());
         }
 
+        // 연령 체크
+        if (!recruitment.isAgeRestrictionSatisfied(currentMember.getAge()))
+            throw new RestrictionFailedException(currentMember.getEmail());
+
         if (!checkSexRestriction(recruitment, currentMember))
             throw new RestrictionFailedException(currentMember.getEmail());
 
@@ -172,14 +176,6 @@ public class RecruitmentService {
                 .map(RecruitmentDto.Response::new);
     }
 
-//    public Page<RecruitmentDto.Response> searchAppointmentTime(String start, String end, Pageable pageable) {
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-//        LocalDateTime startTime = LocalDateTime.parse(start, formatter);
-//        LocalDateTime endTime = LocalDateTime.parse(end, formatter);
-//        return recruitmentRepository.searchByAppointmentTime(
-//                        startTime, endTime, pageable)
-//                .map(RecruitmentDto.Response::new);
-//    }
 
     public Page<RecruitmentDto.Response> searchByAllCondition(Condition.Search search, Pageable pageable) {
         return recruitmentRepository

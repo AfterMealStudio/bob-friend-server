@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -21,9 +20,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -67,6 +65,7 @@ public class RecruitmentCustomRepositoryTest {
                 .author(testAuthor)
                 .totalNumberOfPeople(4)
                 .sexRestriction(Sex.FEMALE)
+                .members(Set.of(testAuthor))
                 .restaurantName("testRestaurantName 1")
                 .restaurantAddress("testRestaurantAddress 1")
                 .latitude(0.0)
@@ -80,6 +79,7 @@ public class RecruitmentCustomRepositoryTest {
                 .author(testAuthor)
                 .totalNumberOfPeople(4)
                 .sexRestriction(Sex.FEMALE)
+                .members(Set.of(testAuthor))
                 .restaurantName("testRestaurantName 2")
                 .restaurantAddress("testRestaurantAddress 2")
                 .latitude(0.0)
@@ -88,7 +88,7 @@ public class RecruitmentCustomRepositoryTest {
                 .build();
 
         memberRepository.save(testAuthor);
-        List list = Arrays.asList( testRecruitment1, testRecruitment2);
+        List list = Arrays.asList(testRecruitment1, testRecruitment2);
         recruitmentRepository.saveAll(list);
 
     }
@@ -199,10 +199,10 @@ public class RecruitmentCustomRepositoryTest {
         Condition.Search search = new Condition.Search();
         search.setKeyword("test");
         search.setStart(createdAt);
-        search.setEnd(createdAt.substring(0,8) + "2000");
+        search.setEnd(createdAt.substring(0, 8) + "2000");
 
         Page<Recruitment> searchByTitle =
-                recruitmentCustomRepository.searchByAll(search,Pageable.ofSize(10));
+                recruitmentCustomRepository.searchByAll(search, Pageable.ofSize(10));
 
         assertThat(searchByTitle.getContent().size(), equalTo(2));
     }
@@ -263,27 +263,50 @@ public class RecruitmentCustomRepositoryTest {
                 .nickname("testAuthor")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
+                .birth(LocalDate.parse(
+                        "1997-06-04"
+                ))
                 .build();
 
         Recruitment recruitment1 = Recruitment.builder()
                 .title("test")
                 .content("test")
-                .author(member1)
+                .author(testAuthor)
                 .totalNumberOfPeople(4)
                 .sexRestriction(Sex.FEMALE)
+                .members(Set.of(testAuthor))
                 .restaurantName("test")
                 .restaurantAddress("testRestaurantAddress")
                 .latitude(0.0)
                 .longitude(0.0)
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .build();
+
+        Recruitment recruitment2 = Recruitment.builder()
+                .title("test")
+                .content("test")
+                .author(testAuthor)
+                .totalNumberOfPeople(4)
+                .sexRestriction(Sex.FEMALE)
+                .members(Set.of(testAuthor))
+                .ageRestrictionStart(0)
+                .ageRestrictionEnd(20)
+                .restaurantName("test")
+                .restaurantAddress("testRestaurantAddress")
+                .latitude(0.0)
+                .longitude(0.0)
+                .appointmentTime(LocalDateTime.now().plusHours(4))
+                .build();
+
         memberRepository.save(member1);
         recruitmentRepository.save(recruitment1);
+        recruitmentRepository.save(recruitment2);
+
         Page<Recruitment> allAvailable =
                 recruitmentCustomRepository
                         .findAllAvailable(member1, pageable);
-        assertThat(allAvailable.getContent().size(), equalTo(2));
+
+        assertThat(allAvailable.getContent().size(), equalTo(3));
     }
 
     @Test
@@ -293,7 +316,9 @@ public class RecruitmentCustomRepositoryTest {
                 .nickname("testAuthor")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
+                .birth(LocalDate.parse(
+                        "1997-06-04"
+                ))
                 .build();
 
         Recruitment recruitment1 = Recruitment.builder()
