@@ -8,6 +8,7 @@
 :sectlinks:
 :sectanchors:
 
+
 [[api]]
 == Recruitment
 === 생성
@@ -106,8 +107,9 @@ response::
 include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-response.adoc[]
 
 === 참여
-NOTE: 이미 참여한 멤버가 요청을 보내면 해당 약속에서 제외됨
-
+```
+이미 참여한 멤버가 요청을 보내면 해당 약속에서 제외됨
+```
 request::
 include::{snippets}/recruitment/join-recruitment/http-request.adoc[]
 header::
@@ -160,7 +162,7 @@ include::{snippets}/recruitment/report-recruitment/http-response.adoc[]
 
 === 마감
 ```
-해당 약속의 작성자만 약속을 마감할 수 있다. 마감된 약속은 참여하거나 참여를 취소할 수 없고, 전체 조회 시 조회되지 않는다.
+해당 약속의 작성자만 약속을 마감할 수 있다. 마감된 약속은 참여하거나 참여를 취소할 수 없고, 전체 조회 시 조회되지 않는다. 약속시간이 지난 약속은 작성자가 직접 마감하지 않아도 자동으로 마감된다(1분에 한 번씩 마감 시킴).
 ```
 
 request::
@@ -175,6 +177,7 @@ include::{snippets}/recruitment/close-recruitment/http-response.adoc[]
 
 === 댓글
 ==== 댓글 생성
+
 request::
 include::{snippets}/comment/create-comment/http-request.adoc[]
 header::
@@ -185,8 +188,9 @@ response::
 include::{snippets}/comment/create-comment/http-response.adoc[]
 
 ==== 댓글 삭제
-NOTE: 댓글 삭제 시 author, content가 null이 됨
-
+```
+대댓글이 달려있는 댓글은 내용과 작성자가 null이 되고, 대댓글이 달려있지 않은 댓글은 바로 삭제된다.
+```
 request::
 include::{snippets}/comment/delete-comment/http-request.adoc[]
 header::
@@ -226,6 +230,7 @@ path-param::
 include::{snippets}/comment/reply/create-reply/path-parameters.adoc[]
 response::
 include::{snippets}/comment/reply/create-reply/http-response.adoc[]
+
 ==== 대댓글 삭제
 request::
 include::{snippets}/comment/reply/delete-reply/http-request.adoc[]
@@ -255,10 +260,24 @@ response::
 include::{snippets}/member/signup/http-response.adoc[]
 
 === 로그인
+```
+인증을 위한 액세스 토큰과 토큰 재발급을 위한 리프레시 토큰을 반환한다.
+```
 request::
 include::{snippets}/member/signin/http-request.adoc[]
 response::
 include::{snippets}/member/signin/http-response.adoc[]
+
+=== 토큰 재발급
+```
+만료된 액세스 토큰과 리프레시 토큰을 받아서 재발급한다. 리프레시 토큰이 만료된 경우 재로그인 해야한다.
+```
+
+request::
+include::{snippets}/auth/reissue/http-request.adoc[]
+response::
+include::{snippets}/auth/reissue/http-response.adoc[]
+
 
 === 회원 탈퇴
 request::
@@ -291,7 +310,9 @@ response::
 include::{snippets}/member/getUserInfo/http-response.adoc[]
 
 === 이메일 중복 체크
-NOTE: 중복된 이메일이 존재할 경우 true
+```
+중복된 이메일이 존재할 경우 true
+```
 
 request::
 include::{snippets}/member/check-email/http-request.adoc[]
@@ -301,8 +322,9 @@ response::
 include::{snippets}/member/check-email/http-response.adoc[]
 
 === 닉네임 중복 체크
-NOTE: 중복된 닉네임이 존재할 경우 true
-
+```
+중복된 닉네임이 존재할 경우 true
+```
 request::
 include::{snippets}/member/check-nickname/http-request.adoc[]
 path-param::
@@ -322,3 +344,4 @@ path-param::
 include::{snippets}/member/rate/path-parameters.adoc[]
 response::
 include::{snippets}/member/rate/http-response.adoc[]
+

@@ -2,7 +2,6 @@ package com.example.bob_friend.service;
 
 import com.example.bob_friend.model.dto.MemberDto;
 import com.example.bob_friend.model.entity.*;
-import com.example.bob_friend.model.exception.MemberDuplicatedException;
 import com.example.bob_friend.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +21,6 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -79,64 +77,6 @@ public class MemberServiceTest {
         assertThat(new MemberDto.Response(testMember), equalTo(getMember));
     }
 
-    @Test
-    @DisplayName(value = "signup_success")
-    void signup() {
-        Member signupTest = Member.builder()
-                .id(1L)
-                .email("signupTestEmail")
-                .nickname("signupTestUser")
-                .password(passwordEncoder.encode("1234"))
-                .birth(LocalDate.of(2020, 8, 9))
-                .sex(Sex.FEMALE)
-                .reportCount(0)
-                .accumulatedReports(0)
-                .rating(0.0)
-                .numberOfJoin(0)
-                .authorities(Collections.singleton(Authority.ROLE_USER))
-                .agree(true)
-                .active(true)
-                .build();
-
-        MemberDto.Signup memberSignupDto = MemberDto.Signup.builder()
-                .email("signupTestEmail")
-                .nickname("signupTestUser")
-                .password("1234")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.of(2020, 8, 9))
-                .agree(true)
-                .build();
-
-        when(memberRepository.existsMemberByEmail(any()))
-                .thenReturn(false);
-        when(memberRepository.save(any()))
-                .thenReturn(signupTest);
-        when(emailService.makeMailText(any()))
-                .thenReturn("http://localhost:8080/api/?email=qww1552@naver.com&code=-150140394");
-        MemberDto.Response responseDto = memberService.signup(memberSignupDto);
-        MemberDto.Response memberResponseDto = new MemberDto.Response(signupTest);
-
-        assertThat(responseDto, equalTo(memberResponseDto));
-    }
-
-    @Test
-    @DisplayName(value = "signup_fail_MemberDuplicated")
-    void signupFail() {
-        MemberDto.Signup memberSignupDto = MemberDto.Signup.builder()
-                .email("signupTestEmail")
-                .nickname("signupTestUser")
-                .password("1234")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.of(2020, 8, 9))
-                .agree(true)
-                .build();
-
-        when(memberRepository.existsMemberByEmail(any()))
-                .thenReturn(true);
-
-        assertThrows(MemberDuplicatedException.class
-                , () -> memberService.signup(memberSignupDto));
-    }
 
     @Test
     @DisplayName(value = "check_member_with_code")
