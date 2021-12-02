@@ -60,7 +60,9 @@ public class AuthenticationControllerTest {
                 .nickname("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
+                .birth(LocalDate.parse("1997-06-04"))
+                .numberOfJoin(0)
+                .rating(0.0)
                 .agree(true)
                 .active(true)
                 .emailVerified(false)
@@ -69,7 +71,7 @@ public class AuthenticationControllerTest {
 
 
     @Test
-    public void signin() throws Exception {
+    void signin() throws Exception {
         TokenDto tokenDto = new TokenDto("jwt-access-token-example", "jwt-refresh-token-example");
         when(authService.signin(any())).thenReturn(tokenDto);
 
@@ -92,6 +94,51 @@ public class AuthenticationControllerTest {
                         getDocumentResponse())
                 );
     }
+
+
+    @Test
+    void signup() throws Exception {
+        TokenDto tokenDto = new TokenDto("jwt-access-token-example", "jwt-refresh-token-example");
+        MemberDto.Signup signup = MemberDto.Signup.builder()
+                .email(testMember.getEmail())
+                .nickname(testMember.getNickname())
+                .password("1234")
+                .birth(testMember.getBirth())
+                .sex(Sex.MALE)
+                .agree(true)
+                .build();
+        MemberDto.Response response = MemberDto.Response.builder()
+                .id(testMember.getId())
+                .email(testMember.getEmail())
+                .nickname(testMember.getNickname())
+                .birth(testMember.getBirth())
+                .sex(testMember.getSex())
+                .rating(testMember.getRating())
+                .accumulatedReports(testMember.getAccumulatedReports())
+                .reportCount(testMember.getReportCount())
+                .agree(testMember.isAgree())
+                .active(testMember.isActive())
+                .build();
+
+        when(authService.signup(any()))
+                .thenReturn(response);
+
+
+        mvc.perform(post("/api/signup")
+                        .content(objectMapper.writeValueAsString(signup))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(
+                        response
+                )))
+
+                .andDo(document("auth/signup",
+                        getDocumentRequest(),
+                        getDocumentResponse())
+                );
+    }
+
 
     @Test
     void reissueTest() throws Exception {

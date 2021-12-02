@@ -255,18 +255,18 @@ include::{snippets}/comment/reply/report-reply/http-response.adoc[]
 == Member
 === 회원가입
 request::
-include::{snippets}/member/signup/http-request.adoc[]
+include::{snippets}/auth/signup/http-request.adoc[]
 response::
-include::{snippets}/member/signup/http-response.adoc[]
+include::{snippets}/auth/signup/http-response.adoc[]
 
 === 로그인
 ```
 인증을 위한 액세스 토큰과 토큰 재발급을 위한 리프레시 토큰을 반환한다.
 ```
 request::
-include::{snippets}/member/signin/http-request.adoc[]
+include::{snippets}/auth/signin/http-request.adoc[]
 response::
-include::{snippets}/member/signin/http-response.adoc[]
+include::{snippets}/auth/signin/http-response.adoc[]
 
 === 토큰 재발급
 ```
