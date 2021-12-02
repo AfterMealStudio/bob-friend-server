@@ -40,6 +40,10 @@ public class RecruitmentDto {
         @NotNull
         private Sex sexRestriction;
 
+        private Integer ageRestrictionStart;
+
+        private Integer ageRestrictionEnd;
+
         @FutureOrPresent
         private LocalDateTime appointmentTime;
 
@@ -65,6 +69,8 @@ public class RecruitmentDto {
                     .latitude(this.latitude)
                     .longitude(this.longitude)
                     .sexRestriction(this.sexRestriction)
+                    .ageRestrictionStart(this.ageRestrictionStart)
+                    .ageRestrictionEnd(this.ageRestrictionEnd)
                     .appointmentTime(this.appointmentTime)
                     .build();
         }
@@ -154,6 +160,8 @@ public class RecruitmentDto {
         protected Double latitude;
         protected Double longitude;
         protected Sex sexRestriction;
+        protected Integer ageRestrictionStart;
+        protected Integer ageRestrictionEnd;
         protected Integer reportCount;
         protected LocalDateTime appointmentTime;
         protected LocalDate createdAt;
@@ -176,6 +184,8 @@ public class RecruitmentDto {
             this.longitude = recruitment.getLongitude();
             this.appointmentTime = recruitment.getAppointmentTime();
             this.sexRestriction = recruitment.getSexRestriction();
+            this.ageRestrictionStart = recruitment.getAgeRestrictionStart();
+            this.ageRestrictionEnd = recruitment.getAgeRestrictionEnd();
             this.createdAt = recruitment.getCreatedAt().toLocalDate();
             this.reportCount = recruitment.getReportCount();
         }
