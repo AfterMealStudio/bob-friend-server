@@ -77,10 +77,6 @@ public class AuthService {
 
     @Transactional
     public TokenDto reissue(TokenDto tokenDto) {
-        if (!tokenProvider.validateToken(tokenDto.getRefreshToken())) {
-            throw new JwtInvalidException();
-        }
-
         Authentication authentication = tokenProvider.getAuthentication(tokenDto.getAccessToken());
 
         RefreshToken refreshToken = refreshTokenRepository.findById(authentication.getName())
@@ -89,7 +85,8 @@ public class AuthService {
         if (!refreshToken.getToken().equals(tokenDto.getRefreshToken())) {
             throw new RefreshTokenNotMatchException();
         }
-        if (!tokenProvider.validateToken(refreshToken.getToken())) {
+
+        if (!tokenProvider.validateRefreshToken(refreshToken.getToken())) {
             throw new JwtInvalidException();
         }
 

@@ -41,7 +41,7 @@ public class AuthenticationController {
     @GetMapping("/validate")
     public ResponseEntity validateToken(HttpServletRequest request) {
         String token = tokenProvider.resolveToken(request);
-        return ResponseEntity.ok(tokenProvider.validateToken(token));
+        return ResponseEntity.ok(tokenProvider.validateAccessToken(token));
     }
 
 
