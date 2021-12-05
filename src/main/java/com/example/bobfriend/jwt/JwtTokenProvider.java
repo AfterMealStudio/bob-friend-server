@@ -31,6 +31,10 @@ public class JwtTokenProvider implements InitializingBean {
     private static final String AUTHORITY_KEY = "roles";
     private final String secretForAccess, secretForRefresh;
     private Key accessKey, refreshKey;
+    @Value("${jwt.access-token-valid-day}")
+    private int ACCESS_TOKEN_VALID_DAY;
+    @Value("${jwt.refresh-token-valid-day}")
+    private int REFRESH_TOKEN_VALID_DAT;
 
     public JwtTokenProvider(@Value("${jwt.secret-for-access}") String secretForAccess,
                             @Value("${jwt.secret-for-refresh}") String secretForRefresh) {
@@ -44,14 +48,15 @@ public class JwtTokenProvider implements InitializingBean {
         this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretForRefresh));
     }
 
+
     public TokenDto createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime accessTokenValidTime = now.plusDays(1);
-        LocalDateTime refreshTokenValidTime = now.plusDays(30);
+        LocalDateTime accessTokenValidTime = now.plusDays(ACCESS_TOKEN_VALID_DAY);
+        LocalDateTime refreshTokenValidTime = now.plusDays(REFRESH_TOKEN_VALID_DAT);
 
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())

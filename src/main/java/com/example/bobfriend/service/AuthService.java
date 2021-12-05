@@ -63,12 +63,14 @@ public class AuthService {
         }
         Authentication authentication = getAuthentication(loginDto.getEmail(),
                 loginDto.getPassword());
+
         TokenDto tokenDto = tokenProvider.createToken(authentication);
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .id(authentication.getName())
                 .token(tokenDto.getRefreshToken())
                 .build();
+
         refreshTokenRepository.save(refreshToken);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -98,6 +100,7 @@ public class AuthService {
     }
 
     public void checkPassword(MemberDto.Delete delete) {
+        // usernamepassword filter를 통과시켜서 비밀번호가 맞는지 검사
         Member currentMember = memberService.getCurrentMember();
         getAuthentication(currentMember.getEmail(), delete.getPassword());
     }
