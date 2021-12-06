@@ -33,9 +33,9 @@ public class AuthenticationController {
         return new ResponseEntity(tokenDto, HttpStatus.OK);
     }
 
-    @PostMapping("/reissue")
-    public ResponseEntity reissueToken(@RequestBody TokenDto token) {
-        return ResponseEntity.ok(authService.reissue(token));
+    @PostMapping("/issue")
+    public ResponseEntity issueToken(@RequestBody TokenDto token) {
+        return ResponseEntity.ok(authService.issueToken(token));
     }
 
     @GetMapping("/validate")

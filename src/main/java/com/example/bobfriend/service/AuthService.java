@@ -78,7 +78,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenDto reissue(TokenDto tokenDto) {
+    public TokenDto issueToken(TokenDto tokenDto) {
         Authentication authentication = tokenProvider.getAuthentication(tokenDto.getAccessToken());
 
         RefreshToken refreshToken = refreshTokenRepository.findById(authentication.getName())
