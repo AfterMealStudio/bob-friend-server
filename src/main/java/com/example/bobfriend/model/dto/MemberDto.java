@@ -3,7 +3,6 @@ package com.example.bobfriend.model.dto;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -87,17 +86,6 @@ public class MemberDto {
         private LocalDate birth;
         @NotNull
         private boolean agree;
-
-        public Member convertToEntityWithPasswordEncoder(PasswordEncoder passwordEncoder) {
-            return Member.builder()
-                    .email(this.email)
-                    .nickname(this.nickname)
-                    .password(passwordEncoder.encode(this.password))
-                    .birth(this.birth)
-                    .sex(this.sex)
-                    .agree(this.agree)
-                    .build();
-        }
 
     }
 

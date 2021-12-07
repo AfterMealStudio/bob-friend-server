@@ -41,13 +41,6 @@ public class MemberService {
         return new MemberDto.Response(member);
     }
 
-    @Transactional
-    public Member getCurrentMember() {
-        String currentUsername = getCurrentUsername();
-        Member currentMember = getMember(currentUsername);
-        return currentMember;
-    }
-
 
     @Transactional
     public void checkMemberWithCode(String email, String code) {
@@ -150,5 +143,24 @@ public class MemberService {
         return username;
     }
 
+
+    @Transactional
+    Member getCurrentMember() {
+        String currentUsername = getCurrentUsername();
+        Member currentMember = getMember(currentUsername);
+        return currentMember;
+    }
+
+
+    Member convertToEntity(MemberDto.Signup signup) {
+        return Member.builder()
+                .email(signup.getEmail())
+                .nickname(signup.getNickname())
+                .password(passwordEncoder.encode(signup.getPassword()))
+                .birth(signup.getBirth())
+                .sex(signup.getSex())
+                .agree(signup.isAgree())
+                .build();
+    }
 
 }
