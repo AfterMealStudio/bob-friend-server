@@ -100,10 +100,7 @@ public class AuthService {
         return token;
     }
 
-    public void checkPassword(MemberDto.Delete delete) {
-        Member currentMember = memberService.getCurrentMember();
-        getAuthentication(currentMember.getEmail(), delete.getPassword());
-    }
+
 
     private Authentication getAuthentication(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
