@@ -99,13 +99,17 @@ public class Member {
         this.active = true;
     }
 
+    public Integer getAge() {
+        return LocalDate.now().minusYears(this.birth.getYear()).getYear() + 1;
+    }
+
     public void addRating(Double score) {
         numberOfJoin++;
         this.rating += score;
     }
 
     public Double getRating() {
-        return Math.round(rating * 2 / Double.valueOf(Math.max(1, numberOfJoin))) / 2.0;
+        return Math.round(rating * 2 / (double) Math.max(1, numberOfJoin)) / 2.0;
     }
 
     public void setAuthorities(Set<Authority> authorities) {
