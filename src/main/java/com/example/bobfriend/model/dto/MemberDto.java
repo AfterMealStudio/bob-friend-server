@@ -37,8 +37,8 @@ public class MemberDto {
         private Integer reportCount;
         private Integer accumulatedReports;
         private Double rating;
-        private boolean agree;
-        private boolean active;
+        private Boolean agree;
+        private Boolean active;
 
         public Response(Member member) {
             this.id = member.getId();
@@ -49,7 +49,7 @@ public class MemberDto {
             this.reportCount = member.getReportCount();
             this.accumulatedReports = member.getAccumulatedReports();
             this.rating = member.getRating();
-            this.agree = member.isAgree();
+            this.agree = member.getAgree();
             this.active = member.isActive();
         }
 
@@ -67,13 +67,13 @@ public class MemberDto {
         }
     }
 
+
     @Getter
     @Setter
-    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @ToString
-    public static class Signup {
+    @Builder
+    public static class Signup extends Request {
         @Email
         private String email;
         @NotBlank
@@ -85,14 +85,31 @@ public class MemberDto {
         @Past
         private LocalDate birth;
         @NotNull
-        private boolean agree;
+        private Boolean agree;
+    }
+
+    public static class Update extends Request{
 
     }
 
     @Getter
     @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Request {
+        protected String email;
+        protected String nickname;
+        protected String password;
+        protected Sex sex;
+        protected LocalDate birth;
+        protected Boolean agree;
+    }
+
+
+    @Getter
+    @Setter
     public static class DuplicationCheck {
-        private boolean duplicated;
+        private Boolean duplicated;
 
         public DuplicationCheck(boolean duplicated) {
             this.duplicated = duplicated;

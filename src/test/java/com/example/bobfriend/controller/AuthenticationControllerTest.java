@@ -98,7 +98,6 @@ public class AuthenticationControllerTest {
 
     @Test
     void signup() throws Exception {
-        TokenDto tokenDto = new TokenDto("jwt-access-token-example", "jwt-refresh-token-example");
         MemberDto.Signup signup = MemberDto.Signup.builder()
                 .email(testMember.getEmail())
                 .nickname(testMember.getNickname())
@@ -107,6 +106,7 @@ public class AuthenticationControllerTest {
                 .sex(Sex.MALE)
                 .agree(true)
                 .build();
+
         MemberDto.Response response = MemberDto.Response.builder()
                 .id(testMember.getId())
                 .email(testMember.getEmail())
@@ -116,7 +116,7 @@ public class AuthenticationControllerTest {
                 .rating(testMember.getRating())
                 .accumulatedReports(testMember.getAccumulatedReports())
                 .reportCount(testMember.getReportCount())
-                .agree(testMember.isAgree())
+                .agree(testMember.getAgree())
                 .active(testMember.isActive())
                 .build();
 

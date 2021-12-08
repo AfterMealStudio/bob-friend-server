@@ -1,7 +1,6 @@
 package com.example.bobfriend.controller;
 
 import com.example.bobfriend.model.dto.MemberDto;
-import com.example.bobfriend.service.AuthService;
 import com.example.bobfriend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +50,14 @@ public class MemberController {
         memberService.delete(delete);
         return ResponseEntity.ok().build();
     }
+
+
+    @PutMapping("/user/{email}")
+    public ResponseEntity updateUserInfo(
+            @RequestBody MemberDto.Update update) {
+        return ResponseEntity.ok(memberService.update(update));
+    }
+
 
     @PostMapping("/user/{nickname}/score")
     public ResponseEntity rateMember(

@@ -186,4 +186,43 @@ class MemberControllerTest {
                         )));
     }
 
+
+    @Test
+    void updateMemberTest() throws Exception {
+        MemberDto.Update update = new MemberDto.Update();
+        update.setNickname("update nickname");
+        update.setBirth(LocalDate.now().minusYears(1));
+        update.setPassword("update password");
+        update.setAgree(false);
+        update.setSex(Sex.NONE);
+
+        Member incoming = Member.builder()
+                .nickname(update.getNickname())
+                .birth(update.getBirth())
+                .password(update.getPassword())
+                .sex(update.getSex())
+                .agree(update.getAgree())
+                .build();
+        testMember.update(incoming);
+        MemberDto.Response response = new MemberDto.Response(testMember);
+
+        when(memberService.update(any()))
+                .thenReturn(response);
+
+        mvc.perform(getRequestBuilder(
+                        put("/api/user")
+                                .content(
+                                        objectMapper.writeValueAsString(update))))
+                .andExpect(status().isOk())
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(response)
+                ))
+                .andDo(document("member/update",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )));
+    }
+
 }

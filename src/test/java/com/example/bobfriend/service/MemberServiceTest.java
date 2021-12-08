@@ -160,6 +160,20 @@ public class MemberServiceTest {
     }
 
 
+    @Test
+    void updateTest() {
+        login();
+        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(testMember));
+        MemberDto.Update incoming = new MemberDto.Update();
+        incoming.setNickname("update");
+
+        MemberDto.Response updatedMember = memberService.update(incoming);
+
+        assertThat(updatedMember.getNickname(), equalTo(incoming.getNickname()));
+    }
+
+
     private void login() {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(

@@ -46,8 +46,8 @@ public class Member {
     @Column(name = "accumulated_reports")
     private Integer accumulatedReports;
 
-    @Column(name = "agree") // 광고성 메일 동의 여부
-    private boolean agree;
+    @Column(name = "agree") // 약관 동의 여부
+    private Boolean agree;
 
     @Column(name = "active")
     private boolean active;
@@ -140,7 +140,7 @@ public class Member {
     private LocalDate calculateReportEnd() {
         return LocalDate.now()
                 .plusDays(Constant.REPORT_SUSPENSION_PERIOD *
-                                this.accumulatedReports);
+                        this.accumulatedReports);
     }
 
     public boolean isEmailVerified() {
@@ -159,6 +159,16 @@ public class Member {
         if (reportEnd != null && LocalDate.now().isAfter(reportEnd)) {
             setActive();
         }
+    }
+
+
+    public Member update(Member incoming) {
+        this.nickname = (incoming.getNickname() == null) ? this.nickname : incoming.getNickname();
+        this.password = (incoming.getPassword() == null) ? this.password : incoming.getPassword();
+        this.sex = (incoming.getSex() == null) ? this.sex : incoming.getSex();
+        this.birth = (incoming.getBirth() == null) ? this.birth : incoming.getBirth();
+        this.agree = (incoming.getAgree() == null) ? this.agree : incoming.getAgree();
+        return this;
     }
 
     @Override

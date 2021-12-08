@@ -4,6 +4,7 @@ import com.example.bobfriend.model.dto.MemberDto;
 import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
+import com.example.bobfriend.model.exception.MemberDuplicatedException;
 import com.example.bobfriend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -82,6 +83,17 @@ public class MemberService {
         memberRepository.delete(currentMember);
     }
 
+
+    @Transactional
+    public MemberDto.Response update(MemberDto.Update update) {
+        if (memberRepository.existsMemberByNickname(update.getNickname()))
+            throw new MemberDuplicatedException(update.getNickname());
+        Member currentMember = getCurrentMember();
+        Member incoming = convertToEntity(update);
+        return new MemberDto.Response(currentMember.update(incoming));
+    }
+
+
     public boolean isExistByEmail(String email) {
         return memberRepository.existsMemberByEmail(email);
     }
@@ -152,14 +164,14 @@ public class MemberService {
     }
 
 
-    Member convertToEntity(MemberDto.Signup signup) {
+    Member convertToEntity(MemberDto.Request request) {
         return Member.builder()
-                .email(signup.getEmail())
-                .nickname(signup.getNickname())
-                .password(passwordEncoder.encode(signup.getPassword()))
-                .birth(signup.getBirth())
-                .sex(signup.getSex())
-                .agree(signup.isAgree())
+                .email(request.getEmail())
+                .nickname(request.getNickname())
+                .password((request.getPassword() == null) ? null : passwordEncoder.encode(request.getPassword()))
+                .birth(request.getBirth())
+                .sex(request.getSex())
+                .agree(request.getAgree())
                 .build();
     }
 
