@@ -1,7 +1,6 @@
 package com.example.bobfriend.controller;
 
 import com.example.bobfriend.model.dto.MemberDto;
-import com.example.bobfriend.service.AuthService;
 import com.example.bobfriend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -45,8 +44,8 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberWithAuthorities(username));
     }
 
-    @DeleteMapping("")
-    public ResponseEntity deleteUserById(
+    @DeleteMapping("/user/{email}")
+    public ResponseEntity deleteMember(
             @Valid @RequestBody MemberDto.Delete delete) {
         memberService.delete(delete);
         return ResponseEntity.ok().build();
