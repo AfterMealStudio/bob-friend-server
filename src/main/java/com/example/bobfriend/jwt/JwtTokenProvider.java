@@ -31,13 +31,13 @@ public class JwtTokenProvider implements InitializingBean {
     private static final String AUTHORITY_KEY = "roles";
     private final String secretForAccess, secretForRefresh;
     private Key accessKey, refreshKey;
-    @Value("${jwt.access-token-valid-day}")
+    @Value("${jwt.access.expire}")
     private int ACCESS_TOKEN_VALID_DAY;
-    @Value("${jwt.refresh-token-valid-day}")
+    @Value("${jwt.refresh.expire}")
     private int REFRESH_TOKEN_VALID_DAT;
 
-    public JwtTokenProvider(@Value("${jwt.secret-for-access}") String secretForAccess,
-                            @Value("${jwt.secret-for-refresh}") String secretForRefresh) {
+    public JwtTokenProvider(@Value("${jwt.access.key}") String secretForAccess,
+                            @Value("${jwt.refresh.key}") String secretForRefresh) {
         this.secretForAccess = secretForAccess;
         this.secretForRefresh = secretForRefresh;
     }
@@ -55,8 +55,8 @@ public class JwtTokenProvider implements InitializingBean {
                 .collect(Collectors.joining(","));
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime accessTokenValidTime = now.plusDays(ACCESS_TOKEN_VALID_DAY);
-        LocalDateTime refreshTokenValidTime = now.plusDays(REFRESH_TOKEN_VALID_DAT);
+        LocalDateTime accessTokenValidTime = now.plusMinutes(ACCESS_TOKEN_VALID_DAY);
+        LocalDateTime refreshTokenValidTime = now.plusMinutes(REFRESH_TOKEN_VALID_DAT);
 
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
