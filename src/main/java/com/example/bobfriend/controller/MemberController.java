@@ -52,7 +52,7 @@ public class MemberController {
     }
 
 
-    @PutMapping("/user/{email}")
+    @PutMapping("/user")
     public ResponseEntity updateUserInfo(
             @RequestBody MemberDto.Update update) {
         return ResponseEntity.ok(memberService.update(update));
