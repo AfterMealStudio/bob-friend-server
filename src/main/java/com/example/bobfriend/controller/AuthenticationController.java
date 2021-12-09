@@ -33,15 +33,15 @@ public class AuthenticationController {
         return new ResponseEntity(tokenDto, HttpStatus.OK);
     }
 
-    @PostMapping("/reissue")
-    public ResponseEntity reissueToken(@RequestBody TokenDto token) {
-        return ResponseEntity.ok(authService.reissue(token));
+    @PostMapping("/issue")
+    public ResponseEntity issueToken(@RequestBody TokenDto token) {
+        return ResponseEntity.ok(authService.issueToken(token));
     }
 
     @GetMapping("/validate")
     public ResponseEntity validateToken(HttpServletRequest request) {
         String token = tokenProvider.resolveToken(request);
-        return ResponseEntity.ok(tokenProvider.validateToken(token));
+        return ResponseEntity.ok(tokenProvider.validateAccessToken(token));
     }
 
 

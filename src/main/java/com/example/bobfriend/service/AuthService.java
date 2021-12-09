@@ -63,12 +63,14 @@ public class AuthService {
         }
         Authentication authentication = getAuthentication(loginDto.getEmail(),
                 loginDto.getPassword());
+
         TokenDto tokenDto = tokenProvider.createToken(authentication);
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .id(authentication.getName())
                 .token(tokenDto.getRefreshToken())
                 .build();
+
         refreshTokenRepository.save(refreshToken);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -76,11 +78,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenDto reissue(TokenDto tokenDto) {
-        if (!tokenProvider.validateToken(tokenDto.getRefreshToken())) {
-            throw new JwtInvalidException();
-        }
-
+    public TokenDto issueToken(TokenDto tokenDto) {
         Authentication authentication = tokenProvider.getAuthentication(tokenDto.getAccessToken());
 
         RefreshToken refreshToken = refreshTokenRepository.findById(authentication.getName())
@@ -89,7 +87,8 @@ public class AuthService {
         if (!refreshToken.getToken().equals(tokenDto.getRefreshToken())) {
             throw new RefreshTokenNotMatchException();
         }
-        if (!tokenProvider.validateToken(refreshToken.getToken())) {
+
+        if (!tokenProvider.validateRefreshToken(refreshToken.getToken())) {
             throw new JwtInvalidException();
         }
 
@@ -101,6 +100,7 @@ public class AuthService {
     }
 
     public void checkPassword(MemberDto.Delete delete) {
+        // usernamepassword filter를 통과시켜서 비밀번호가 맞는지 검사
         Member currentMember = memberService.getCurrentMember();
         getAuthentication(currentMember.getEmail(), delete.getPassword());
     }

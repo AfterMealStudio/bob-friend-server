@@ -29,18 +29,25 @@ public class JwtTokenProvider implements InitializingBean {
     @Value("${jwt.header}")
     private String AUTHORIZATION_HEADER;
     private static final String AUTHORITY_KEY = "roles";
-    private final String secret;
-    private Key key;
+    private final String secretForAccess, secretForRefresh;
+    private Key accessKey, refreshKey;
+    @Value("${jwt.access.expire}")
+    private int ACCESS_TOKEN_VALID_DAY;
+    @Value("${jwt.refresh.expire}")
+    private int REFRESH_TOKEN_VALID_DAT;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secret) {
-        this.secret = secret;
+    public JwtTokenProvider(@Value("${jwt.access.key}") String secretForAccess,
+                            @Value("${jwt.refresh.key}") String secretForRefresh) {
+        this.secretForAccess = secretForAccess;
+        this.secretForRefresh = secretForRefresh;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.accessKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretForAccess));
+        this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretForRefresh));
     }
+
 
     public TokenDto createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
@@ -48,19 +55,19 @@ public class JwtTokenProvider implements InitializingBean {
                 .collect(Collectors.joining(","));
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime accessTokenValidTime = now.plusDays(1);
-        LocalDateTime refreshTokenValidTime = now.plusDays(30);
+        LocalDateTime accessTokenValidTime = now.plusMinutes(ACCESS_TOKEN_VALID_DAY);
+        LocalDateTime refreshTokenValidTime = now.plusMinutes(REFRESH_TOKEN_VALID_DAT);
 
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITY_KEY, authorities)
                 .setExpiration(Date.from(accessTokenValidTime.toInstant(ZoneOffset.UTC)))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(accessKey, SignatureAlgorithm.HS256)
                 .compact();
 
         String refreshToken = Jwts.builder()
                 .setExpiration(Date.from(refreshTokenValidTime.toInstant(ZoneOffset.UTC)))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(refreshKey, SignatureAlgorithm.HS256)
                 .compact();
 
         return TokenDto.builder()
@@ -71,12 +78,12 @@ public class JwtTokenProvider implements InitializingBean {
 
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(accessKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        Collection authorities =
+        Collection<SimpleGrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITY_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
@@ -84,9 +91,18 @@ public class JwtTokenProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateAccessToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(refreshKey).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;

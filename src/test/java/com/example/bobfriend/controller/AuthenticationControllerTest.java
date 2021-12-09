@@ -146,9 +146,9 @@ public class AuthenticationControllerTest {
                 .accessToken("new-access-token-example")
                 .refreshToken("new-5refresh-token-example")
                 .build();
-        when(authService.reissue(any()))
+        when(authService.issueToken(any()))
                 .thenReturn(tokenDto);
-        mvc.perform(post("/api/reissue")
+        mvc.perform(post("/api/issue")
                         .content(objectMapper.writeValueAsString(
                                 TokenDto.builder()
                                         .accessToken("old-access-token")
@@ -160,7 +160,7 @@ public class AuthenticationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(tokenDto)))
-                .andDo(document("auth/reissue",
+                .andDo(document("auth/issue",
                         getDocumentRequest(),
                         getDocumentResponse()));
     }
