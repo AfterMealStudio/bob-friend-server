@@ -1,14 +1,12 @@
 package com.example.bobfriend.model.exception;
 
-import org.springframework.http.HttpStatus;
-
 public class RefreshTokenNotFoundException extends CustomException {
     public RefreshTokenNotFoundException() {
         super("refresh token is not exist in database");
     }
 
-    @Override
-    public HttpStatus getHttpStatus() {
-        return HttpStatus.NOT_FOUND;
-    }
+//    @Override
+//    public HttpStatus getHttpStatus() {
+//        return HttpStatus.NOT_FOUND;
+//    }
 }

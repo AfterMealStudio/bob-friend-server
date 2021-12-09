@@ -1,7 +1,6 @@
 package com.example.bobfriend.model.exception;
 
 import com.example.bobfriend.model.entity.Writing;
-import org.springframework.http.HttpStatus;
 
 public class AlreadyReportedExeption extends CustomException{
     public AlreadyReportedExeption(Writing writing) {
@@ -9,8 +8,8 @@ public class AlreadyReportedExeption extends CustomException{
 
     }
 
-    @Override
-    public HttpStatus getHttpStatus() {
-        return HttpStatus.CONFLICT;
-    }
+//    @Override
+//    public HttpStatus getHttpStatus() {
+//        return HttpStatus.CONFLICT;
+//    }
 }
