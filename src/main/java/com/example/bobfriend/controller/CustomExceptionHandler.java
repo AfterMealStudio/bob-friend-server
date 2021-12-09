@@ -16,42 +16,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class CustomExceptionHandler {
 
-    @ExceptionHandler(value = {
-            AlreadyJoined.class,
-            AlreadyReportedExeption.class,
-            RecruitmentIsFullException.class})
-    public ResponseEntity handleConflictException(CustomException e) {
+    @ExceptionHandler(value = {CustomException.class})
+    public ResponseEntity handleCustomException(CustomException e) {
         ErrorResponse response = ErrorResponse.of(e.getMessage(), e.getClass());
-        return new ResponseEntity(response, HttpStatus.CONFLICT);
+        return new ResponseEntity(response, ErrorCode.valueOf(e.getClass().getSimpleName()).getStatus());
     }
 
-    @ExceptionHandler(value = {
-            CommentNotFoundException.class,
-            RecruitmentNotFoundException.class,
-            ReplyNotFoundException.class,
-            RefreshTokenNotFoundException.class})
-    public ResponseEntity handleNotFoundException(CustomException e) {
-        ErrorResponse response = ErrorResponse.of(e.getMessage(), e.getClass());
+
+    @ExceptionHandler(value = UsernameNotFoundException.class)
+    public ResponseEntity handleUsernameNotFound(UsernameNotFoundException e) {
+        ErrorResponse response = ErrorResponse.of(
+                e.getMessage() + " is not a member", e.getClass());
         return new ResponseEntity(response, HttpStatus.NOT_FOUND);
     }
-
-    @ExceptionHandler(value = {
-            JwtInvalidException.class,
-            RefreshTokenNotMatchException.class})
-    public ResponseEntity handleBadRequestException(CustomException e) {
-        ErrorResponse response = ErrorResponse.of(e.getMessage(), e.getClass());
-        return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(value = {
-            MemberNotAllowedException.class,
-            RecruitmentNotActiveException.class,
-            MemberNotVerifiedException.class})
-    public ResponseEntity handleForbiddenException(CustomException e) {
-        ErrorResponse response = ErrorResponse.of(e.getMessage(), e.getClass());
-        return new ResponseEntity(response, HttpStatus.FORBIDDEN);
-    }
-
 
     @ExceptionHandler(value = ExpiredJwtException.class)
     public ResponseEntity handleJwtExpireException(ExpiredJwtException e) {
@@ -86,13 +63,6 @@ public class CustomExceptionHandler {
     public ResponseEntity handleMissingValueException(MissingRequestValueException e) {
         ErrorResponse response = ErrorResponse.of(e.getMessage(), e.getClass());
         return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(value = UsernameNotFoundException.class)
-    public ResponseEntity handleUsernameNotFound(UsernameNotFoundException e) {
-        ErrorResponse response = ErrorResponse.of(
-                e.getMessage() + " is not a member", e.getClass());
-        return new ResponseEntity(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = AuthenticationException.class)
