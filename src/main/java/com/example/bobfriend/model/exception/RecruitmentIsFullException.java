@@ -1,6 +1,6 @@
 package com.example.bobfriend.model.exception;
 
-public class RecruitmentIsFullException extends CustomException {
+public class RecruitmentIsFullException extends BusinessConflictException {
     public RecruitmentIsFullException(Long recruitmentId) {
         super("Recruitment(" + recruitmentId + ") is full");
     }

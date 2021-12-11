@@ -1,12 +1,7 @@
 package com.example.bobfriend.model.exception;
 
-public class RefreshTokenNotFoundException extends CustomException {
+public class RefreshTokenNotFoundException extends BusinessNotFoundException {
     public RefreshTokenNotFoundException() {
         super("refresh token is not exist in database");
     }
-
-//    @Override
-//    public HttpStatus getHttpStatus() {
-//        return HttpStatus.NOT_FOUND;
-//    }
 }
