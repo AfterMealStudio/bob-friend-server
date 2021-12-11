@@ -21,7 +21,7 @@ public interface RecruitmentCustomRepository {
 
     Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable);
 
-    Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable);
+//    Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable);
 
     Page<Recruitment> findAllByAuthor(Member author, Pageable pageable);
 

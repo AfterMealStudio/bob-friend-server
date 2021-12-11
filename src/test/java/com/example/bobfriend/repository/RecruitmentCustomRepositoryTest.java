@@ -239,19 +239,19 @@ public class RecruitmentCustomRepositoryTest {
         assertThat(allByAuthor.getContent().size(), equalTo(2));
     }
 
-    @Test
-    void findAllByRestaurantTest() {
-        String restaurantName = testRecruitment1.getRestaurantName();
-        String restaurantAddress = testRecruitment1.getRestaurantAddress();
-        Condition.Search search = new Condition.Search();
-        search.setRestaurantName(restaurantName);
-        search.setRestaurantAddress(restaurantAddress);
-
-        Page<Recruitment> allByRestaurant =
-                recruitmentCustomRepository
-                        .findAllByRestaurant(search, Pageable.ofSize(10));
-        assertThat(allByRestaurant.getContent().size(), equalTo(1));
-    }
+//    @Test
+//    void findAllByRestaurantTest() {
+//        String restaurantName = testRecruitment1.getRestaurantName();
+//        String restaurantAddress = testRecruitment1.getRestaurantAddress();
+//        Condition.Search search = new Condition.Search();
+//        search.setRestaurantName(restaurantName);
+//        search.setRestaurantAddress(restaurantAddress);
+//
+//        Page<Recruitment> allByRestaurant =
+//                recruitmentCustomRepository
+//                        .findAllByRestaurant(search, Pageable.ofSize(10));
+//        assertThat(allByRestaurant.getContent().size(), equalTo(1));
+//    }
 
     @Test
     void findAllAvailableTest() {

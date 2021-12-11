@@ -33,7 +33,7 @@ public class RecruitmentService {
 
     @Transactional
     public Page<RecruitmentDto.ResponseList> findAll(Pageable pageable) {
-        return recruitmentRepository.findAll(pageable)
+        return recruitmentRepository.findAllByActiveTrue(pageable)
                 .map(RecruitmentDto.ResponseList::new);
     }
 
@@ -61,14 +61,14 @@ public class RecruitmentService {
     }
 
 
-    @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllByRestaurant(
-            Condition.Search searchCondition,
-            Pageable pageable) {
-        return recruitmentRepository
-                .findAllByRestaurant(searchCondition, pageable)
-                .map(RecruitmentDto.ResponseList::new);
-    }
+//    @Transactional
+//    public Page<RecruitmentDto.ResponseList> findAllByRestaurant(
+//            Condition.Search searchCondition,
+//            Pageable pageable) {
+//        return recruitmentRepository
+//                .findAllByRestaurant(searchCondition, pageable)
+//                .map(RecruitmentDto.ResponseList::new);
+//    }
 
 
     @Transactional
@@ -166,20 +166,13 @@ public class RecruitmentService {
                 .map(RecruitmentDto.Response::new);
     }
 
+
     public Page<RecruitmentDto.Response> searchRestaurant(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
                 .searchByRestaurant(search, pageable)
                 .map(RecruitmentDto.Response::new);
     }
 
-//    public Page<RecruitmentDto.Response> searchAppointmentTime(String start, String end, Pageable pageable) {
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-//        LocalDateTime startTime = LocalDateTime.parse(start, formatter);
-//        LocalDateTime endTime = LocalDateTime.parse(end, formatter);
-//        return recruitmentRepository.searchByAppointmentTime(
-//                        startTime, endTime, pageable)
-//                .map(RecruitmentDto.Response::new);
-//    }
 
     public Page<RecruitmentDto.Response> searchByAllCondition(Condition.Search search, Pageable pageable) {
         return recruitmentRepository

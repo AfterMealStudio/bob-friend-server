@@ -25,8 +25,7 @@ public class RecruitmentController {
 
     @GetMapping()
     public ResponseEntity getAllRecruitment(
-            @RequestParam(name = "type", defaultValue = "all") Condition.SearchType type,
-            Condition.Search searchCondition,
+            @RequestParam(name = "type", defaultValue = "all") Condition.SelectType type,
             @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.ASC) Pageable pageable) {
         Page<RecruitmentDto.ResponseList> responseDtoList = null;
 
@@ -45,11 +44,10 @@ public class RecruitmentController {
                 break;
             case all: // 전체
                 responseDtoList = recruitmentService
-                        .findAllByRestaurant(searchCondition, pageable);
+                        .findAll(pageable);
         }
         return ResponseEntity.ok(responseDtoList);
     }
-
 
 
     @GetMapping("/locations")
@@ -106,12 +104,6 @@ public class RecruitmentController {
             Condition.Search searchCondition,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        Page<RecruitmentDto.Response> searchResult = getResponses(category, searchCondition, pageable);
-
-        return ResponseEntity.ok(searchResult);
-    }
-
-    private Page<RecruitmentDto.Response> getResponses(Condition.SearchCategory category, Condition.Search searchCondition, Pageable pageable) {
         Page<RecruitmentDto.Response> searchResult = null;
         switch (category) {
             case place:
@@ -127,7 +119,8 @@ public class RecruitmentController {
                 searchResult = recruitmentService.searchByAllCondition(searchCondition, pageable);
                 break;
         }
-        return searchResult;
+
+        return ResponseEntity.ok(searchResult);
     }
 
 }

@@ -33,6 +33,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         });
     }
 
+
     @Override
     public Page<Recruitment> searchByContent(Condition.Search search, Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{
@@ -40,6 +41,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 betweenTime(search.getStart(), search.getEnd())
         });
     }
+
 
     @Override
     public Page<Recruitment> searchByRestaurant(Condition.Search search, Pageable pageable) {
@@ -49,13 +51,6 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         });
     }
 
-
-//    @Override
-//    public Page<Recruitment> searchByAppointmentTime(LocalDateTime start, LocalDateTime end, Pageable pageable) {
-//        return getPageFromStatement(pageable, () -> new Predicate[]{
-//                betweenTime(start, end)
-//        });
-//    }
 
     @Override
     public Page<Recruitment> searchByAll(Condition.Search search, Pageable pageable) {
@@ -77,18 +72,21 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         });
     }
 
+
     @Override
     public Page<Recruitment> findAll(Pageable pageable) {
         return getPageFromStatement(pageable, () -> new Predicate[]{});
     }
 
-    @Override
-    public Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable) {
-        return getPageFromStatement(pageable, () -> new Predicate[]{
-                eqRestaurantName(searchCondition.getRestaurantName()),
-                eqRestaurantAddress(searchCondition.getRestaurantAddress())
-        });
-    }
+//
+//    @Override
+//    public Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable) {
+//        return getPageFromStatement(pageable, () -> new Predicate[]{
+//                eqRestaurantName(searchCondition.getRestaurantName()),
+//                eqRestaurantAddress(searchCondition.getRestaurantAddress())
+//        });
+//    }
+
 
     @Override
     public Page<Recruitment> findAllAvailable(Member currentMember, Pageable pageable) {
@@ -101,6 +99,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 )
         });
     }
+
 
     @Override
     public Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable) {
@@ -125,11 +124,13 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         return recruitment.restaurantName.eq(restaurantName);
     }
 
+
     private BooleanExpression betweenTime(LocalDateTime start, LocalDateTime end) {
         if (start == null) return null;
         if (end == null) return null;
         return recruitment.appointmentTime.between(start, end);
     }
+
 
     private BooleanExpression eqRestaurantAddress(String restaurantAddress) {
         if (!StringUtils.hasLength(restaurantAddress)) return null;
@@ -144,6 +145,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 .fetch();
         return PageableExecutionUtils.getPage(list, pageable, () -> where.fetchCount());
     }
+
 
     private JPAQuery<Recruitment> getActiveRecruitments() {
         return jpaQueryFactory.selectFrom(recruitment).where(
