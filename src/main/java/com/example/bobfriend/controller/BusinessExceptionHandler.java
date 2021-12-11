@@ -14,14 +14,31 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class CustomExceptionHandler {
+public class BusinessExceptionHandler {
 
-    @ExceptionHandler(value = {CustomException.class})
-    public ResponseEntity handleCustomException(CustomException e) {
+    @ExceptionHandler(value = {BusinessConflictException.class})
+    public ResponseEntity handleConflictException(BusinessConflictException e) {
         ErrorResponse response = ErrorResponse.of(e.getMessage(), e.getClass());
-        return new ResponseEntity(response, ErrorCode.valueOf(e.getClass().getSimpleName()).getStatus());
+        return new ResponseEntity(response, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(value = {BusinessNotFoundException.class})
+    public ResponseEntity handleNotFoundException(BusinessNotFoundException e) {
+        ErrorResponse response = ErrorResponse.of(e.getMessage(), e.getClass());
+        return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = {BusinessBadRequestException.class})
+    public ResponseEntity handleBadRequestException(BusinessBadRequestException e) {
+        ErrorResponse response = ErrorResponse.of(e.getMessage(), e.getClass());
+        return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {BusinessForbiddenException.class})
+    public ResponseEntity handleForbiddenException(BusinessForbiddenException e) {
+        ErrorResponse response = ErrorResponse.of(e.getMessage(), e.getClass());
+        return new ResponseEntity(response, HttpStatus.FORBIDDEN);
+    }
 
     @ExceptionHandler(value = UsernameNotFoundException.class)
     public ResponseEntity handleUsernameNotFound(UsernameNotFoundException e) {
