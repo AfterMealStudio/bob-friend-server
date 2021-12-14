@@ -1,11 +1,11 @@
 package com.example.bobfriend.service;
 
+import com.example.bobfriend.model.dto.Condition;
 import com.example.bobfriend.model.dto.MemberDto;
 import com.example.bobfriend.model.dto.RecruitmentDto;
-import com.example.bobfriend.model.dto.Condition;
 import com.example.bobfriend.model.entity.*;
-import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.model.exception.AlreadyJoined;
+import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.model.exception.RecruitmentNotFoundException;
 import com.example.bobfriend.repository.RecruitmentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -251,7 +251,7 @@ class RecruitmentServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
 
         List<Recruitment> recruitmentList = Arrays.asList(testRecruitment, recruitment);
-        given(recruitmentRepository.findAllJoined(any(),any()))
+        given(recruitmentRepository.findAllJoined(any(), any()))
                 .willReturn(new PageImpl<>(recruitmentList));
 
         Page<RecruitmentDto.ResponseList> responseDtoList =
@@ -297,7 +297,7 @@ class RecruitmentServiceTest {
         when(memberService.getCurrentMember()).thenReturn(testMember);
         PageRequest pageRequest = PageRequest.of(0, 1);
         List<Recruitment> recruitmentList = Arrays.asList(recruitment);
-        given(recruitmentRepository.findAllAvailable(any(),any()))
+        given(recruitmentRepository.findAllAvailable(any(), any()))
                 .willReturn(new PageImpl<>(recruitmentList));
         Page<RecruitmentDto.ResponseList> responseDtoList =
                 recruitmentService.findAllAvailableRecruitments(pageRequest);
@@ -399,7 +399,6 @@ class RecruitmentServiceTest {
     }
 
 
-
     @Test
     void deleteRecruitmentFail_RecruitmentNotFound() {
         when(memberService.getCurrentMember())
@@ -462,5 +461,35 @@ class RecruitmentServiceTest {
 
         assertThat(responsePage, equalTo(new PageImpl<>(collect)));
     }
+
+
+    @Test
+    void findAllLocationsTest() {
+        double lat = 33.4566084914484;
+        double lon = 126.56207301534569;
+        double distance = 0.01;
+        List<Recruitment> recruitments = new ArrayList<>();
+        for (int i = 0; i < 50; i++) {
+            Recruitment recruitment = Recruitment.builder()
+                    .latitude(lat + (i * distance))
+                    .longitude(lon)
+                    .restaurantAddress("test " + i)
+                    .author(testAuthor)
+                    .appointmentTime(LocalDateTime.now())
+                    .sexRestriction(Sex.NONE)
+                    .active(true)
+                    .build();
+            recruitments.add(recruitment);
+        }
+        Set<RecruitmentDto.Address> addresses = recruitments.stream().map(RecruitmentDto.Address::new).collect(Collectors.toSet());
+        when(recruitmentRepository.findAllByLocation(any(), any(), any()))
+                .thenReturn(recruitments);
+
+
+        Set<RecruitmentDto.Address> allLocations = recruitmentService.findAllLocations(lat, lon, 3);
+
+        assertThat(allLocations, equalTo(addresses));
+    }
+
 
 }

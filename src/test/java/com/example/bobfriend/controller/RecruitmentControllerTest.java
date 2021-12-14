@@ -116,8 +116,8 @@ class RecruitmentControllerTest {
                 .totalNumberOfPeople(4)
                 .restaurantName("testRestaurantName")
                 .restaurantAddress("testRestaurantAddress")
-                .latitude(0.0)
-                .longitude(0.0)
+                .latitude(33.4566084914484)
+                .longitude(126.56207301534569)
                 .createdAt(LocalDateTime.now())
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .endAt(LocalDateTime.now().plusDays(1))
@@ -135,7 +135,7 @@ class RecruitmentControllerTest {
 
         PageImpl<RecruitmentDto.ResponseList> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
-        given(recruitmentService.findAllByRestaurant(any(),any()))
+        given(recruitmentService.findAllByRestaurant(any(), any()))
                 .willReturn(responsePage);
 
         mvc.perform(getRequestBuilder(
@@ -168,7 +168,7 @@ class RecruitmentControllerTest {
 
         mvc.perform(getRequestBuilder(
                         get("/recruitments"))
-                        .param("type","owned")
+                        .param("type", "owned")
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(
@@ -260,11 +260,14 @@ class RecruitmentControllerTest {
 
         addressDto.setCount(1);
 
-        given(recruitmentService.findAllLocations())
+        given(recruitmentService.findAllLocations(any(), any(), any()))
                 .willReturn(Set.of(addressDto));
 
         mvc.perform(getRequestBuilder(
                         get("/recruitments/locations"))
+                        .param("zoom", String.valueOf(3))
+                        .param("longitude", String.valueOf(126.56207301534569))
+                        .param("latitude", String.valueOf(33.4566084914484))
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(

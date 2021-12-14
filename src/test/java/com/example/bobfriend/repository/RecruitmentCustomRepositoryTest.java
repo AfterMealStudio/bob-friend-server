@@ -321,6 +321,8 @@ public class RecruitmentCustomRepositoryTest {
         List<Recruitment> recruitments = new ArrayList();
         double lat = 33.4566084914484;
         double lon = 126.56207301534569;
+        double bound = 0.05 * (3);
+
         double distance = 0.01;
         for (int i = 0; i < 50; i++) {
             Recruitment recruitment = Recruitment.builder()

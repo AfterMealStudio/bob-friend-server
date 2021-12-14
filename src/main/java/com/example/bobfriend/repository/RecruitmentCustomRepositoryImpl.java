@@ -116,10 +116,14 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     public List<Recruitment> findAllByLocation(Double latitude,
                                                Double longitude,
                                                Double bound) {
-        return getQueryFromStatement(() -> new Predicate[]{
-                recruitment.latitude.between(latitude - bound, latitude + bound).and(
-                        recruitment.longitude.between(longitude - bound, longitude + bound)
-                )
+        return getQueryFromStatement(() -> {
+            double from = latitude - bound;
+            double to = latitude + bound;
+            return new Predicate[]{
+                    recruitment.latitude.between(from, to).and(
+                            recruitment.longitude.between(longitude - bound, longitude + bound)
+                    )
+            };
         }).fetch();
     }
 

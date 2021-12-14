@@ -80,11 +80,16 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public Set<RecruitmentDto.Address> findAllLocations() {
+    public Set<RecruitmentDto.Address> findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
         Map<RecruitmentDto.Address, Integer> addressMap = new HashMap();
 
+        // 0.05가 지도 상에서 대충 500m 정도
+        // 줌 레벨이 -2 ~ 12까지의 값을 가짐
+        double bound = 0.05 * (zoomLevel + 3);
+
+        List<Recruitment> allByLocation = recruitmentRepository.findAllByLocation(latitude, longitude, bound);
         Iterator<Recruitment> iterator =
-                recruitmentRepository.findAllByActiveTrue()
+                allByLocation
                         .iterator();
         while (iterator.hasNext()) {
             Recruitment recruitment = iterator.next();
@@ -134,6 +139,7 @@ public class RecruitmentService {
 
         Recruitment recruitment = getRecruitment(recruitmentId);
         Member author = recruitment.getAuthor();
+
         if (author.isUnknown() || !recruitment.isActive())
             throw new RecruitmentNotActiveException(recruitmentId);
 
