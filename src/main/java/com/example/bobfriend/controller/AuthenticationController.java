@@ -26,22 +26,25 @@ public class AuthenticationController {
         return ResponseEntity.ok(authService.signup(memberSignupDto));
     }
 
+
     @PostMapping("/signin")
     public ResponseEntity signin(@Valid @RequestBody MemberDto.Login loginDto)
             throws AuthenticationException {
-        TokenDto tokenDto = authService.signin(loginDto);
+        TokenDto.Token tokenDto = authService.signin(loginDto);
         return new ResponseEntity(tokenDto, HttpStatus.OK);
     }
 
+
     @PostMapping("/issue")
-    public ResponseEntity issueToken(@RequestBody TokenDto token) {
+    public ResponseEntity issueToken(@RequestBody TokenDto.Token token) {
         return ResponseEntity.ok(authService.issueToken(token));
     }
+
 
     @GetMapping("/validate")
     public ResponseEntity validateToken(HttpServletRequest request) {
         String token = tokenProvider.resolveToken(request);
-        return ResponseEntity.ok(tokenProvider.validateAccessToken(token));
+        return ResponseEntity.ok(new TokenDto.Validation(tokenProvider.validateAccessToken(token)));
     }
 
 

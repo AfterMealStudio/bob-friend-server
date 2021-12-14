@@ -252,7 +252,7 @@ response::
 include::{snippets}/comment/reply/report-reply/http-response.adoc[]
 
 
-== Member
+== Auth
 === 회원가입
 request::
 include::{snippets}/auth/signup/http-request.adoc[]
@@ -278,7 +278,19 @@ include::{snippets}/auth/reissue/http-request.adoc[]
 response::
 include::{snippets}/auth/reissue/http-response.adoc[]
 
+=== 토큰 확인
+```
+액세스토큰이 만료되었는지를 true/false로 반환한다.
+```
 
+request::
+include::{snippets}/auth/validate/http-request.adoc[]
+header::
+include::{snippets}/auth/validate/request-headers.adoc[]
+response::
+include::{snippets}/auth/validate/http-response.adoc[]
+
+== Member
 === 회원 탈퇴
 request::
 include::{snippets}/member/delete/http-request.adoc[]

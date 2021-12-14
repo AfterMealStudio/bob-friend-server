@@ -49,7 +49,7 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
 
-    public TokenDto createToken(Authentication authentication) {
+    public TokenDto.Token createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -70,7 +70,7 @@ public class JwtTokenProvider implements InitializingBean {
                 .signWith(refreshKey, SignatureAlgorithm.HS256)
                 .compact();
 
-        return TokenDto.builder()
+        return TokenDto.Token.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
