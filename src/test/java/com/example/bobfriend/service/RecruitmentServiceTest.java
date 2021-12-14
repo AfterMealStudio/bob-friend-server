@@ -467,13 +467,13 @@ class RecruitmentServiceTest {
     void findAllLocationsTest() {
         double lat = 33.4566084914484;
         double lon = 126.56207301534569;
-        double distance = 0.01;
+
         List<Recruitment> recruitments = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 30; i++) {
             Recruitment recruitment = Recruitment.builder()
-                    .latitude(lat + (i * distance))
+                    .latitude(lat)
                     .longitude(lon)
-                    .restaurantAddress("test " + i)
+                    .restaurantAddress("test")
                     .author(testAuthor)
                     .appointmentTime(LocalDateTime.now())
                     .sexRestriction(Sex.NONE)
@@ -481,14 +481,14 @@ class RecruitmentServiceTest {
                     .build();
             recruitments.add(recruitment);
         }
-        Set<RecruitmentDto.Address> addresses = recruitments.stream().map(RecruitmentDto.Address::new).collect(Collectors.toSet());
         when(recruitmentRepository.findAllByLocation(any(), any(), any()))
                 .thenReturn(recruitments);
 
+        RecruitmentDto.Address address = new RecruitmentDto.Address(recruitments.get(0));
+        address.setCount(recruitments.size());
+        RecruitmentDto.AddressList allLocations = recruitmentService.findAllLocations(lat, lon, 3);
 
-        Set<RecruitmentDto.Address> allLocations = recruitmentService.findAllLocations(lat, lon, 3);
-
-        assertThat(allLocations, equalTo(addresses));
+        assertThat(allLocations.getAddresses(), equalTo(List.of(address)));
     }
 
 

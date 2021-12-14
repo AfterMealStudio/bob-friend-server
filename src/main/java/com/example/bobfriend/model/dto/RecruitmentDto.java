@@ -105,6 +105,17 @@ public class RecruitmentDto {
 
     @Getter
     @Setter
+    public static class AddressList {
+        private List<Address> addresses;
+
+        public AddressList(List<Address> addresses) {
+            this.addresses = addresses;
+        }
+    }
+
+
+    @Getter
+    @Setter
     @ToString
     public static class Address {
         private double latitude;

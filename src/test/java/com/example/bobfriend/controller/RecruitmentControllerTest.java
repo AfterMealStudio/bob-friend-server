@@ -260,8 +260,9 @@ class RecruitmentControllerTest {
 
         addressDto.setCount(1);
 
+        RecruitmentDto.AddressList value = new RecruitmentDto.AddressList(List.of(addressDto));
         given(recruitmentService.findAllLocations(any(), any(), any()))
-                .willReturn(Set.of(addressDto));
+                .willReturn(value);
 
         mvc.perform(getRequestBuilder(
                         get("/recruitments/locations"))
@@ -271,7 +272,7 @@ class RecruitmentControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(
-                        objectMapper.writeValueAsString(Arrays.asList(addressDto))))
+                        objectMapper.writeValueAsString(value)))
                 .andDo(document("recruitment/get-all-recruitments-locations",
                         getDocumentRequest(),
                         getDocumentResponse(),
@@ -280,11 +281,12 @@ class RecruitmentControllerTest {
                                         .description("토큰")
                         ),
                         responseFields(
-                                fieldWithPath("[].latitude").description("위도"),
-                                fieldWithPath("[].longitude").description("경도"),
-                                fieldWithPath("[].address").description("주소"),
-                                fieldWithPath("[].count").description("해당 좌표에 존재하는 약속의 수")
-                        )));
+                                fieldWithPath("addresses[].latitude").description("위도"),
+                                fieldWithPath("addresses[].longitude").description("경도"),
+                                fieldWithPath("addresses[].address").description("주소"),
+                                fieldWithPath("addresses[].count").description("해당 좌표에 존재하는 약속의 수")
+                        )
+                ));
     }
 
     @Test
