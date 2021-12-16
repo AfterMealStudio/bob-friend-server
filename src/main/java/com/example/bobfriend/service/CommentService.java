@@ -39,15 +39,20 @@ public class CommentService {
 
     @Transactional
     public CommentDto.Response createComment(
-            CommentDto.Request commentRequestDto,
+            CommentDto.Request commentDto,
             Long recruitmentId) {
-        Comment comment = commentRequestDto.convertToEntity();
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
-        comment.setAuthor(currentMember);
-        comment.setRecruitment(recruitment);
+
+        Comment comment = Comment.builder()
+                .content(commentDto.getContent())
+                .author(currentMember)
+                .recruitment(recruitment)
+                .build();
+
         return new CommentDto.Response(commentRepository.save(comment));
     }
+
 
     @Transactional
     public void deleteComment(Long commentId) {
@@ -70,9 +75,12 @@ public class CommentService {
             ReplyDto.Request replyDto) {
         Member author = memberService.getCurrentMember();
         Comment comment = getComment(commentId);
-        Reply reply = replyDto.convertToEntity();
-        reply.setAuthor(author);
-        reply.setComment(comment);
+
+        Reply reply = Reply.builder()
+                .content(replyDto.getContent())
+                .author(author)
+                .comment(comment)
+                .build();
 
         Reply save = replyRepository.save(reply);
         return new ReplyDto.Response(save);

@@ -25,13 +25,6 @@ public class CommentDto {
         public Request(Comment comment) {
             this.content = comment.getContent();
         }
-
-        public Comment convertToEntity() {
-            return Comment.builder()
-                    .content(content)
-                    .replies(new LinkedList<>())
-                    .build();
-        }
     }
 
     @Getter
