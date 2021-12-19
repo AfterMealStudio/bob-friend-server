@@ -80,7 +80,7 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public RecruitmentDto.AddressList findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
+    public RecruitmentDto.AddressCollection findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
         Map<RecruitmentDto.Address, Integer> addressMap = new HashMap();
 
         // 0.05가 지도 상에서 대충 500m 정도
@@ -102,7 +102,7 @@ public class RecruitmentService {
                 addressMap.entrySet()) {
             entry.getKey().setCount(entry.getValue());
         }
-        return new RecruitmentDto.AddressList(new ArrayList<>(addressMap.keySet()));
+        return new RecruitmentDto.AddressCollection(new ArrayList<>(addressMap.keySet()));
     }
 
     @Transactional

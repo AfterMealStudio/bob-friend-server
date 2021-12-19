@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static com.example.bobfriend.document.ApiDocumentUtils.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -260,7 +259,7 @@ class RecruitmentControllerTest {
 
         addressDto.setCount(1);
 
-        RecruitmentDto.AddressList value = new RecruitmentDto.AddressList(List.of(addressDto));
+        RecruitmentDto.AddressCollection value = new RecruitmentDto.AddressCollection(List.of(addressDto));
         given(recruitmentService.findAllLocations(any(), any(), any()))
                 .willReturn(value);
 

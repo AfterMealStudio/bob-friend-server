@@ -486,7 +486,7 @@ class RecruitmentServiceTest {
 
         RecruitmentDto.Address address = new RecruitmentDto.Address(recruitments.get(0));
         address.setCount(recruitments.size());
-        RecruitmentDto.AddressList allLocations = recruitmentService.findAllLocations(lat, lon, 3);
+        RecruitmentDto.AddressCollection allLocations = recruitmentService.findAllLocations(lat, lon, 3);
 
         assertThat(allLocations.getAddresses(), equalTo(List.of(address)));
     }
