@@ -27,16 +27,16 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> searchByTitle(Condition.Search search, Pageable pageable) {
-        JPAQuery<Recruitment> query = getQueryFromStatement(() -> new Predicate[]{
-                recruitment.title.contains(search.getKeyword()),
-                betweenTime(search.getStart(), search.getEnd())
-        });
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
+                        recruitment.title.contains(search.getKeyword()),
+                        betweenTime(search.getStart(), search.getEnd())
+                });
         return getPage(pageable, query);
     }
 
     @Override
     public Page<Recruitment> searchByContent(Condition.Search search, Pageable pageable) {
-        JPAQuery<Recruitment> query = getQueryFromStatement(() -> new Predicate[]{
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
                 recruitment.content.contains(search.getKeyword()),
                 betweenTime(search.getStart(), search.getEnd())
         });
@@ -45,7 +45,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> searchByRestaurant(Condition.Search search, Pageable pageable) {
-        JPAQuery<Recruitment> query = getQueryFromStatement(() -> new Predicate[]{
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
                 recruitment.restaurantName.contains(search.getKeyword()),
                 betweenTime(search.getStart(), search.getEnd())
         });
@@ -55,7 +55,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> searchByAll(Condition.Search search, Pageable pageable) {
-        JPAQuery<Recruitment> query = getQueryFromStatement(() -> new Predicate[]{
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
                         recruitment.title.contains(search.getKeyword()).or(
                                 recruitment.content.contains(search.getKeyword()).or(
                                         recruitment.restaurantName.contains(search.getKeyword())
@@ -69,7 +69,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> findAllByAuthor(Member author, Pageable pageable) {
-        JPAQuery<Recruitment> query = getQueryFromStatement(() -> new Predicate[]{
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
                 recruitment.author.eq(author)
         });
         return getPage(pageable, query);
@@ -77,13 +77,13 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> findAll(Pageable pageable) {
-        JPAQuery<Recruitment> query = getQueryFromStatement(() -> new Predicate[]{});
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{});
         return getPage(pageable, query);
     }
 
     @Override
     public Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable) {
-        JPAQuery<Recruitment> query = getQueryFromStatement(() -> new Predicate[]{
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
                 eqRestaurantName(searchCondition.getRestaurantName()),
                 eqRestaurantAddress(searchCondition.getRestaurantAddress())
         });
@@ -92,7 +92,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> findAllAvailable(Member currentMember, Pageable pageable) {
-        JPAQuery<Recruitment> query = getQueryFromStatement(() -> new Predicate[]{
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
                 recruitment.totalNumberOfPeople.gt(recruitment.members.size()),
                 recruitment.author.ne(currentMember),
                 recruitment.members.contains(currentMember).not(),
@@ -105,7 +105,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable) {
-        JPAQuery<Recruitment> query = getQueryFromStatement(() -> new Predicate[]{
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
                 recruitment.members.contains(currentMember)
         });
         return getPage(pageable, query);
@@ -116,24 +116,17 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     public List<Recruitment> findAllByLocation(Double latitude,
                                                Double longitude,
                                                Double bound) {
-        return getQueryFromStatement(() -> {
-            double from = latitude - bound;
-            double to = latitude + bound;
-            return new Predicate[]{
-                    recruitment.latitude.between(from, to).and(
-                            recruitment.longitude.between(longitude - bound, longitude + bound)
-                    )
-            };
+        return getFilteringQueryFromPredicates(new Predicate[]{
+                recruitment.latitude.between(latitude - bound, latitude + bound).and(
+                        recruitment.longitude.between(longitude - bound, longitude + bound)
+                )
         }).fetch();
     }
 
 
-    private JPAQuery<Recruitment> getQueryFromStatement(StatementStrategy statementStrategy) {
-        Predicate[] booleanExpression = statementStrategy.makeBooleanExpression();
+    private JPAQuery<Recruitment> getFilteringQueryFromPredicates(Predicate[] predicates) {
         return getActiveRecruitments()
-                .where(
-                        booleanExpression
-                );
+                .where(predicates);
     }
 
 
@@ -142,11 +135,13 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         return recruitment.restaurantName.eq(restaurantName);
     }
 
+
     private BooleanExpression betweenTime(LocalDateTime start, LocalDateTime end) {
         if (start == null) return null;
         if (end == null) return null;
         return recruitment.appointmentTime.between(start, end);
     }
+
 
     private BooleanExpression eqRestaurantAddress(String restaurantAddress) {
         if (!StringUtils.hasLength(restaurantAddress)) return null;
