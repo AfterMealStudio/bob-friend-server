@@ -2,7 +2,7 @@ package com.example.bobfriend.service;
 
 import com.example.bobfriend.jwt.JwtTokenProvider;
 import com.example.bobfriend.model.dto.MemberDto;
-import com.example.bobfriend.model.dto.TokenDto;
+import com.example.bobfriend.model.dto.token.Token;
 import com.example.bobfriend.model.entity.Authority;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.RefreshToken;
@@ -57,14 +57,14 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenDto.Token signin(MemberDto.Login loginDto) {
+    public Token signin(MemberDto.Login loginDto) {
         if (!memberRepository.existsMemberByEmail(loginDto.getEmail())) {
             throw new UsernameNotFoundException(loginDto.getEmail());
         }
         Authentication authentication = getAuthentication(loginDto.getEmail(),
                 loginDto.getPassword());
 
-        TokenDto.Token tokenDto = tokenProvider.createToken(authentication);
+        Token tokenDto = tokenProvider.createToken(authentication);
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .id(authentication.getName())
@@ -78,7 +78,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenDto.Token issueToken(TokenDto.Token tokenDto) {
+    public Token issueToken(Token tokenDto) {
         Authentication authentication = tokenProvider.getAuthentication(tokenDto.getAccessToken());
 
         RefreshToken refreshToken = refreshTokenRepository.findById(authentication.getName())
@@ -92,7 +92,7 @@ public class AuthService {
             throw new JwtInvalidException();
         }
 
-        TokenDto.Token token = tokenProvider.createToken(authentication);
+        Token token = tokenProvider.createToken(authentication);
 
         refreshTokenRepository.save(refreshToken.updateToken(tokenDto.getRefreshToken()));
 
