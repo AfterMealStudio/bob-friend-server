@@ -1,11 +1,10 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.CommentDto;
 import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.ReplyDto;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.repository.CommentRepository;
-import com.example.bobfriend.repository.RecruitmentRepository;
 import com.example.bobfriend.repository.ReplyRepository;
 import com.example.bobfriend.repository.WritingReportRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,10 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,20 +26,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class CommentServiceTest {
+public class ReplyServiceTest {
     @Mock
-    CommentRepository commentRepository;
+    private CommentRepository commentRepository;
     @Mock
-    ReplyRepository replyRepository;
+    private ReplyRepository replyRepository;
     @Mock
-    RecruitmentRepository recruitmentRepository;
+    private MemberService memberService;
     @Mock
-    WritingReportRepository reportRepository;
+    private ReportService reportService;
     @Mock
-    MemberService memberService;
+    private WritingReportRepository reportRepository;
     @InjectMocks
-    CommentService commentService;
-
+    ReplyService replyService;
     private Member testAuthor;
     private Comment testComment;
     private Recruitment testRecruitment;
@@ -97,74 +93,60 @@ public class CommentServiceTest {
 
     }
 
-    @Test
-    void createCommentTest() {
-        when(memberService.getCurrentMember()).thenReturn(testAuthor);
-        when(commentRepository.save(any())).thenReturn(testComment);
-        when(recruitmentRepository.findById(any()))
-                .thenReturn(java.util.Optional.ofNullable(testRecruitment));
-        CommentDto.Request commentRequestDto = new CommentDto.Request();
-        commentRequestDto.setContent(testComment.getContent());
-        CommentDto.Response commentDto =
-                commentService.create(commentRequestDto,
-                        testRecruitment.getId());
-
-        assertThat(commentDto.getAuthor(), equalTo(
-                new MemberDto.Preview(testAuthor)));
-        assertThat(commentDto.getContent(), equalTo(
-                testComment.getContent()));
-    }
-
 
     @Test
-    void deleteCommentTest() {
+    void createReplyTest() {
         when(memberService.getCurrentMember())
                 .thenReturn(testAuthor);
         when(commentRepository.findById(any()))
                 .thenReturn(java.util.Optional.ofNullable(testComment));
+        when(replyRepository.save(any()))
+                .thenReturn(testReply);
+        ReplyDto.Request requestDto = new ReplyDto.Request();
+        requestDto.setContent(testReply.getContent());
 
-        commentService.delete(testComment.getId());
+        ReplyDto.Response replyDto =
+                replyService.create(
+                        testComment.getId(), requestDto);
 
-        assertThat(testComment.getAuthor().getEmail(), equalTo("unknown"));
-
-        assertThat(testComment.getContent(), equalTo(null));
+        assertThat(replyDto.getId(), equalTo(testReply.getId()));
+        assertThat(replyDto.getAuthor(), equalTo(
+                new MemberDto.Preview(testAuthor)
+        ));
     }
 
 
     @Test
-    void deleteCommentTest_fail_memberNotAllowed() {
+    void deleteReplyTest() {
+        testReply = Reply.builder()
+                .id(1L)
+                .author(testAuthor)
+                .comment(testComment)
+                .content("test reply")
+                .createdAt(LocalDateTime.now())
+                .build();
+        when(memberService.getCurrentMember())
+                .thenReturn(testAuthor);
+
+        when(replyRepository.findById(any()))
+                .thenReturn(java.util.Optional.ofNullable(testReply));
+
+        replyService.delete(testReply.getId());
+
+    }
+
+
+    @Test
+    void deleteReplyTest_fail_memberNotAllowed() {
         Member member = Member.builder()
                 .id(2L).build();
         when(memberService.getCurrentMember())
                 .thenReturn(member);
-        when(commentRepository.findById(any()))
-                .thenReturn(java.util.Optional.ofNullable(testComment));
+        when(replyRepository.findById(any()))
+                .thenReturn(java.util.Optional.ofNullable(testReply));
 
-        assertThrows(MemberNotAllowedException.class, () -> {
-            commentService.delete(testComment.getId());
-        });
+        assertThrows(MemberNotAllowedException.class, () ->
+                replyService.delete(testReply.getId())
+        );
     }
-
-
-    @Test
-    void getAllCommentsTest() {
-        List<Comment> commentList = Arrays.asList(testComment);
-        when(commentRepository.findAllByRecruitmentId(any()))
-                .thenReturn(commentList);
-        List<CommentDto.Response> allComment =
-                commentService.getAllCommentByRecruitmentId(
-                        testRecruitment.getId());
-        List<CommentDto.Response> responseList = commentList.stream()
-                .map((comment) -> new CommentDto.Response(comment))
-                .collect(Collectors.toList());
-        assertThat(allComment, equalTo(
-                responseList));
-    }
-
-
-
-
-
-
-
 }
