@@ -1,6 +1,9 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.RecruitmentDto;
+import com.example.bobfriend.model.dto.Recruitment.Address;
+import com.example.bobfriend.model.dto.Recruitment.Create;
+import com.example.bobfriend.model.dto.Recruitment.Response;
+import com.example.bobfriend.model.dto.Recruitment.ResponseCollection;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.service.CommentService;
 import com.example.bobfriend.service.RecruitmentService;
@@ -130,10 +133,10 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitment() throws Exception {
-        RecruitmentDto.ResponseList responseDto1 =
-                new RecruitmentDto.ResponseList(testRecruitment);
+        ResponseCollection responseDto1 =
+                new ResponseCollection(testRecruitment);
 
-        PageImpl<RecruitmentDto.ResponseList> responsePage =
+        PageImpl<ResponseCollection> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
         given(recruitmentService.findAllByRestaurant(any(),any()))
                 .willReturn(responsePage);
@@ -157,10 +160,10 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitment_my() throws Exception {
-        RecruitmentDto.ResponseList responseDto1 =
-                new RecruitmentDto.ResponseList(testRecruitment);
+        ResponseCollection responseDto1 =
+                new ResponseCollection(testRecruitment);
 
-        PageImpl<RecruitmentDto.ResponseList> responsePage =
+        PageImpl<ResponseCollection> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
 
         when(recruitmentService.findMyRecruitments(any()))
@@ -187,11 +190,11 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitments_restaurantAddress() throws Exception {
-        RecruitmentDto.ResponseList responseDto1 =
-                new RecruitmentDto.ResponseList(testRecruitment);
+        ResponseCollection responseDto1 =
+                new ResponseCollection(testRecruitment);
 
         String testRestaurantAddress = "testRestaurantAddress";
-        PageImpl<RecruitmentDto.ResponseList> responsePage =
+        PageImpl<ResponseCollection> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
         given(recruitmentService.findAllByRestaurant(any(), any()))
                 .willReturn(responsePage);
@@ -216,9 +219,9 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitments_restaurant() throws Exception {
-        RecruitmentDto.ResponseList responseDto1 =
-                new RecruitmentDto.ResponseList(testRecruitment);
-        PageImpl<RecruitmentDto.ResponseList> responsePage =
+        ResponseCollection responseDto1 =
+                new ResponseCollection(testRecruitment);
+        PageImpl<ResponseCollection> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
 
         String testRestaurantName = "testRestaurantName";
@@ -255,8 +258,8 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllLocations() throws Exception {
-        RecruitmentDto.Address addressDto =
-                new RecruitmentDto.Address(testRecruitment);
+        Address addressDto =
+                new Address(testRecruitment);
 
         addressDto.setCount(1);
 
@@ -286,8 +289,8 @@ class RecruitmentControllerTest {
 
     @Test
     void getRecruitment() throws Exception {
-        RecruitmentDto.Response responseDto =
-                new RecruitmentDto.Response(testRecruitment);
+        Response responseDto =
+                new Response(testRecruitment);
         given(recruitmentService.findById(any()))
                 .willReturn(responseDto);
 
@@ -333,10 +336,10 @@ class RecruitmentControllerTest {
 
     @Test
     void createRecruitment() throws Exception {
-        RecruitmentDto.Response responseDto =
-                new RecruitmentDto.Response(testRecruitment);
-        RecruitmentDto.Request requestDto =
-                new RecruitmentDto.Request(testRecruitment);
+        Response responseDto =
+                new Response(testRecruitment);
+        Create requestDto =
+                new Create(testRecruitment);
         given(recruitmentService.createRecruitment(any()))
                 .willReturn(responseDto);
 
@@ -390,7 +393,7 @@ class RecruitmentControllerTest {
                 .active(true)
                 .build();
         testRecruitment.addMember(testMember2);
-        RecruitmentDto.Response response = new RecruitmentDto.Response(testRecruitment);
+        Response response = new Response(testRecruitment);
         when(recruitmentService.joinOrUnjoin(any()))
                 .thenReturn(response);
 
@@ -441,9 +444,9 @@ class RecruitmentControllerTest {
 
     @Test
     void searchRecruitmentTest() throws Exception {
-        RecruitmentDto.Response responseDto =
-                new RecruitmentDto.Response(testRecruitment);
-        PageImpl<RecruitmentDto.Response> responsePage =
+        Response responseDto =
+                new Response(testRecruitment);
+        PageImpl<Response> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto));
         when(recruitmentService.searchTitle(any(), any()))
                 .thenReturn(new PageImpl<>(Arrays.asList(responseDto)));
