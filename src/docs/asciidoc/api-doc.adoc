@@ -354,6 +354,7 @@ include::{snippets}/auth/reissue/http-response.adoc[]
 액세스토큰이 만료되었는지를 true/false로 반환한다.
 ```
 
+
 request::
 include::{snippets}/auth/validate/http-request.adoc[]
 header::
@@ -362,6 +363,21 @@ response::
 include::{snippets}/auth/validate/http-response.adoc[]
 
 == Member
+
+=== 회원 정보 수정
+[source]
+----
+변경할 필드에 null이 아닌 값을 입력하면 해당하는 유저의 속성이 변경된다. email의 경우 null이 아닌 값을 입력하더라도 변경되지 않는다.
+----
+
+request::
+include::{snippets}/member/update/http-request.adoc[]
+header::
+include::{snippets}/member/update/request-headers.adoc[]
+response::
+include::{snippets}/member/update/http-response.adoc[]
+
+
 === 회원 탈퇴
 request::
 include::{snippets}/member/delete/http-request.adoc[]
