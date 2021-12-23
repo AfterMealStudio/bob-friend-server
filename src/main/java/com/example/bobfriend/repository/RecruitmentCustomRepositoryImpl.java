@@ -1,9 +1,7 @@
 package com.example.bobfriend.repository;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.entity.Member;
-import com.example.bobfriend.model.entity.Recruitment;
-import com.example.bobfriend.model.entity.Sex;
+import com.example.bobfriend.model.entity.*;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -27,87 +25,78 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> searchByTitle(Condition.Search search, Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
-                        recruitment.title.contains(search.getKeyword()),
-                        betweenTime(search.getStart(), search.getEnd())
-                });
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
+                recruitment.title.contains(search.getKeyword()),
+                betweenTime(search.getStart(), search.getEnd()));
         return getPage(pageable, query);
     }
 
     @Override
     public Page<Recruitment> searchByContent(Condition.Search search, Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
                 recruitment.content.contains(search.getKeyword()),
-                betweenTime(search.getStart(), search.getEnd())
-        });
+                betweenTime(search.getStart(), search.getEnd()));
         return getPage(pageable, query);
     }
 
     @Override
     public Page<Recruitment> searchByRestaurant(Condition.Search search, Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
                 recruitment.restaurantName.contains(search.getKeyword()),
-                betweenTime(search.getStart(), search.getEnd())
-        });
+                betweenTime(search.getStart(), search.getEnd()));
         return getPage(pageable, query);
     }
 
 
     @Override
     public Page<Recruitment> searchByAll(Condition.Search search, Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
-                        recruitment.title.contains(search.getKeyword()).or(
-                                recruitment.content.contains(search.getKeyword()).or(
-                                        recruitment.restaurantName.contains(search.getKeyword())
-                                )),
-                        betweenTime(search.getStart(), search.getEnd())
-                }
-        );
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
+                recruitment.title.contains(search.getKeyword()).or(
+                        recruitment.content.contains(search.getKeyword()).or(
+                                recruitment.restaurantName.contains(search.getKeyword())
+                        )),
+                betweenTime(search.getStart(), search.getEnd()));
         return getPage(pageable, query);
     }
 
 
     @Override
     public Page<Recruitment> findAllByAuthor(Member author, Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
-                recruitment.author.eq(author)
-        });
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
+                recruitment.author.eq(author));
         return getPage(pageable, query);
     }
 
     @Override
     public Page<Recruitment> findAll(Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{});
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates();
         return getPage(pageable, query);
     }
 
     @Override
     public Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
                 eqRestaurantName(searchCondition.getRestaurantName()),
-                eqRestaurantAddress(searchCondition.getRestaurantAddress())
-        });
+                eqRestaurantAddress(searchCondition.getRestaurantAddress()));
         return getPage(pageable, query);
     }
 
     @Override
     public Page<Recruitment> findAllAvailable(Member currentMember, Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
                 recruitment.totalNumberOfPeople.gt(recruitment.members.size()),
                 recruitment.author.ne(currentMember),
                 recruitment.members.contains(currentMember).not(),
                 recruitment.sexRestriction.eq(currentMember.getSex()).or(
                         recruitment.sexRestriction.eq(Sex.NONE)
-                )
-        });
+                ));
         return getPage(pageable, query);
     }
 
     @Override
     public Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(new Predicate[]{
-                recruitment.members.contains(currentMember)
-        });
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
+                recruitment.members.contains(currentMember));
         return getPage(pageable, query);
     }
 
@@ -124,7 +113,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     }
 
 
-    private JPAQuery<Recruitment> getFilteringQueryFromPredicates(Predicate[] predicates) {
+    private JPAQuery<Recruitment> getFilteringQueryFromPredicates(Predicate... predicates) {
         return getActiveRecruitments()
                 .where(predicates);
     }
