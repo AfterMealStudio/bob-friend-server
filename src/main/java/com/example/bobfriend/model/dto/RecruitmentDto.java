@@ -1,5 +1,6 @@
 package com.example.bobfriend.model.dto;
 
+import com.example.bobfriend.model.dto.member.Preview;
 import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.entity.Sex;
@@ -143,8 +144,8 @@ public class RecruitmentDto {
         protected Long id;
         protected String title;
         protected String content;
-        protected MemberDto.Preview author;
-        protected Set<MemberDto.Preview> members;
+        protected Preview author;
+        protected Set<Preview> members;
         protected Integer amountOfComments;
 
         protected Integer totalNumberOfPeople;
@@ -163,9 +164,9 @@ public class RecruitmentDto {
             this.id = recruitment.getId();
             this.title = recruitment.getTitle();
             this.content = recruitment.getContent();
-            this.author = new MemberDto.Preview(recruitment.getAuthor());
+            this.author = new Preview(recruitment.getAuthor());
             this.members = recruitment.getMembers().stream()
-                    .map(member -> new MemberDto.Preview(member))
+                    .map(member -> new Preview(member))
                     .collect(Collectors.toSet());
             this.amountOfComments = getAmountOfComments(recruitment);
             this.currentNumberOfPeople = recruitment.getCurrentNumberOfPeople();

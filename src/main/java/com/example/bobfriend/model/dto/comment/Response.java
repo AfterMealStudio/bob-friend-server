@@ -1,7 +1,7 @@
 package com.example.bobfriend.model.dto.comment;
 
-import com.example.bobfriend.model.dto.MemberDto;
 import com.example.bobfriend.model.dto.ReplyDto;
+import com.example.bobfriend.model.dto.member.Preview;
 import com.example.bobfriend.model.entity.Comment;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Setter
 public class Response {
     private Long id;
-    private MemberDto.Preview author;
+    private Preview author;
     private String content;
     private List<ReplyDto.Response> replies;
     private Integer reportCount;
@@ -24,7 +24,7 @@ public class Response {
 
     public Response(Comment comment) {
         this.id = comment.getId();
-        this.author = new MemberDto.Preview(comment.getAuthor());
+        this.author = new Preview(comment.getAuthor());
         this.content = comment.getContent();
         this.replies = comment.getReplies().stream()
                 .map(ReplyDto.Response::new)

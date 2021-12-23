@@ -1,8 +1,8 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.MemberDto;
 import com.example.bobfriend.model.dto.RecruitmentDto;
 import com.example.bobfriend.model.dto.Condition;
+import com.example.bobfriend.model.dto.member.Preview;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.model.exception.AlreadyJoined;
@@ -178,14 +178,12 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findById(testRecruitment.getId()))
                 .willReturn(Optional.ofNullable(testRecruitment));
 
-//        when(recruitmentRepository.save(any())) joinOrUnjoin 메소드는 영속상태의 엔티티를 이용하므로
-//                .thenReturn(testRecruitment);   변경감지가 일어나 save 할 필요 없다.
 
         RecruitmentDto.Response recruitmentResponseDto =
                 recruitmentService.joinOrUnjoin(testRecruitment.getId());
 
-        Set<MemberDto.Preview> members = recruitmentResponseDto.getMembers();
-        assertTrue(members.contains(new MemberDto.Preview(testMember)));
+        Set<Preview> members = recruitmentResponseDto.getMembers();
+        assertTrue(members.contains(new Preview(testMember)));
     }
 
 
@@ -210,8 +208,8 @@ class RecruitmentServiceTest {
         RecruitmentDto.Response recruitmentResponseDto =
                 recruitmentService.joinOrUnjoin(testRecruitment.getId());
 
-        Set<MemberDto.Preview> members = recruitmentResponseDto.getMembers();
-        assertFalse(members.contains(new MemberDto.Preview(testMember)));
+        Set<Preview> members = recruitmentResponseDto.getMembers();
+        assertFalse(members.contains(new Preview(testMember)));
     }
 
 

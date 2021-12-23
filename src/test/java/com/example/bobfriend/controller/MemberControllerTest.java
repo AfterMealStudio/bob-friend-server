@@ -1,6 +1,9 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.member.Delete;
+import com.example.bobfriend.model.dto.member.DuplicationCheck;
+import com.example.bobfriend.model.dto.member.Response;
+import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
@@ -70,7 +73,7 @@ class MemberControllerTest {
 
     @Test
     public void getMyUserInfo() throws Exception {
-        MemberDto.Response responseDto = new MemberDto.Response(testMember);
+        Response responseDto = new Response(testMember);
         when(memberService.getMyMemberWithAuthorities())
                 .thenReturn(responseDto);
         mvc.perform(getRequestBuilder(
@@ -89,7 +92,7 @@ class MemberControllerTest {
 
     @Test
     public void getUserInfo() throws Exception {
-        MemberDto.Response responseDto = new MemberDto.Response(testMember);
+        Response responseDto = new Response(testMember);
         when(memberService.getMemberWithAuthorities(any()))
                 .thenReturn(responseDto);
         mvc.perform(getRequestBuilder(
@@ -112,11 +115,11 @@ class MemberControllerTest {
     @Test
     public void checkEmail() throws Exception {
         when(memberService.checkExistByEmail(any()))
-                .thenReturn(new MemberDto.DuplicationCheck(false));
+                .thenReturn(new DuplicationCheck(false));
         mvc.perform(get("/api/email/{email}", testMember.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(
-                        new MemberDto.DuplicationCheck(false)
+                        new DuplicationCheck(false)
                 )))
                 .andDo(document("member/check-email",
                         getDocumentRequest(),
@@ -132,13 +135,13 @@ class MemberControllerTest {
     public void checkNickname() throws Exception {
         when(memberService.checkExistByNickname(any()))
                 .thenReturn(
-                        new MemberDto.DuplicationCheck(false)
+                        new DuplicationCheck(false)
                 );
         mvc.perform(get("/api/nickname/{nickname}", testMember.getNickname()))
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json(objectMapper.writeValueAsString(
-                                new MemberDto.DuplicationCheck(false)
+                                new DuplicationCheck(false)
                         )))
                 .andDo(document("member/check-nickname",
                         getDocumentRequest(),
@@ -153,7 +156,7 @@ class MemberControllerTest {
 
     @Test
     void deleteMember() throws Exception {
-        MemberDto.Delete delete = new MemberDto.Delete(testMember.getPassword());
+        Delete delete = new Delete(testMember.getPassword());
         mvc.perform(getRequestBuilder(
                         delete("/api/user/{userId}", testMember.getId()))
                         .content(objectMapper.writeValueAsString(delete)))
@@ -172,7 +175,7 @@ class MemberControllerTest {
 
     @Test
     void rateMemberTest() throws Exception {
-        MemberDto.Rate rate = new MemberDto.Rate();
+        Score rate = new Score();
         rate.setScore(3.2);
         mvc.perform(getRequestBuilder(
                         post("/api/user/{nickname}/score", testMember.getNickname()))

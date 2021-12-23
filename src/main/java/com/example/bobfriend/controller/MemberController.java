@@ -1,6 +1,7 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.member.Delete;
+import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.service.AuthService;
 import com.example.bobfriend.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -49,8 +50,8 @@ public class MemberController {
     @DeleteMapping("/user/{memberId}")
     public ResponseEntity deleteUserById(
             @PathVariable Long memberId,
-            @Valid @RequestBody MemberDto.Delete delete) {
-        authService.checkPassword(delete);
+            @Valid @RequestBody Delete deleteDto) {
+        authService.checkPassword(deleteDto);
         memberService.deleteById(memberId);
         return ResponseEntity.ok().build();
     }
@@ -58,8 +59,8 @@ public class MemberController {
     @PostMapping("/user/{nickname}/score")
     public ResponseEntity rateMember(
             @PathVariable String nickname,
-            @Valid @RequestBody MemberDto.Rate rate) {
-        memberService.rateMember(nickname, rate);
+            @Valid @RequestBody Score scoreDto) {
+        memberService.rateMember(nickname, scoreDto);
         return ResponseEntity.ok().build();
     }
 }

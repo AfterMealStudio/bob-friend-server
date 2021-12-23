@@ -1,8 +1,8 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.MemberDto;
 import com.example.bobfriend.model.dto.comment.Create;
 import com.example.bobfriend.model.dto.comment.Response;
+import com.example.bobfriend.model.dto.member.Preview;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.repository.CommentRepository;
@@ -111,7 +111,7 @@ public class CommentServiceTest {
                         testRecruitment.getId());
 
         assertThat(commentDto.getAuthor(), equalTo(
-                new MemberDto.Preview(testAuthor)));
+                new Preview(testAuthor)));
         assertThat(commentDto.getContent(), equalTo(
                 testComment.getContent()));
     }

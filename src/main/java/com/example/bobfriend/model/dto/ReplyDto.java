@@ -1,5 +1,6 @@
 package com.example.bobfriend.model.dto;
 
+import com.example.bobfriend.model.dto.member.Preview;
 import com.example.bobfriend.model.entity.Reply;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,14 +27,14 @@ public class ReplyDto {
     @Setter
     public static class Response {
         private Long id;
-        private MemberDto.Preview author;
+        private Preview author;
         private String content;
         private Integer reportCount;
         private LocalDateTime createdAt;
 
         public Response(Reply reply) {
             this.id = reply.getId();
-            this.author = new MemberDto.Preview(reply.getAuthor());
+            this.author = new Preview(reply.getAuthor());
             this.content = reply.getContent();
             this.reportCount = reply.getReportCount();
             this.createdAt = reply.getCreatedAt();
