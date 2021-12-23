@@ -3,6 +3,7 @@ package com.example.bobfriend.model.dto;
 import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.entity.Sex;
+import com.example.bobfriend.model.dto.comment.*;
 import lombok.*;
 
 import javax.validation.constraints.FutureOrPresent;
@@ -77,13 +78,13 @@ public class RecruitmentDto {
     @EqualsAndHashCode(callSuper = false)
     public static class Response extends BaseResponse {
 
-        private List<CommentDto.Response> comments;
+        private List<com.example.bobfriend.model.dto.comment.Response> comments;
 
         public Response(Recruitment recruitment) {
             super(recruitment);
             this.comments = recruitment.getComments().stream()
-                    .map(CommentDto.Response::new)
-                    .sorted(Comparator.comparing(CommentDto.Response::getCreatedAt))
+                    .map(com.example.bobfriend.model.dto.comment.Response::new)
+                    .sorted(Comparator.comparing(com.example.bobfriend.model.dto.comment.Response::getCreatedAt))
                     .collect(Collectors.toList());
         }
 
