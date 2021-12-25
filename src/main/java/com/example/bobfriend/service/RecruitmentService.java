@@ -1,10 +1,7 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.dto.recruitment.Address;
-import com.example.bobfriend.model.dto.recruitment.Create;
-import com.example.bobfriend.model.dto.recruitment.Response;
-import com.example.bobfriend.model.dto.recruitment.ResponseCollection;
+import com.example.bobfriend.model.dto.recruitment.*;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.entity.Sex;
@@ -29,25 +26,25 @@ public class RecruitmentService {
     private final MemberService memberService;
 
     @Transactional
-    public Response findById(Long recruitmentId) {
+    public DetailResponse findById(Long recruitmentId) {
         Recruitment recruitment = getRecruitment(recruitmentId);
-        return new Response(recruitment);
+        return new DetailResponse(recruitment);
     }
 
     @Transactional
-    public Page<ResponseCollection> findAll(Pageable pageable) {
+    public Page<SimpleResponse> findAll(Pageable pageable) {
         return recruitmentRepository.findAll(pageable)
-                .map(ResponseCollection::new);
+                .map(SimpleResponse::new);
     }
 
 
     @Transactional
-    public Response createRecruitment(Create recruitmentRequestDto) {
+    public DetailResponse createRecruitment(Create recruitmentRequestDto) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
         recruitment.setAuthor(currentMember);
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
-        return new Response(savedRecruitment);
+        return new DetailResponse(savedRecruitment);
     }
 
 
@@ -65,26 +62,26 @@ public class RecruitmentService {
 
 
     @Transactional
-    public Page<ResponseCollection> findAllByRestaurant(
+    public Page<SimpleResponse> findAllByRestaurant(
             Condition.Search searchCondition,
             Pageable pageable) {
         return recruitmentRepository
                 .findAllByRestaurant(searchCondition, pageable)
-                .map(ResponseCollection::new);
+                .map(SimpleResponse::new);
     }
 
 
     @Transactional
-    public Page<ResponseCollection> findAllAvailableRecruitments(Pageable pageable) {
+    public Page<SimpleResponse> findAllAvailableRecruitments(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         return recruitmentRepository
                 .findAllAvailable(currentMember, pageable)
-                .map(ResponseCollection::new);
+                .map(SimpleResponse::new);
     }
 
     @Transactional
-    public RecruitmentDto.AddressCollection findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
-        Map<RecruitmentDto.Address, Integer> addressMap = new HashMap();
+    public AddressCollection findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
+        Map<Address, Integer> addressMap = new HashMap();
 
         // 0.05가 지도 상에서 대충 500m 정도
         // 줌 레벨이 -2 ~ 12까지의 값을 가짐
@@ -105,25 +102,25 @@ public class RecruitmentService {
                 addressMap.entrySet()) {
             entry.getKey().setCount(entry.getValue());
         }
-        return new RecruitmentDto.AddressCollection(new ArrayList<>(addressMap.keySet()));
+        return new AddressCollection(new ArrayList<>(addressMap.keySet()));
     }
 
     @Transactional
-    public Page<ResponseCollection> findAllJoinedRecruitments(Pageable pageable) {
+    public Page<SimpleResponse> findAllJoinedRecruitments(Pageable pageable) {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllJoined(author, pageable)
-                .map(ResponseCollection::new);
+                .map(SimpleResponse::new);
     }
 
     @Transactional
-    public Page<ResponseCollection> findMyRecruitments(Pageable pageable) {
+    public Page<SimpleResponse> findMyRecruitments(Pageable pageable) {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllByAuthor(author, pageable)
-                .map(ResponseCollection::new);
+                .map(SimpleResponse::new);
     }
 
     @Transactional
-    public Response closeRecruitment(Long recruitmentId) {
+    public DetailResponse closeRecruitment(Long recruitmentId) {
         Member author = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (author.equals(recruitment.getAuthor())) {
@@ -131,12 +128,12 @@ public class RecruitmentService {
         } else {
             throw new MemberNotAllowedException(author.getNickname());
         }
-        return new Response(recruitment);
+        return new DetailResponse(recruitment);
     }
 
 
     @Transactional
-    public Response joinOrUnjoin(Long recruitmentId)
+    public DetailResponse joinOrUnjoin(Long recruitmentId)
             throws RecruitmentIsFullException, RecruitmentNotActiveException {
         Member currentMember = memberService.getCurrentMember();
 
@@ -158,34 +155,34 @@ public class RecruitmentService {
         else
             recruitment.addMember(currentMember);
 
-        return new Response(recruitment);
+        return new DetailResponse(recruitment);
     }
 
 
-    public Page<Response> searchTitle(Condition.Search search, Pageable pageable) {
+    public Page<DetailResponse> searchTitle(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
                 .searchByTitle(search, pageable)
-                .map(Response::new);
+                .map(DetailResponse::new);
     }
 
 
-    public Page<Response> searchContent(Condition.Search search, Pageable pageable) {
+    public Page<DetailResponse> searchContent(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
                 .searchByContent(search, pageable)
-                .map(Response::new);
+                .map(DetailResponse::new);
     }
 
-    public Page<Response> searchRestaurant(Condition.Search search, Pageable pageable) {
+    public Page<DetailResponse> searchRestaurant(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
                 .searchByRestaurant(search, pageable)
-                .map(Response::new);
+                .map(DetailResponse::new);
     }
 
 
-    public Page<Response> searchByAllCondition(Condition.Search search, Pageable pageable) {
+    public Page<DetailResponse> searchByAllCondition(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
                 .searchByAll(search, pageable)
-                .map(Response::new);
+                .map(DetailResponse::new);
     }
 
 

@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class ResponseCollection extends BaseResponse{
-    public ResponseCollection(Recruitment recruitment) {
+public class SimpleResponse extends BaseResponse{
+    public SimpleResponse(Recruitment recruitment) {
         super(recruitment);
     }
 }

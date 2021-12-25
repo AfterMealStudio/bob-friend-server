@@ -1,9 +1,7 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.dto.recruitment.Create;
-import com.example.bobfriend.model.dto.recruitment.Response;
-import com.example.bobfriend.model.dto.recruitment.ResponseCollection;
+import com.example.bobfriend.model.dto.recruitment.*;
 import com.example.bobfriend.model.dto.member.Preview;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.model.exception.AlreadyJoined;
@@ -107,11 +105,11 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findById(testRecruitment.getId()))
                 .willReturn(Optional.ofNullable(testRecruitment));
 
-        Response byId = recruitmentService
+        DetailResponse byId = recruitmentService
                 .findById(testRecruitment.getId());
 
-        Response dtoFromEntity =
-                new Response(testRecruitment);
+        DetailResponse dtoFromEntity =
+                new DetailResponse(testRecruitment);
 
         assertThat(byId, equalTo(dtoFromEntity));
     }
@@ -133,14 +131,14 @@ class RecruitmentServiceTest {
     public void findAll() {
         List<Recruitment> recruitmentList = Arrays.asList(testRecruitment);
         PageRequest pageRequest = PageRequest.of(0, 1);
-        List<ResponseCollection> collect = recruitmentList.stream()
-                .map(r -> new ResponseCollection(r))
+        List<SimpleResponse> collect = recruitmentList.stream()
+                .map(r -> new SimpleResponse(r))
                 .collect(Collectors.toList());
-        Page<ResponseCollection> page = new PageImpl<>(collect);
+        Page<SimpleResponse> page = new PageImpl<>(collect);
 
         given(recruitmentRepository.findAll(pageRequest))
                 .willReturn(new PageImpl<>(recruitmentList));
-        Page<ResponseCollection> responseDtoList = recruitmentService.findAll(pageRequest);
+        Page<SimpleResponse> responseDtoList = recruitmentService.findAll(pageRequest);
 
         assertThat(responseDtoList,
                 equalTo(page));
@@ -155,9 +153,9 @@ class RecruitmentServiceTest {
         when(recruitmentRepository.findById(any())).thenReturn(Optional.ofNullable(testRecruitment));
         Create requestDto = new Create(testRecruitment);
 
-        Response add = recruitmentService.createRecruitment(requestDto);
+        DetailResponse add = recruitmentService.createRecruitment(requestDto);
 
-        Response byId = recruitmentService.findById(testRecruitment.getId());
+        DetailResponse byId = recruitmentService.findById(testRecruitment.getId());
 
         assertThat(add, equalTo(byId));
     }
@@ -181,10 +179,10 @@ class RecruitmentServiceTest {
                 .willReturn(Optional.ofNullable(testRecruitment));
 
 
-        Response recruitmentResponseDto =
+        DetailResponse recruitmentDetailResponseDto =
                 recruitmentService.joinOrUnjoin(testRecruitment.getId());
 
-        Set<Preview> members = recruitmentResponseDto.getMembers();
+        Set<Preview> members = recruitmentDetailResponseDto.getMembers();
         assertTrue(members.contains(new Preview(testMember)));
     }
 
@@ -207,10 +205,10 @@ class RecruitmentServiceTest {
                 .willReturn(Optional.ofNullable(testRecruitment));
         testRecruitment.getMembers().add(testMember);
 
-        Response recruitmentResponseDto =
+        DetailResponse recruitmentDetailResponseDto =
                 recruitmentService.joinOrUnjoin(testRecruitment.getId());
 
-        Set<Preview> members = recruitmentResponseDto.getMembers();
+        Set<Preview> members = recruitmentDetailResponseDto.getMembers();
         assertFalse(members.contains(new Preview(testMember)));
     }
 
@@ -254,12 +252,12 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findAllJoined(any(), any()))
                 .willReturn(new PageImpl<>(recruitmentList));
 
-        Page<ResponseCollection> responseDtoList =
+        Page<SimpleResponse> responseDtoList =
                 recruitmentService.findAllJoinedRecruitments(pageRequest);
 
         assertThat(responseDtoList.toList(),
                 equalTo(recruitmentList.stream()
-                        .map(r -> new ResponseCollection(r))
+                        .map(r -> new SimpleResponse(r))
                         .collect(Collectors.toList())));
     }
 
@@ -299,11 +297,11 @@ class RecruitmentServiceTest {
         List<Recruitment> recruitmentList = Arrays.asList(recruitment);
         given(recruitmentRepository.findAllAvailable(any(), any()))
                 .willReturn(new PageImpl<>(recruitmentList));
-        Page<ResponseCollection> responseDtoList =
+        Page<SimpleResponse> responseDtoList =
                 recruitmentService.findAllAvailableRecruitments(pageRequest);
 
         assertThat(responseDtoList.toList(),
-                equalTo(Arrays.asList(new ResponseCollection(recruitment))));
+                equalTo(Arrays.asList(new SimpleResponse(recruitment))));
     }
 
 
@@ -345,12 +343,12 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findAllByAuthor(any(), any()))
                 .willReturn(new PageImpl<>(recruitmentList));
 
-        Page<ResponseCollection> responseDtoList =
+        Page<SimpleResponse> responseDtoList =
                 recruitmentService.findMyRecruitments(pageRequest);
 
         assertThat(responseDtoList.toList(),
                 equalTo(recruitmentList.stream()
-                        .map(r -> new ResponseCollection(r))
+                        .map(r -> new SimpleResponse(r))
                         .collect(Collectors.toList())));
     }
 
@@ -365,12 +363,12 @@ class RecruitmentServiceTest {
         String restaurantAddress = "restaurantAddress";
         Condition.Search searchCondition = new Condition.Search();
         searchCondition.setRestaurantAddress(restaurantAddress);
-        Page<ResponseCollection> restaurantList = recruitmentService
+        Page<SimpleResponse> restaurantList = recruitmentService
                 .findAllByRestaurant(searchCondition, pageRequest);
 
         assertThat(restaurantList.toList(),
                 equalTo(Arrays.asList(
-                        new ResponseCollection(testRecruitment)
+                        new SimpleResponse(testRecruitment)
                 )));
     }
 
@@ -387,14 +385,14 @@ class RecruitmentServiceTest {
         Condition.Search searchCondition = new Condition.Search();
         searchCondition.setRestaurantName(restaurantName);
         searchCondition.setRestaurantAddress(restaurantAddress);
-        Page<ResponseCollection> restaurantList = recruitmentService
+        Page<SimpleResponse> restaurantList = recruitmentService
                 .findAllByRestaurant(
                         searchCondition,
                         pageRequest);
 
         assertThat(restaurantList.toList(),
                 equalTo(Arrays.asList(
-                        new ResponseCollection(testRecruitment)
+                        new SimpleResponse(testRecruitment)
                 )));
     }
 
@@ -451,12 +449,12 @@ class RecruitmentServiceTest {
                 .thenReturn(new PageImpl<>(recruitments));
         PageRequest pageRequest = PageRequest.of(0, 1);
 
-        List<Response> collect = recruitments.stream()
-                .map(Response::new)
+        List<DetailResponse> collect = recruitments.stream()
+                .map(DetailResponse::new)
                 .collect(Collectors.toList());
         Condition.Search search = new Condition.Search();
         search.setKeyword(testRecruitment.getTitle());
-        Page<Response> responsePage =
+        Page<DetailResponse> responsePage =
                 recruitmentService.searchTitle(search, pageRequest);
 
         assertThat(responsePage, equalTo(new PageImpl<>(collect)));
@@ -484,9 +482,9 @@ class RecruitmentServiceTest {
         when(recruitmentRepository.findAllByLocation(any(), any(), any()))
                 .thenReturn(recruitments);
 
-        RecruitmentDto.Address address = new RecruitmentDto.Address(recruitments.get(0));
+        Address address = new Address(recruitments.get(0));
         address.setCount(recruitments.size());
-        RecruitmentDto.AddressCollection allLocations = recruitmentService.findAllLocations(lat, lon, 3);
+        AddressCollection allLocations = recruitmentService.findAllLocations(lat, lon, 3);
 
         assertThat(allLocations.getAddresses(), equalTo(List.of(address)));
     }

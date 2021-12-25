@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class Response extends BaseResponse {
+public class DetailResponse extends BaseResponse {
     private List<com.example.bobfriend.model.dto.comment.Response> comments;
 
-    public Response(Recruitment recruitment) {
+    public DetailResponse(Recruitment recruitment) {
         super(recruitment);
         this.comments = recruitment.getComments().stream()
                 .map(com.example.bobfriend.model.dto.comment.Response::new)

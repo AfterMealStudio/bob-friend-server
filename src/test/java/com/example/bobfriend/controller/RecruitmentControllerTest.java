@@ -1,9 +1,6 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.recruitment.Address;
-import com.example.bobfriend.model.dto.recruitment.Create;
-import com.example.bobfriend.model.dto.recruitment.Response;
-import com.example.bobfriend.model.dto.recruitment.ResponseCollection;
+import com.example.bobfriend.model.dto.recruitment.*;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.service.CommentService;
 import com.example.bobfriend.service.RecruitmentService;
@@ -132,10 +129,10 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitment() throws Exception {
-        ResponseCollection responseDto1 =
-                new ResponseCollection(testRecruitment);
+        SimpleResponse responseDto1 =
+                new SimpleResponse(testRecruitment);
 
-        PageImpl<ResponseCollection> responsePage =
+        PageImpl<SimpleResponse> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
         given(recruitmentService.findAllByRestaurant(any(), any()))
                 .willReturn(responsePage);
@@ -159,10 +156,10 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitment_my() throws Exception {
-        ResponseCollection responseDto1 =
-                new ResponseCollection(testRecruitment);
+        SimpleResponse responseDto1 =
+                new SimpleResponse(testRecruitment);
 
-        PageImpl<ResponseCollection> responsePage =
+        PageImpl<SimpleResponse> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
 
         when(recruitmentService.findMyRecruitments(any()))
@@ -189,11 +186,11 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitments_restaurantAddress() throws Exception {
-        ResponseCollection responseDto1 =
-                new ResponseCollection(testRecruitment);
+        SimpleResponse responseDto1 =
+                new SimpleResponse(testRecruitment);
 
         String testRestaurantAddress = "testRestaurantAddress";
-        PageImpl<ResponseCollection> responsePage =
+        PageImpl<SimpleResponse> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
         given(recruitmentService.findAllByRestaurant(any(), any()))
                 .willReturn(responsePage);
@@ -218,9 +215,9 @@ class RecruitmentControllerTest {
 
     @Test
     void getAllRecruitments_restaurant() throws Exception {
-        ResponseCollection responseDto1 =
-                new ResponseCollection(testRecruitment);
-        PageImpl<ResponseCollection> responsePage =
+        SimpleResponse responseDto1 =
+                new SimpleResponse(testRecruitment);
+        PageImpl<SimpleResponse> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
 
         String testRestaurantName = "testRestaurantName";
@@ -262,7 +259,7 @@ class RecruitmentControllerTest {
 
         addressDto.setCount(1);
 
-        RecruitmentDto.AddressCollection value = new RecruitmentDto.AddressCollection(List.of(addressDto));
+        AddressCollection value = new AddressCollection(List.of(addressDto));
         given(recruitmentService.findAllLocations(any(), any(), any()))
                 .willReturn(value);
 
@@ -293,10 +290,10 @@ class RecruitmentControllerTest {
 
     @Test
     void getRecruitment() throws Exception {
-        Response responseDto =
-                new Response(testRecruitment);
+        DetailResponse detailResponseDto =
+                new DetailResponse(testRecruitment);
         given(recruitmentService.findById(any()))
-                .willReturn(responseDto);
+                .willReturn(detailResponseDto);
 
         mvc.perform(getRequestBuilder(
                         get("/recruitments/{recruitmentId}",
@@ -304,7 +301,7 @@ class RecruitmentControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(
-                        objectMapper.writeValueAsString(responseDto)))
+                        objectMapper.writeValueAsString(detailResponseDto)))
                 .andDo(document("recruitment/get-one-recruitment",
                         getDocumentRequest(),
                         getDocumentResponse(),
@@ -340,12 +337,12 @@ class RecruitmentControllerTest {
 
     @Test
     void createRecruitment() throws Exception {
-        Response responseDto =
-                new Response(testRecruitment);
+        DetailResponse detailResponseDto =
+                new DetailResponse(testRecruitment);
         Create requestDto =
                 new Create(testRecruitment);
         given(recruitmentService.createRecruitment(any()))
-                .willReturn(responseDto);
+                .willReturn(detailResponseDto);
 
         mvc.perform(getRequestBuilder(
                         post("/recruitments"))
@@ -353,7 +350,7 @@ class RecruitmentControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(
-                        objectMapper.writeValueAsString(responseDto)))
+                        objectMapper.writeValueAsString(detailResponseDto)))
                 .andDo(document("recruitment/create-recruitment",
                         getDocumentRequest(),
                         getDocumentResponse(),
@@ -397,9 +394,9 @@ class RecruitmentControllerTest {
                 .active(true)
                 .build();
         testRecruitment.addMember(testMember2);
-        Response response = new Response(testRecruitment);
+        DetailResponse detailResponse = new DetailResponse(testRecruitment);
         when(recruitmentService.joinOrUnjoin(any()))
-                .thenReturn(response);
+                .thenReturn(detailResponse);
 
         mvc.perform(getRequestBuilder(
                         patch("/recruitments/{recruitmentId}",
@@ -407,7 +404,7 @@ class RecruitmentControllerTest {
                 ))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
-                        objectMapper.writeValueAsString(response)
+                        objectMapper.writeValueAsString(detailResponse)
                 ))
                 .andDo(document("recruitment/join-recruitment",
                         getDocumentRequest(),
@@ -448,12 +445,12 @@ class RecruitmentControllerTest {
 
     @Test
     void searchRecruitmentTest() throws Exception {
-        Response responseDto =
-                new Response(testRecruitment);
-        PageImpl<Response> responsePage =
-                new PageImpl<>(Arrays.asList(responseDto));
+        DetailResponse detailResponseDto =
+                new DetailResponse(testRecruitment);
+        PageImpl<DetailResponse> responsePage =
+                new PageImpl<>(Arrays.asList(detailResponseDto));
         when(recruitmentService.searchTitle(any(), any()))
-                .thenReturn(new PageImpl<>(Arrays.asList(responseDto)));
+                .thenReturn(new PageImpl<>(Arrays.asList(detailResponseDto)));
         mvc.perform(getRequestBuilder(
                         get("/recruitments/search"))
                         .param("category", "title")
