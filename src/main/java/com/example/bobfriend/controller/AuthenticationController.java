@@ -2,7 +2,7 @@ package com.example.bobfriend.controller;
 
 import com.example.bobfriend.jwt.JwtTokenProvider;
 import com.example.bobfriend.model.dto.MemberDto;
-import com.example.bobfriend.model.dto.TokenDto;
+import com.example.bobfriend.model.dto.token.*;
 import com.example.bobfriend.model.exception.MemberDuplicatedException;
 import com.example.bobfriend.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -26,22 +26,25 @@ public class AuthenticationController {
         return ResponseEntity.ok(authService.signup(memberSignupDto));
     }
 
+
     @PostMapping("/signin")
     public ResponseEntity signin(@Valid @RequestBody MemberDto.Login loginDto)
             throws AuthenticationException {
-        TokenDto tokenDto = authService.signin(loginDto);
+        Token tokenDto = authService.signin(loginDto);
         return new ResponseEntity(tokenDto, HttpStatus.OK);
     }
 
-    @PostMapping("/reissue")
-    public ResponseEntity reissueToken(@RequestBody TokenDto token) {
-        return ResponseEntity.ok(authService.reissue(token));
+
+    @PostMapping("/issue")
+    public ResponseEntity issueToken(@RequestBody Token token) {
+        return ResponseEntity.ok(authService.issueToken(token));
     }
+
 
     @GetMapping("/validate")
     public ResponseEntity validateToken(HttpServletRequest request) {
         String token = tokenProvider.resolveToken(request);
-        return ResponseEntity.ok(tokenProvider.validateToken(token));
+        return ResponseEntity.ok(new Validation(tokenProvider.validateAccessToken(token)));
     }
 
 

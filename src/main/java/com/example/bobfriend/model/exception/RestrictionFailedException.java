@@ -1,15 +1,7 @@
 package com.example.bobfriend.model.exception;
 
-import org.springframework.http.HttpStatus;
-
-public class RestrictionFailedException extends CustomException{
-
+public class RestrictionFailedException extends BusinessForbiddenException {
     public RestrictionFailedException(String username) {
         super(username + " does not fit the restriction");
-    }
-
-    @Override
-    public HttpStatus getHttpStatus() {
-        return HttpStatus.FORBIDDEN;
     }
 }

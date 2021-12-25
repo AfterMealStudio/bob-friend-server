@@ -1,14 +1,7 @@
 package com.example.bobfriend.model.exception;
 
-import org.springframework.http.HttpStatus;
-
-public class MemberNotAllowedException extends CustomException{
+public class MemberNotAllowedException extends BusinessForbiddenException {
     public MemberNotAllowedException(String member) {
         super(member + " has no permission");
-    }
-
-    @Override
-    public HttpStatus getHttpStatus() {
-        return HttpStatus.FORBIDDEN;
     }
 }

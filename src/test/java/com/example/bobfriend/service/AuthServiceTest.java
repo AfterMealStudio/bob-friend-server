@@ -96,4 +96,6 @@ public class AuthServiceTest {
         assertThrows(MemberDuplicatedException.class
                 , () -> authService.signup(memberSignupDto));
     }
+
+
 }

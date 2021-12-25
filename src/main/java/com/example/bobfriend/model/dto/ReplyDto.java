@@ -16,11 +16,6 @@ public class ReplyDto {
         @NotBlank
         private String content;
 
-        public Reply convertToEntity() {
-            return Reply.builder()
-                    .content(content)
-                    .build();
-        }
 
         public Request(Reply reply) {
             this.content = reply.getContent();

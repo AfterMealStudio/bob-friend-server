@@ -2,7 +2,7 @@ package com.example.bobfriend.service;
 
 import com.example.bobfriend.jwt.JwtTokenProvider;
 import com.example.bobfriend.model.dto.MemberDto;
-import com.example.bobfriend.model.dto.TokenDto;
+import com.example.bobfriend.model.dto.token.Token;
 import com.example.bobfriend.model.entity.Authority;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.RefreshToken;
@@ -57,18 +57,20 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenDto signin(MemberDto.Login loginDto) {
+    public Token signin(MemberDto.Login loginDto) {
         if (!memberRepository.existsMemberByEmail(loginDto.getEmail())) {
             throw new UsernameNotFoundException(loginDto.getEmail());
         }
         Authentication authentication = getAuthentication(loginDto.getEmail(),
                 loginDto.getPassword());
-        TokenDto tokenDto = tokenProvider.createToken(authentication);
+
+        Token tokenDto = tokenProvider.createToken(authentication);
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .id(authentication.getName())
                 .token(tokenDto.getRefreshToken())
                 .build();
+
         refreshTokenRepository.save(refreshToken);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -76,11 +78,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenDto reissue(TokenDto tokenDto) {
-        if (!tokenProvider.validateToken(tokenDto.getRefreshToken())) {
-            throw new JwtInvalidException();
-        }
-
+    public Token issueToken(Token tokenDto) {
         Authentication authentication = tokenProvider.getAuthentication(tokenDto.getAccessToken());
 
         RefreshToken refreshToken = refreshTokenRepository.findById(authentication.getName())
@@ -89,11 +87,12 @@ public class AuthService {
         if (!refreshToken.getToken().equals(tokenDto.getRefreshToken())) {
             throw new RefreshTokenNotMatchException();
         }
-        if (!tokenProvider.validateToken(refreshToken.getToken())) {
+
+        if (!tokenProvider.validateRefreshToken(refreshToken.getToken())) {
             throw new JwtInvalidException();
         }
 
-        TokenDto token = tokenProvider.createToken(authentication);
+        Token token = tokenProvider.createToken(authentication);
 
         refreshTokenRepository.save(refreshToken.updateToken(tokenDto.getRefreshToken()));
 

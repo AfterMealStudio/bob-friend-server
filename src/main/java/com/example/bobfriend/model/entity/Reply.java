@@ -24,14 +24,6 @@ public class Reply extends Writing {
     private Comment comment;
 
 
-    public void setAuthor(Member author) {
-        this.author = author;
-    }
-
-    public void setComment(Comment comment) {
-        this.comment = comment;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
