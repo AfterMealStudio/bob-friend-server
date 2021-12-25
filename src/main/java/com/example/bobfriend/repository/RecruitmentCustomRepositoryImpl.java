@@ -1,7 +1,9 @@
 package com.example.bobfriend.repository;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.entity.*;
+import com.example.bobfriend.model.entity.Member;
+import com.example.bobfriend.model.entity.Recruitment;
+import com.example.bobfriend.model.entity.Sex;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -90,9 +92,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 recruitment.sexRestriction.eq(currentMember.getSex()).or(
                         recruitment.sexRestriction.eq(Sex.NONE)
                 ),
-                betweenAgeRestrictionRange(currentMember)
-        });
-                ));
+                betweenAgeRestrictionRange(currentMember));
         return getPage(pageable, query);
     }
 
@@ -125,7 +125,8 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
 
     private JPAQuery<Recruitment> getFilteringQueryFromPredicates(Predicate... predicates) {
-        return getActiveRecruitments()
+        return jpaQueryFactory.selectFrom(recruitment)
+                .where(recruitment.active.eq(true))
                 .where(predicates);
     }
 

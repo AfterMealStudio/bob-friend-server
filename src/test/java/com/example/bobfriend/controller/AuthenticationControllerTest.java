@@ -2,6 +2,8 @@ package com.example.bobfriend.controller;
 
 import com.example.bobfriend.jwt.JwtTokenProvider;
 import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.token.Token;
+import com.example.bobfriend.model.dto.token.Validation;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,12 +25,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
-import static com.example.bobfriend.document.ApiDocumentUtils.getDocumentRequest;
-import static com.example.bobfriend.document.ApiDocumentUtils.getDocumentResponse;
+import static com.example.bobfriend.document.ApiDocumentUtils.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
