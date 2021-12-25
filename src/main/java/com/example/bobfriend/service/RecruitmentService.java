@@ -1,10 +1,10 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.dto.Recruitment.Address;
-import com.example.bobfriend.model.dto.Recruitment.Create;
-import com.example.bobfriend.model.dto.Recruitment.Response;
-import com.example.bobfriend.model.dto.Recruitment.ResponseCollection;
+import com.example.bobfriend.model.dto.recruitment.Address;
+import com.example.bobfriend.model.dto.recruitment.Create;
+import com.example.bobfriend.model.dto.recruitment.Response;
+import com.example.bobfriend.model.dto.recruitment.ResponseCollection;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.entity.Sex;

@@ -1,9 +1,9 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.dto.Recruitment.Create;
-import com.example.bobfriend.model.dto.Recruitment.Response;
-import com.example.bobfriend.model.dto.Recruitment.ResponseCollection;
+import com.example.bobfriend.model.dto.recruitment.Create;
+import com.example.bobfriend.model.dto.recruitment.Response;
+import com.example.bobfriend.model.dto.recruitment.ResponseCollection;
 import com.example.bobfriend.model.dto.member.Preview;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;

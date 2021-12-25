@@ -1,9 +1,9 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.Recruitment.Address;
-import com.example.bobfriend.model.dto.Recruitment.Create;
-import com.example.bobfriend.model.dto.Recruitment.Response;
-import com.example.bobfriend.model.dto.Recruitment.ResponseCollection;
+import com.example.bobfriend.model.dto.recruitment.Address;
+import com.example.bobfriend.model.dto.recruitment.Create;
+import com.example.bobfriend.model.dto.recruitment.Response;
+import com.example.bobfriend.model.dto.recruitment.ResponseCollection;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.service.CommentService;
 import com.example.bobfriend.service.RecruitmentService;

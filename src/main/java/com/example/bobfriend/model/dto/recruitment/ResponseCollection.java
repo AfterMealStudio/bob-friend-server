@@ -1,9 +1,8 @@
-package com.example.bobfriend.model.dto.Recruitment;
+package com.example.bobfriend.model.dto.recruitment;
 
 import com.example.bobfriend.model.entity.Recruitment;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter

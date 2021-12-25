@@ -1,4 +1,4 @@
-package com.example.bobfriend.model.dto.Recruitment;
+package com.example.bobfriend.model.dto.recruitment;
 
 import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.entity.Sex;
