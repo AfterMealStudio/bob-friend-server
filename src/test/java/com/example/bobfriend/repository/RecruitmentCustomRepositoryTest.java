@@ -19,6 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -340,6 +341,42 @@ public class RecruitmentCustomRepositoryTest {
                 recruitmentCustomRepository
                         .findAllJoined(member1, pageable);
         assertThat(allJoined.getContent().size(), equalTo(1));
+    }
+
+
+    @Test
+    void findAllByLocation() {
+        List<Recruitment> recruitments = new ArrayList();
+        double lat = 33.4566084914484;
+        double lon = 126.56207301534569;
+        double bound = 0.05 * (3);
+
+        double distance = 0.01;
+        for (int i = 0; i < 50; i++) {
+            Recruitment recruitment = Recruitment.builder()
+                    .latitude(lat + (i * distance))
+                    .longitude(lon)
+                    .restaurantAddress("test " + i)
+                    .author(testAuthor)
+                    .appointmentTime(LocalDateTime.now())
+                    .sexRestriction(Sex.NONE)
+                    .active(true)
+                    .build();
+            recruitments.add(recruitment);
+        }
+        recruitmentRepository.saveAll(recruitments);
+
+        List<Recruitment> allByLocation =
+                recruitmentCustomRepository.findAllByLocation(lat, lon, distance);
+
+        // 미리 설정한 거리(distance)보다 가까운 장소 카운트
+        int cnt = 0;
+        for (Recruitment r : recruitments) {
+            if (r.getLatitude().compareTo(lat + distance) <= 0)
+                cnt++;
+        }
+
+        assertThat(allByLocation.size(), equalTo(cnt));
     }
 
 }

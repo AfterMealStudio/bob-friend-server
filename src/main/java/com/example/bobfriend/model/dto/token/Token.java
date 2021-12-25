@@ -1,4 +1,4 @@
-package com.example.bobfriend.model.dto;
+package com.example.bobfriend.model.dto.token;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class TokenDto {
+public class Token {
     private String accessToken;
     private String refreshToken;
 }

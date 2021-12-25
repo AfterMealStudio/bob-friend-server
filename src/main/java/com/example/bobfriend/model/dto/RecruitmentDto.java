@@ -11,10 +11,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RecruitmentDto {
@@ -106,6 +103,17 @@ public class RecruitmentDto {
             super(recruitment);
         }
 
+    }
+
+
+    @Getter
+    @Setter
+    public static class AddressCollection {
+        private Collection<Address> addresses;
+
+        public AddressCollection(Collection<Address> addresses) {
+            this.addresses = addresses;
+        }
     }
 
 

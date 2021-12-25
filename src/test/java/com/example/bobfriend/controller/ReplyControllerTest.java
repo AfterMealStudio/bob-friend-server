@@ -1,8 +1,8 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.CommentDto;
+import com.example.bobfriend.model.dto.ReplyDto;
 import com.example.bobfriend.model.entity.*;
-import com.example.bobfriend.service.CommentService;
+import com.example.bobfriend.service.ReplyService;
 import com.example.bobfriend.service.ReportService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,10 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 
 import static com.example.bobfriend.document.ApiDocumentUtils.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,15 +36,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(useDefaultFilters = false)
-@Import(CommentController.class)
-public class CommentControllerTest {
+@Import(ReplyController.class)
+public class ReplyControllerTest {
     @Autowired
     MockMvc mvc;
     @Autowired
     ObjectMapper objectMapper;
 
     @MockBean
-    CommentService commentService;
+    ReplyService replyService;
 
     @MockBean
     ReportService reportService;
@@ -123,101 +121,80 @@ public class CommentControllerTest {
                 .build();
     }
 
-    @Test
-    void getAllComments() throws Exception {
-        CommentDto.Response commentDto = new CommentDto.Response(testComment);
-
-        List<CommentDto.Response> responseList = Arrays.asList(commentDto);
-        when(commentService.getAllCommentByRecruitmentId(any()))
-                .thenReturn(responseList);
-
-        mvc.perform(getRequestBuilder(
-                        get("/recruitments/{recruitmentId}/comments", 1)))
-                .andExpect(status().isOk())
-                .andExpect(content().json(
-                        objectMapper.writeValueAsString(responseList)
-                ))
-                .andDo(document("comment/get-all-comments-by-recruitment",
-                        getDocumentRequest(),
-                        getDocumentResponse(),
-                        pathParameters(
-                                parameterWithName("recruitmentId").description("약속 번호")
-                        ),
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
-                        )
-                ));
-    }
 
     @Test
-    void createComment() throws Exception {
-        CommentDto.Request requestDto = new CommentDto.Request(testComment);
-        CommentDto.Response responseDto = new CommentDto.Response(testComment);
+    void createReplyToComment() throws Exception {
+        ReplyDto.Request requestDto = new ReplyDto.Request(testReply);
+        ReplyDto.Response responseDto = new ReplyDto.Response(testReply);
 
-        when(commentService.create(any(), any()))
+        when(replyService.create(any(), any()))
                 .thenReturn(responseDto);
 
         mvc.perform(getRequestBuilder(
-                        post("/recruitments/{recruitmentId}/comments", 1))
-                        .content(objectMapper.writeValueAsString(requestDto))
-                )
+                        post("/recruitments/{recruitmentId}/comments/{commentId}/replies", 1, 1))
+                        .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(responseDto)
                 ))
-                .andDo(document("comment/create-comment",
-                        getDocumentRequest(),
-                        getDocumentResponse(),
-                        pathParameters(
-                                parameterWithName("recruitmentId").description("약속 번호")
-                        ),
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
-                        )
-                ));
-    }
-
-    @Test
-    void reportComment() throws Exception {
-        mvc.perform(getRequestBuilder(
-                        patch("/recruitments/{recruitmentId}/comments/{commentId}/report",
-                                1, 1)))
-                .andExpect(status().isOk())
-                .andDo(document("comment/report-comment",
+                .andDo(document("comment/reply/create-reply",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(
                                 parameterWithName("recruitmentId").description("약속 번호"),
                                 parameterWithName("commentId").description("댓글 번호")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
+    }
+
+
+    @Test
+    void deleteReplyTest() throws Exception {
+        mvc.perform(getRequestBuilder(
+                        delete("/recruitments/{recruitmentId}" +
+                                        "/comments/{commentId}" +
+                                        "/replies/{replyId}",
+                                1, 1, 1)))
+                .andExpect(status().isOk())
+                .andDo(document("comment/reply/delete-reply",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId").description("약속 번호"),
+                                parameterWithName("commentId").description("댓글 번호"),
+                                parameterWithName("replyId").description("대댓글 번호")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
+    }
+
+
+    @Test
+    void reportReply() throws Exception {
+        mvc.perform(getRequestBuilder(
+                        patch(
+                                "/recruitments/{recruitmentId}" +
+                                        "/comments/{commentId}" +
+                                        "/replies/{replyId}" +
+                                        "/report",
+                                1, 1, 1)))
+                .andExpect(status().isOk())
+                .andDo(document("comment/reply/report-reply",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("recruitmentId").description("약속 번호"),
+                                parameterWithName("commentId").description("댓글 번호"),
+                                parameterWithName("replyId").description("대댓글 번호")
                         ),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )));
 
     }
-
-
-    @Test
-    void deleteCommentTest() throws Exception {
-        mvc.perform(getRequestBuilder(
-                        delete("/recruitments/{recruitmentId}" +
-                                "/comments/{commentId}", 1, 1)))
-                .andExpect(status().isOk())
-                .andDo(document("comment/delete-comment",
-                        getDocumentRequest(),
-                        getDocumentResponse(),
-                        pathParameters(
-                                parameterWithName("recruitmentId").description("약속 번호"),
-                                parameterWithName("commentId").description("댓글 번호")
-                        ),
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
-                        )
-                ));
-    }
-
-
-
-
-
 }

@@ -53,8 +53,11 @@ public class RecruitmentController {
 
 
     @GetMapping("/locations")
-    public ResponseEntity getAllLocations() {
-        return ResponseEntity.ok(recruitmentService.findAllLocations());
+    public ResponseEntity getAllLocations(
+            @RequestParam(name = "zoom") Integer zoom,
+            @RequestParam(name = "latitude") Double latitude,
+            @RequestParam(name = "longitude") Double longitude) {
+        return ResponseEntity.ok(recruitmentService.findAllLocations(latitude, longitude, zoom));
     }
 
 

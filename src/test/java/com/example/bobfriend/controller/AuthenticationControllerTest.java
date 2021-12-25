@@ -2,7 +2,6 @@ package com.example.bobfriend.controller;
 
 import com.example.bobfriend.jwt.JwtTokenProvider;
 import com.example.bobfriend.model.dto.MemberDto;
-import com.example.bobfriend.model.dto.TokenDto;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
@@ -72,7 +71,7 @@ public class AuthenticationControllerTest {
 
     @Test
     void signin() throws Exception {
-        TokenDto tokenDto = new TokenDto("jwt-access-token-example", "jwt-refresh-token-example");
+        Token tokenDto = new Token("jwt-access-token-example", "jwt-refresh-token-example");
         when(authService.signin(any())).thenReturn(tokenDto);
 
         MemberDto.Login login = MemberDto.Login.builder()
@@ -98,6 +97,7 @@ public class AuthenticationControllerTest {
 
     @Test
     void signup() throws Exception {
+        Token tokenDto = new Token("jwt-access-token-example", "jwt-refresh-token-example");
         MemberDto.Signup signup = MemberDto.Signup.builder()
                 .email(testMember.getEmail())
                 .nickname(testMember.getNickname())
@@ -142,15 +142,15 @@ public class AuthenticationControllerTest {
 
     @Test
     void reissueTest() throws Exception {
-        TokenDto tokenDto = TokenDto.builder()
+        Token tokenDto = Token.builder()
                 .accessToken("new-access-token-example")
-                .refreshToken("new-5refresh-token-example")
+                .refreshToken("new-refresh-token-example")
                 .build();
-        when(authService.reissue(any()))
+        when(authService.issueToken(any()))
                 .thenReturn(tokenDto);
-        mvc.perform(post("/api/reissue")
+        mvc.perform(post("/api/issue")
                         .content(objectMapper.writeValueAsString(
-                                TokenDto.builder()
+                                Token.builder()
                                         .accessToken("old-access-token")
                                         .refreshToken("old-refresh-token")
                                         .build()
@@ -160,8 +160,29 @@ public class AuthenticationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(tokenDto)))
-                .andDo(document("auth/reissue",
+                .andDo(document("auth/issue",
                         getDocumentRequest(),
                         getDocumentResponse()));
+    }
+
+
+    @Test
+    void validateToken() throws Exception {
+        when(tokenProvider.validateAccessToken(any()))
+                .thenReturn(true);
+
+        mvc.perform(getRequestBuilder(get("/api/validate")))
+                .andExpect(status().isOk())
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(
+                                new Validation(tokenProvider.validateAccessToken(any()))
+                        )
+                ))
+                .andDo(document("auth/validate",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )));
     }
 }
