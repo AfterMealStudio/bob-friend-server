@@ -153,7 +153,7 @@ class RecruitmentServiceTest {
         when(recruitmentRepository.findById(any())).thenReturn(Optional.ofNullable(testRecruitment));
         RecruitmentDto.Request requestDto = new RecruitmentDto.Request(testRecruitment);
 
-        RecruitmentDto.Response add = recruitmentService.createRecruitment(requestDto);
+        RecruitmentDto.Response add = recruitmentService.create(requestDto);
 
         RecruitmentDto.Response byId = recruitmentService.findById(testRecruitment.getId());
 
@@ -255,7 +255,7 @@ class RecruitmentServiceTest {
                 .willReturn(new PageImpl<>(recruitmentList));
 
         Page<RecruitmentDto.ResponseList> responseDtoList =
-                recruitmentService.findAllJoinedRecruitments(pageRequest);
+                recruitmentService.findAllJoined(pageRequest);
 
         assertThat(responseDtoList.toList(),
                 equalTo(recruitmentList.stream()
@@ -300,7 +300,7 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findAllAvailable(any(), any()))
                 .willReturn(new PageImpl<>(recruitmentList));
         Page<RecruitmentDto.ResponseList> responseDtoList =
-                recruitmentService.findAllAvailableRecruitments(pageRequest);
+                recruitmentService.findAllAvailable(pageRequest);
 
         assertThat(responseDtoList.toList(),
                 equalTo(Arrays.asList(new RecruitmentDto.ResponseList(recruitment))));
@@ -406,7 +406,7 @@ class RecruitmentServiceTest {
         when(recruitmentRepository.findById(any()))
                 .thenReturn(Optional.empty());
         assertThrows(RecruitmentNotFoundException.class, () -> {
-            recruitmentService.deleteRecruitment(testRecruitment.getId());
+            recruitmentService.delete(testRecruitment.getId());
         });
     }
 
@@ -428,7 +428,7 @@ class RecruitmentServiceTest {
                 .thenReturn(Optional.ofNullable(testRecruitment));
 
         assertThrows(MemberNotAllowedException.class, () -> {
-            recruitmentService.deleteRecruitment(testRecruitment.getId());
+            recruitmentService.delete(testRecruitment.getId());
         });
     }
 
@@ -438,7 +438,7 @@ class RecruitmentServiceTest {
                 .thenReturn(Optional.ofNullable(testRecruitment));
         when(memberService.getCurrentMember())
                 .thenReturn(testAuthor);
-        recruitmentService.closeRecruitment(testRecruitment.getId());
+        recruitmentService.closeById(testRecruitment.getId());
 
         assertThat(testRecruitment.isActive(), equalTo(false));
     }

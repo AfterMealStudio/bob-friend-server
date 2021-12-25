@@ -341,7 +341,7 @@ class RecruitmentControllerTest {
                 new RecruitmentDto.Response(testRecruitment);
         RecruitmentDto.Request requestDto =
                 new RecruitmentDto.Request(testRecruitment);
-        given(recruitmentService.createRecruitment(any()))
+        given(recruitmentService.create(any()))
                 .willReturn(responseDto);
 
         mvc.perform(getRequestBuilder(
