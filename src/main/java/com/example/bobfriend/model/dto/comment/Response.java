@@ -1,8 +1,9 @@
 package com.example.bobfriend.model.dto.comment;
 
-import com.example.bobfriend.model.dto.ReplyDto;
 import com.example.bobfriend.model.dto.member.Preview;
 import com.example.bobfriend.model.entity.Comment;
+
+import com.example.bobfriend.model.entity.Reply;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +19,7 @@ public class Response {
     private Long id;
     private Preview author;
     private String content;
-    private List<ReplyDto.Response> replies;
+    private List<com.example.bobfriend.model.dto.reply.Response> replies;
     private Integer reportCount;
     private LocalDateTime createdAt;
 
@@ -27,8 +28,8 @@ public class Response {
         this.author = new Preview(comment.getAuthor());
         this.content = comment.getContent();
         this.replies = comment.getReplies().stream()
-                .map(ReplyDto.Response::new)
-                .sorted(Comparator.comparing(ReplyDto.Response::getCreatedAt))
+                .map(reply -> new com.example.bobfriend.model.dto.reply.Response(reply))
+                .sorted(Comparator.comparing(response -> response.getCreatedAt()))
                 .collect(Collectors.toList());
         this.reportCount = comment.getReportCount();
         this.createdAt = comment.getCreatedAt();

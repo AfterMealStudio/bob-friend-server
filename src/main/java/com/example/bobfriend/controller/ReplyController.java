@@ -1,6 +1,7 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.ReplyDto;
+import com.example.bobfriend.model.dto.reply.Create;
+import com.example.bobfriend.model.dto.reply.Response;
 import com.example.bobfriend.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,8 @@ public class ReplyController {
     @PostMapping()
     public ResponseEntity create(
             @PathVariable Long commentId,
-            @Valid @RequestBody ReplyDto.Request replyDto) {
-        ReplyDto.Response reply =
+            @Valid @RequestBody Create replyDto) {
+        Response reply =
                 replyService.create(commentId, replyDto);
 
         return ResponseEntity.ok(reply);

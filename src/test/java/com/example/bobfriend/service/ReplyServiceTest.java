@@ -1,7 +1,8 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.ReplyDto;
 import com.example.bobfriend.model.dto.member.Preview;
+import com.example.bobfriend.model.dto.reply.Create;
+import com.example.bobfriend.model.dto.reply.Response;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.repository.CommentRepository;
@@ -102,10 +103,10 @@ public class ReplyServiceTest {
                 .thenReturn(java.util.Optional.ofNullable(testComment));
         when(replyRepository.save(any()))
                 .thenReturn(testReply);
-        ReplyDto.Request requestDto = new ReplyDto.Request();
+        Create requestDto = new Create();
         requestDto.setContent(testReply.getContent());
 
-        ReplyDto.Response replyDto =
+        Response replyDto =
                 replyService.create(
                         testComment.getId(), requestDto);
 
