@@ -1,11 +1,11 @@
 package com.example.bobfriend.service;
 
+import com.example.bobfriend.model.dto.Condition;
 import com.example.bobfriend.model.dto.MemberDto;
 import com.example.bobfriend.model.dto.RecruitmentDto;
-import com.example.bobfriend.model.dto.Condition;
 import com.example.bobfriend.model.entity.*;
-import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.model.exception.AlreadyJoined;
+import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.model.exception.RecruitmentNotFoundException;
 import com.example.bobfriend.repository.RecruitmentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -153,7 +153,7 @@ class RecruitmentServiceTest {
         when(recruitmentRepository.findById(any())).thenReturn(Optional.ofNullable(testRecruitment));
         RecruitmentDto.Request requestDto = new RecruitmentDto.Request(testRecruitment);
 
-        RecruitmentDto.Response add = recruitmentService.createRecruitment(requestDto);
+        RecruitmentDto.Response add = recruitmentService.create(requestDto);
 
         RecruitmentDto.Response byId = recruitmentService.findById(testRecruitment.getId());
 
@@ -251,11 +251,11 @@ class RecruitmentServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
 
         List<Recruitment> recruitmentList = Arrays.asList(testRecruitment, recruitment);
-        given(recruitmentRepository.findAllJoined(any(),any()))
+        given(recruitmentRepository.findAllJoined(any(), any()))
                 .willReturn(new PageImpl<>(recruitmentList));
 
         Page<RecruitmentDto.ResponseList> responseDtoList =
-                recruitmentService.findAllJoinedRecruitments(pageRequest);
+                recruitmentService.findAllJoined(pageRequest);
 
         assertThat(responseDtoList.toList(),
                 equalTo(recruitmentList.stream()
@@ -297,10 +297,10 @@ class RecruitmentServiceTest {
         when(memberService.getCurrentMember()).thenReturn(testMember);
         PageRequest pageRequest = PageRequest.of(0, 1);
         List<Recruitment> recruitmentList = Arrays.asList(recruitment);
-        given(recruitmentRepository.findAllAvailable(any(),any()))
+        given(recruitmentRepository.findAllAvailable(any(), any()))
                 .willReturn(new PageImpl<>(recruitmentList));
         Page<RecruitmentDto.ResponseList> responseDtoList =
-                recruitmentService.findAllAvailableRecruitments(pageRequest);
+                recruitmentService.findAllAvailable(pageRequest);
 
         assertThat(responseDtoList.toList(),
                 equalTo(Arrays.asList(new RecruitmentDto.ResponseList(recruitment))));
@@ -399,7 +399,6 @@ class RecruitmentServiceTest {
 //    }
 
 
-
     @Test
     void deleteRecruitmentFail_RecruitmentNotFound() {
         when(memberService.getCurrentMember())
@@ -407,7 +406,7 @@ class RecruitmentServiceTest {
         when(recruitmentRepository.findById(any()))
                 .thenReturn(Optional.empty());
         assertThrows(RecruitmentNotFoundException.class, () -> {
-            recruitmentService.deleteRecruitment(testRecruitment.getId());
+            recruitmentService.delete(testRecruitment.getId());
         });
     }
 
@@ -429,7 +428,7 @@ class RecruitmentServiceTest {
                 .thenReturn(Optional.ofNullable(testRecruitment));
 
         assertThrows(MemberNotAllowedException.class, () -> {
-            recruitmentService.deleteRecruitment(testRecruitment.getId());
+            recruitmentService.delete(testRecruitment.getId());
         });
     }
 
@@ -439,7 +438,7 @@ class RecruitmentServiceTest {
                 .thenReturn(Optional.ofNullable(testRecruitment));
         when(memberService.getCurrentMember())
                 .thenReturn(testAuthor);
-        recruitmentService.closeRecruitment(testRecruitment.getId());
+        recruitmentService.closeById(testRecruitment.getId());
 
         assertThat(testRecruitment.isActive(), equalTo(false));
     }
@@ -462,5 +461,35 @@ class RecruitmentServiceTest {
 
         assertThat(responsePage, equalTo(new PageImpl<>(collect)));
     }
+
+
+    @Test
+    void findAllLocationsTest() {
+        double lat = 33.4566084914484;
+        double lon = 126.56207301534569;
+
+        List<Recruitment> recruitments = new ArrayList<>();
+        for (int i = 0; i < 30; i++) {
+            Recruitment recruitment = Recruitment.builder()
+                    .latitude(lat)
+                    .longitude(lon)
+                    .restaurantAddress("test")
+                    .author(testAuthor)
+                    .appointmentTime(LocalDateTime.now())
+                    .sexRestriction(Sex.NONE)
+                    .active(true)
+                    .build();
+            recruitments.add(recruitment);
+        }
+        when(recruitmentRepository.findAllByLocation(any(), any(), any()))
+                .thenReturn(recruitments);
+
+        RecruitmentDto.Address address = new RecruitmentDto.Address(recruitments.get(0));
+        address.setCount(recruitments.size());
+        RecruitmentDto.AddressCollection allLocations = recruitmentService.findAllLocations(lat, lon, 3);
+
+        assertThat(allLocations.getAddresses(), equalTo(List.of(address)));
+    }
+
 
 }

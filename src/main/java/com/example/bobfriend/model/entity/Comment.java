@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -29,17 +30,15 @@ public class Comment extends Writing {
     private List<Reply> replies;
 
 
-    public void setAuthor(Member author) {
-        this.author = author;
-    }
-
-    public void setRecruitment(Recruitment recruitment) {
-        this.recruitment = recruitment;
-    }
-
     public void clear() {
         this.author = null;
         this.content = null;
+    }
+
+    @Override
+    public void setup() {
+        super.setup();
+        replies = new ArrayList<>();
     }
 
     public void report() {

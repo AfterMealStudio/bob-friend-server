@@ -19,6 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -85,7 +86,7 @@ public class RecruitmentCustomRepositoryTest {
                 .build();
 
         memberRepository.save(testAuthor);
-        List list = Arrays.asList( testRecruitment1, testRecruitment2);
+        List list = Arrays.asList(testRecruitment1, testRecruitment2);
         recruitmentRepository.saveAll(list);
 
     }
@@ -196,10 +197,10 @@ public class RecruitmentCustomRepositoryTest {
         Condition.Search search = new Condition.Search();
         search.setKeyword("test");
         search.setStart(createdAt);
-        search.setEnd(createdAt.substring(0,8) + "2000");
+        search.setEnd(createdAt.substring(0, 8) + "2000");
 
         Page<Recruitment> searchByTitle =
-                recruitmentCustomRepository.searchByAll(search,Pageable.ofSize(10));
+                recruitmentCustomRepository.searchByAll(search, Pageable.ofSize(10));
 
         assertThat(searchByTitle.getContent().size(), equalTo(2));
     }
@@ -312,6 +313,42 @@ public class RecruitmentCustomRepositoryTest {
                 recruitmentCustomRepository
                         .findAllJoined(member1, pageable);
         assertThat(allJoined.getContent().size(), equalTo(1));
+    }
+
+
+    @Test
+    void findAllByLocation() {
+        List<Recruitment> recruitments = new ArrayList();
+        double lat = 33.4566084914484;
+        double lon = 126.56207301534569;
+        double bound = 0.05 * (3);
+
+        double distance = 0.01;
+        for (int i = 0; i < 50; i++) {
+            Recruitment recruitment = Recruitment.builder()
+                    .latitude(lat + (i * distance))
+                    .longitude(lon)
+                    .restaurantAddress("test " + i)
+                    .author(testAuthor)
+                    .appointmentTime(LocalDateTime.now())
+                    .sexRestriction(Sex.NONE)
+                    .active(true)
+                    .build();
+            recruitments.add(recruitment);
+        }
+        recruitmentRepository.saveAll(recruitments);
+
+        List<Recruitment> allByLocation =
+                recruitmentCustomRepository.findAllByLocation(lat, lon, distance);
+
+        // 미리 설정한 거리(distance)보다 가까운 장소 카운트
+        int cnt = 0;
+        for (Recruitment r : recruitments) {
+            if (r.getLatitude().compareTo(lat + distance) <= 0)
+                cnt++;
+        }
+
+        assertThat(allByLocation.size(), equalTo(cnt));
     }
 
 }

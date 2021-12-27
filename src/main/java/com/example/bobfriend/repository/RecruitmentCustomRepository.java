@@ -6,6 +6,8 @@ import com.example.bobfriend.model.entity.Recruitment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface RecruitmentCustomRepository {
     Page<Recruitment> searchByTitle(Condition.Search search, Pageable pageable);
 
@@ -24,5 +26,7 @@ public interface RecruitmentCustomRepository {
 //    Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable);
 
     Page<Recruitment> findAllByAuthor(Member author, Pageable pageable);
+
+    List<Recruitment> findAllByLocation(Double latitude, Double longitude, Double bound);
 
 }

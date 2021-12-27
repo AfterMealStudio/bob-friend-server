@@ -39,7 +39,7 @@ public class RecruitmentService {
 
 
     @Transactional
-    public RecruitmentDto.Response createRecruitment(RecruitmentDto.Request recruitmentRequestDto) {
+    public RecruitmentDto.Response create(RecruitmentDto.Request recruitmentRequestDto) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
         recruitment.setAuthor(currentMember);
@@ -49,7 +49,7 @@ public class RecruitmentService {
 
 
     @Transactional
-    public void deleteRecruitment(Long recruitmentId) {
+    public void delete(Long recruitmentId) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (currentMember.equals(recruitment.getAuthor())) {
@@ -72,7 +72,7 @@ public class RecruitmentService {
 
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllAvailableRecruitments(Pageable pageable) {
+    public Page<RecruitmentDto.ResponseList> findAllAvailable(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         return recruitmentRepository
                 .findAllAvailable(currentMember, pageable)
@@ -80,12 +80,17 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public Set<RecruitmentDto.Address> findAllLocations() {
+    public RecruitmentDto.AddressCollection findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
         Map<RecruitmentDto.Address, Integer> addressMap = new HashMap();
 
+        // 0.05가 지도 상에서 대충 500m 정도
+        // 줌 레벨이 -2 ~ 12까지의 값을 가짐
+        double bound = 0.05 * (zoomLevel + 3);
+
+        List<Recruitment> allByLocation = recruitmentRepository.findAllByLocation(latitude, longitude, bound);
         Iterator<Recruitment> iterator =
-                recruitmentRepository.findAllByActiveTrue()
-                        .iterator();
+                allByLocation.iterator();
+
         while (iterator.hasNext()) {
             Recruitment recruitment = iterator.next();
             RecruitmentDto.Address address =
@@ -97,11 +102,11 @@ public class RecruitmentService {
                 addressMap.entrySet()) {
             entry.getKey().setCount(entry.getValue());
         }
-        return addressMap.keySet();
+        return new RecruitmentDto.AddressCollection(new ArrayList<>(addressMap.keySet()));
     }
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllJoinedRecruitments(Pageable pageable) {
+    public Page<RecruitmentDto.ResponseList> findAllJoined(Pageable pageable) {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllJoined(author, pageable)
                 .map(RecruitmentDto.ResponseList::new);
@@ -115,7 +120,7 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public RecruitmentDto.Response closeRecruitment(Long recruitmentId) {
+    public RecruitmentDto.Response closeById(Long recruitmentId) {
         Member author = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (author.equals(recruitment.getAuthor())) {
@@ -134,6 +139,7 @@ public class RecruitmentService {
 
         Recruitment recruitment = getRecruitment(recruitmentId);
         Member author = recruitment.getAuthor();
+
         if (author.isUnknown() || !recruitment.isActive())
             throw new RecruitmentNotActiveException(recruitmentId);
 
@@ -181,14 +187,14 @@ public class RecruitmentService {
     }
 
 
-    public void reportRecruitment(Long recruitmentId) {
+    public void reportById(Long recruitmentId) {
         Recruitment recruitment = getRecruitment(recruitmentId);
         Member member = memberService.getCurrentMember();
         reportService.reportWriting(member, recruitment);
     }
 
     @Transactional
-    public void expireRecruitment() {
+    public void expire() {
         List<Recruitment> allByActiveTrue = recruitmentRepository.findAllByActiveTrue();
         for (Recruitment recruitment :
                 allByActiveTrue) {

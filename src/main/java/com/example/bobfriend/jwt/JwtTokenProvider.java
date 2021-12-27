@@ -1,6 +1,6 @@
 package com.example.bobfriend.jwt;
 
-import com.example.bobfriend.model.dto.TokenDto;
+import com.example.bobfriend.model.dto.token.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -49,7 +49,7 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
 
-    public TokenDto createToken(Authentication authentication) {
+    public Token createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -70,7 +70,7 @@ public class JwtTokenProvider implements InitializingBean {
                 .signWith(refreshKey, SignatureAlgorithm.HS256)
                 .compact();
 
-        return TokenDto.builder()
+        return Token.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

@@ -13,4 +13,7 @@ public class ErrorResponse {
     String message;
     String error;
 
+    public static ErrorResponse of(String message, Class<? extends Throwable> throwable) {
+        return new ErrorResponse(message, throwable.getSimpleName());
+    }
 }
