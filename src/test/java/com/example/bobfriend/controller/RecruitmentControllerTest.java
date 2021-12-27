@@ -3,6 +3,7 @@ package com.example.bobfriend.controller;
 import com.example.bobfriend.model.dto.RecruitmentDto;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.service.CommentService;
+import com.example.bobfriend.service.RecruitmentFindService;
 import com.example.bobfriend.service.RecruitmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +50,8 @@ class RecruitmentControllerTest {
 
     @MockBean
     RecruitmentService recruitmentService;
+    @MockBean
+    RecruitmentFindService recruitmentFindService;
     @MockBean
     CommentService commentService;
 
@@ -134,7 +137,7 @@ class RecruitmentControllerTest {
 
         PageImpl<RecruitmentDto.ResponseList> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
-        given(recruitmentService.findAllByRestaurant(any(), any()))
+        given(recruitmentFindService.findAllByRestaurant(any(), any()))
                 .willReturn(responsePage);
 
         mvc.perform(getRequestBuilder(
@@ -162,7 +165,7 @@ class RecruitmentControllerTest {
         PageImpl<RecruitmentDto.ResponseList> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
 
-        when(recruitmentService.findMyRecruitments(any()))
+        when(recruitmentFindService.findMyRecruitments(any()))
                 .thenReturn(responsePage);
 
         mvc.perform(getRequestBuilder(
@@ -192,7 +195,7 @@ class RecruitmentControllerTest {
         String testRestaurantAddress = "testRestaurantAddress";
         PageImpl<RecruitmentDto.ResponseList> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
-        given(recruitmentService.findAllByRestaurant(any(), any()))
+        given(recruitmentFindService.findAllByRestaurant(any(), any()))
                 .willReturn(responsePage);
         mvc.perform(getRequestBuilder(
                         get("/recruitments"))
@@ -223,7 +226,7 @@ class RecruitmentControllerTest {
         String testRestaurantName = "testRestaurantName";
         String testRestaurantAddress = "testRestaurantAddress";
 
-        given(recruitmentService
+        given(recruitmentFindService
                 .findAllByRestaurant(
                         any(),
                         any()))
@@ -260,7 +263,7 @@ class RecruitmentControllerTest {
         addressDto.setCount(1);
 
         RecruitmentDto.AddressCollection value = new RecruitmentDto.AddressCollection(List.of(addressDto));
-        given(recruitmentService.findAllLocations(any(), any(), any()))
+        given(recruitmentFindService.findAllLocations(any(), any(), any()))
                 .willReturn(value);
 
         mvc.perform(getRequestBuilder(
@@ -292,7 +295,7 @@ class RecruitmentControllerTest {
     void getRecruitment() throws Exception {
         RecruitmentDto.Response responseDto =
                 new RecruitmentDto.Response(testRecruitment);
-        given(recruitmentService.findById(any()))
+        given(recruitmentFindService.findById(any()))
                 .willReturn(responseDto);
 
         mvc.perform(getRequestBuilder(

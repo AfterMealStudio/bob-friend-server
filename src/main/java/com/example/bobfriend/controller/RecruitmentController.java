@@ -5,6 +5,7 @@ import com.example.bobfriend.model.dto.Condition;
 import com.example.bobfriend.model.exception.RecruitmentIsFullException;
 import com.example.bobfriend.model.exception.RecruitmentNotActiveException;
 import com.example.bobfriend.model.exception.RecruitmentNotFoundException;
+import com.example.bobfriend.service.RecruitmentFindService;
 import com.example.bobfriend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,7 @@ import javax.validation.Valid;
 @RequestMapping("/recruitments")
 public class RecruitmentController {
     private final RecruitmentService recruitmentService;
-
+    private final RecruitmentFindService recruitmentFindService;
 
     @GetMapping()
     public ResponseEntity getAll(
@@ -32,19 +33,19 @@ public class RecruitmentController {
 
         switch (type) {
             case owned: // 자기가 작성한
-                responseDtoList = recruitmentService
+                responseDtoList = recruitmentFindService
                         .findMyRecruitments(pageable);
                 break;
             case joined:// 자기가 참여한
-                responseDtoList = recruitmentService
+                responseDtoList = recruitmentFindService
                         .findAllJoined(pageable);
                 break;
             case available:// 참여 가능한
-                responseDtoList = recruitmentService
+                responseDtoList = recruitmentFindService
                         .findAllAvailable(pageable);
                 break;
             case all: // 전체
-                responseDtoList = recruitmentService
+                responseDtoList = recruitmentFindService
                         .findAllByRestaurant(searchCondition, pageable);
         }
         return ResponseEntity.ok(responseDtoList);
@@ -57,14 +58,14 @@ public class RecruitmentController {
             @RequestParam(name = "zoom") Integer zoom,
             @RequestParam(name = "latitude") Double latitude,
             @RequestParam(name = "longitude") Double longitude) {
-        return ResponseEntity.ok(recruitmentService.findAllLocations(latitude, longitude, zoom));
+        return ResponseEntity.ok(recruitmentFindService.findAllLocations(latitude, longitude, zoom));
     }
 
 
     @GetMapping("/{recruitmentId}")
     public ResponseEntity getRecruitment(@PathVariable Long recruitmentId)
             throws RecruitmentNotFoundException {
-        RecruitmentDto.Response recruitmentResponseDto = recruitmentService.findById(recruitmentId);
+        RecruitmentDto.Response recruitmentResponseDto = recruitmentFindService.findById(recruitmentId);
         return ResponseEntity.ok(recruitmentResponseDto);
     }
 
