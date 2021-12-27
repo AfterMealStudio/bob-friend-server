@@ -25,8 +25,8 @@ public class RecruitmentController {
 
     @GetMapping()
     public ResponseEntity getAll(
-            @RequestParam(name = "type", defaultValue = "all") Condition.SelectType type,
-            Condition.Search searchCondition,
+            @RequestParam(name = "type", defaultValue = "all") Condition.SearchType type,
+            @RequestParam(required = false) String address,
             @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.ASC) Pageable pageable) {
         Page<RecruitmentDto.ResponseList> responseDtoList = null;
 
@@ -43,9 +43,14 @@ public class RecruitmentController {
                 responseDtoList = recruitmentService
                         .findAllAvailable(pageable);
                 break;
+            case specific: // 특정 위치에 있는
+                responseDtoList = recruitmentService
+                        .findAllByRestaurantAddress(address, pageable);
+                break;
             case all: // 전체
                 responseDtoList = recruitmentService
                         .findAll(pageable);
+                break;
         }
         return ResponseEntity.ok(responseDtoList);
     }

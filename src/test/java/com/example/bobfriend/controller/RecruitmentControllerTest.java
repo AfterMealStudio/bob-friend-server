@@ -184,34 +184,37 @@ class RecruitmentControllerTest {
     }
 
 
-//    @Test
-//    void getAllRecruitments_restaurantAddress() throws Exception {
-//        RecruitmentDto.ResponseList responseDto1 =
-//                new RecruitmentDto.ResponseList(testRecruitment);
-//
-//        String testRestaurantAddress = "testRestaurantAddress";
-//        PageImpl<RecruitmentDto.ResponseList> responsePage =
-//                new PageImpl<>(Arrays.asList(responseDto1));
-//        given(recruitmentService.findAllByRestaurant(any(), any()))
-//                .willReturn(responsePage);
-//        mvc.perform(getRequestBuilder(
-//                        get("/recruitments"))
-//                        .param("restaurantAddress", testRestaurantAddress))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
-//                .andDo(document("recruitment/get-all-recruitments-by-address",
-//                        getDocumentRequest(),
-//                        getDocumentResponse(),
-//                        requestParameters(
-//                                parameterWithName("restaurantAddress")
-//                                        .description("식당 주소")
-//                        ),
-//                        requestHeaders(
-//                                headerWithName(HttpHeaders.AUTHORIZATION)
-//                                        .description("토큰")
-//                        )
-//                ));
-//    }
+    @Test
+    void getAllRecruitments_restaurantAddress() throws Exception {
+        RecruitmentDto.ResponseList responseDto1 =
+                new RecruitmentDto.ResponseList(testRecruitment);
+
+        String testRestaurantAddress = "testRestaurantAddress";
+        PageImpl<RecruitmentDto.ResponseList> responsePage =
+                new PageImpl<>(Arrays.asList(responseDto1));
+        given(recruitmentService.findAllByRestaurantAddress(any(), any()))
+                .willReturn(responsePage);
+        mvc.perform(getRequestBuilder(
+                        get("/recruitments"))
+                .param("type","specific")
+                        .param("address", testRestaurantAddress))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
+                .andDo(document("recruitment/get-all-recruitments-by-address",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestParameters(
+                                parameterWithName("type")
+                                        .description("specific"),
+                                parameterWithName("address")
+                                        .description("식당 주소")
+                        ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("토큰")
+                        )
+                ));
+    }
 
 //    @Test
 //    void getAllRecruitments_restaurant() throws Exception {

@@ -11,8 +11,8 @@ public class Condition {
         title, content, place, time, all
     }
 
-    public enum SelectType {
-        available, all, joined, owned
+    public enum SearchType {
+        available, all, joined, owned, specific
     }
 
     @Setter

@@ -61,14 +61,13 @@ public class RecruitmentService {
     }
 
 
-//    @Transactional
-//    public Page<RecruitmentDto.ResponseList> findAllByRestaurant(
-//            Condition.Search searchCondition,
-//            Pageable pageable) {
-//        return recruitmentRepository
-//                .findAllByRestaurant(searchCondition, pageable)
-//                .map(RecruitmentDto.ResponseList::new);
-//    }
+    @Transactional
+    public Page<RecruitmentDto.ResponseList> findAllByRestaurantAddress(
+            String address, Pageable pageable) {
+        return recruitmentRepository
+                .findAllByAddress(address, pageable)
+                .map(RecruitmentDto.ResponseList::new);
+    }
 
 
     @Transactional

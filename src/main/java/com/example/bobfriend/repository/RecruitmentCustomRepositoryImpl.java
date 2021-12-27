@@ -71,19 +71,12 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
 
     @Override
-    public Page<Recruitment> findAll(Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates();
+    public Page<Recruitment> findAllByAddress(String address, Pageable pageable) {
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
+                eqRestaurantAddress(address)
+        );
         return getPage(pageable, query);
     }
-
-//
-//    @Override
-//    public Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable) {
-//        return getPageFromStatement(pageable, () -> new Predicate[]{
-//                eqRestaurantName(searchCondition.getRestaurantName()),
-//                eqRestaurantAddress(searchCondition.getRestaurantAddress())
-//        });
-//    }
 
 
     @Override

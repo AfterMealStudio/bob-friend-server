@@ -355,24 +355,23 @@ class RecruitmentServiceTest {
     }
 
 
-//    @Test
-//    void findAllByRestaurantAddress() {
-//        PageRequest pageRequest = PageRequest.of(0, 1);
-//        when(recruitmentRepository.findAllByRestaurant(
-//                any(), any()
-//        )).thenReturn(new PageImpl<>(Arrays.asList(testRecruitment)));
-//
-//        String restaurantAddress = "restaurantAddress";
-//        Condition.Search searchCondition = new Condition.Search();
-//        searchCondition.setRestaurantAddress(restaurantAddress);
-//        Page<RecruitmentDto.ResponseList> restaurantList = recruitmentService
-//                .findAllByRestaurant(searchCondition, pageRequest);
-//
-//        assertThat(restaurantList.toList(),
-//                equalTo(Arrays.asList(
-//                        new RecruitmentDto.ResponseList(testRecruitment)
-//                )));
-//    }
+    @Test
+    void findAllByRestaurantAddress() {
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        when(recruitmentRepository.findAllByAddress(
+                any(), any()
+        )).thenReturn(new PageImpl<>(Arrays.asList(testRecruitment)));
+
+        String restaurantAddress = "restaurantAddress";
+
+        Page<RecruitmentDto.ResponseList> restaurantList = recruitmentService
+                .findAllByRestaurantAddress(restaurantAddress, pageRequest);
+
+        assertThat(restaurantList.toList(),
+                equalTo(Arrays.asList(
+                        new RecruitmentDto.ResponseList(testRecruitment)
+                )));
+    }
 
 //    @Test
 //    void findAllByRestaurantNameAndAddress() {

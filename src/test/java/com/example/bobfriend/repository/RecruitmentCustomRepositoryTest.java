@@ -93,13 +93,6 @@ public class RecruitmentCustomRepositoryTest {
 
 
     @Test
-    void findAllTest() {
-        Page<Recruitment> all = recruitmentCustomRepository.findAll(Pageable.ofSize(10));
-
-        assertThat(all.getContent().size(), equalTo(2));
-    }
-
-    @Test
     void searchByTitleTest() {
         Recruitment recruitment1 = Recruitment.builder()
                 .title("test")
@@ -240,19 +233,17 @@ public class RecruitmentCustomRepositoryTest {
         assertThat(allByAuthor.getContent().size(), equalTo(2));
     }
 
-//    @Test
-//    void findAllByRestaurantTest() {
-//        String restaurantName = testRecruitment1.getRestaurantName();
-//        String restaurantAddress = testRecruitment1.getRestaurantAddress();
-//        Condition.Search search = new Condition.Search();
-//        search.setRestaurantName(restaurantName);
-//        search.setRestaurantAddress(restaurantAddress);
-//
-//        Page<Recruitment> allByRestaurant =
-//                recruitmentCustomRepository
-//                        .findAllByRestaurant(search, Pageable.ofSize(10));
-//        assertThat(allByRestaurant.getContent().size(), equalTo(1));
-//    }
+
+    @Test
+    void findAllByAddressTest() {
+        String restaurantAddress = testRecruitment1.getRestaurantAddress();
+
+        Page<Recruitment> allByRestaurant =
+                recruitmentCustomRepository
+                        .findAllByAddress(restaurantAddress, Pageable.ofSize(10));
+        assertThat(allByRestaurant.getContent().size(), equalTo(1));
+    }
+
 
     @Test
     void findAllAvailableTest() {

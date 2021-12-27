@@ -59,8 +59,9 @@ include::{snippets}/recruitment/get-all-recruitments/http-response.adoc[]
 
 ==== 전제 조회 필터링
 ```
-전체 조회는 type 이라는 파라미터를 입력해 결과를 필터링 할 수 있다. type 파라미터는 owned, joined, available, all 4가지가 있다. 각각 자신이 생성한 약속, 현재 참여가 가능한 약속, 자신이 참여한 약속, 모든 약속을 의미한다. type이 all이면 type을 입력하지 않은 것과 같다.
-
+전체 조회는 type 이라는 파라미터를 입력해 결과를 필터링 할 수 있다. type 파라미터는 owned, joined, available, all, specific 5가지가 있다. 각각 자신이 생성한 약속, 현재 참여가 가능한 약속, 자신이 참여한 약속, 모든 약속, 특정 위치의 약속을 의미한다. type이 all이면 type을 입력하지 않은 것과 같다.
+type이 specific인 경우 address라는 파라미터를 추가로 입력해야 한다.
+ex) type=specific&address=testaddress
 아래의 예는 자신이 생성한 약속을 조회한다(type=owned).
 ```
 
@@ -79,32 +80,36 @@ include::{snippets}/recruitment/get-all-recruitments-locations/request-headers.a
 response::
 include::{snippets}/recruitment/get-all-recruitments-locations/http-response.adoc[]
 
-//==== 주소로 약속 조회
-//request::
-//include::{snippets}/recruitment/get-all-recruitments-by-address/http-request.adoc[]
-//header::
-//include::{snippets}/recruitment/get-all-recruitments-by-address/request-headers.adoc[]
-//parameter::
-//include::{snippets}/recruitment/get-all-recruitments-by-address/request-parameters.adoc[]
-//response::
-//include::{snippets}/recruitment/get-all-recruitments-by-address/http-response.adoc[]
-
-==== 주소와 식당이름으로 약속 조회
+==== 주소로 약속 조회
 ```
-파라미터인 restaurantName과 restaurantAddress는 생략할 수 있다. 파라미터로 restaurantName=restaurant만 입력할 경우 식당 이름이 "restaurantName"인 결과들을 반환하고,
-restaurantName=restaurant&restaurantAddress=restaurantAddress를 입력할 경우 식당이름이 restaurant이고, 주소가 restaurantAddress인 약속들을 반환한다. 파라미터를 입력하지 않을 경우 모든 약속들을 반환한다.
-```
+아래의 예는 type=specific인 경우를 나타낸다. 파라미터로 address가 추가로 주어져야 한다.
 
+```
 request::
-include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-request.adoc[]
+include::{snippets}/recruitment/get-all-recruitments-by-address/http-request.adoc[]
 header::
-include::{snippets}/recruitment/get-all-recruitments-by-restaurant/request-headers.adoc[]
+include::{snippets}/recruitment/get-all-recruitments-by-address/request-headers.adoc[]
 parameter::
-include::{snippets}/recruitment/get-all-recruitments-by-restaurant/request-parameters.adoc[]
-
-
+include::{snippets}/recruitment/get-all-recruitments-by-address/request-parameters.adoc[]
 response::
-include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-response.adoc[]
+include::{snippets}/recruitment/get-all-recruitments-by-address/http-response.adoc[]
+
+//==== 주소와 식당이름으로 약속 조회
+//```
+//파라미터인 restaurantName과 restaurantAddress는 생략할 수 있다. 파라미터로 restaurantName=restaurant만 입력할 경우 식당 이름이 "restaurantName"인 결과들을 반환하고,
+//restaurantName=restaurant&restaurantAddress=restaurantAddress를 입력할 경우 식당이름이 restaurant이고, 주소가 restaurantAddress인 약속들을 반환한다. 파라미터를 입력하지 않을 경우 모든 약속들을 반환한다.
+//```
+//
+//request::
+//include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-request.adoc[]
+//header::
+//include::{snippets}/recruitment/get-all-recruitments-by-restaurant/request-headers.adoc[]
+//parameter::
+//include::{snippets}/recruitment/get-all-recruitments-by-restaurant/request-parameters.adoc[]
+//
+//
+//response::
+//include::{snippets}/recruitment/get-all-recruitments-by-restaurant/http-response.adoc[]
 
 === 참여
 ```
@@ -274,9 +279,9 @@ include::{snippets}/auth/signin/http-response.adoc[]
 ```
 
 request::
-include::{snippets}/auth/reissue/http-request.adoc[]
+include::{snippets}/auth/issue/http-request.adoc[]
 response::
-include::{snippets}/auth/reissue/http-response.adoc[]
+include::{snippets}/auth/issue/http-response.adoc[]
 
 === 토큰 확인
 ```
