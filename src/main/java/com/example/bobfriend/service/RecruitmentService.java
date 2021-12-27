@@ -39,7 +39,7 @@ public class RecruitmentService {
 
 
     @Transactional
-    public RecruitmentDto.Response createRecruitment(RecruitmentDto.Request recruitmentRequestDto) {
+    public RecruitmentDto.Response create(RecruitmentDto.Request recruitmentRequestDto) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
         recruitment.setAuthor(currentMember);
@@ -49,7 +49,7 @@ public class RecruitmentService {
 
 
     @Transactional
-    public void deleteRecruitment(Long recruitmentId) {
+    public void delete(Long recruitmentId) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (currentMember.equals(recruitment.getAuthor())) {
@@ -72,7 +72,7 @@ public class RecruitmentService {
 
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllAvailableRecruitments(Pageable pageable) {
+    public Page<RecruitmentDto.ResponseList> findAllAvailable(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         return recruitmentRepository
                 .findAllAvailable(currentMember, pageable)
@@ -106,7 +106,7 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllJoinedRecruitments(Pageable pageable) {
+    public Page<RecruitmentDto.ResponseList> findAllJoined(Pageable pageable) {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllJoined(author, pageable)
                 .map(RecruitmentDto.ResponseList::new);
@@ -120,7 +120,7 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public RecruitmentDto.Response closeRecruitment(Long recruitmentId) {
+    public RecruitmentDto.Response closeById(Long recruitmentId) {
         Member author = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (author.equals(recruitment.getAuthor())) {
@@ -178,14 +178,6 @@ public class RecruitmentService {
                 .map(RecruitmentDto.Response::new);
     }
 
-//    public Page<RecruitmentDto.Response> searchAppointmentTime(String start, String end, Pageable pageable) {
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-//        LocalDateTime startTime = LocalDateTime.parse(start, formatter);
-//        LocalDateTime endTime = LocalDateTime.parse(end, formatter);
-//        return recruitmentRepository.searchByAppointmentTime(
-//                        startTime, endTime, pageable)
-//                .map(RecruitmentDto.Response::new);
-//    }
 
     public Page<RecruitmentDto.Response> searchByAllCondition(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
@@ -194,14 +186,14 @@ public class RecruitmentService {
     }
 
 
-    public void reportRecruitment(Long recruitmentId) {
+    public void reportById(Long recruitmentId) {
         Recruitment recruitment = getRecruitment(recruitmentId);
         Member member = memberService.getCurrentMember();
         reportService.reportWriting(member, recruitment);
     }
 
     @Transactional
-    public void expireRecruitment() {
+    public void expire() {
         List<Recruitment> allByActiveTrue = recruitmentRepository.findAllByActiveTrue();
         for (Recruitment recruitment :
                 allByActiveTrue) {

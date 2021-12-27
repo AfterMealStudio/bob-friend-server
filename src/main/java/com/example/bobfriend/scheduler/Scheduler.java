@@ -12,6 +12,6 @@ public class Scheduler {
 
     @Scheduled(cron = "0 0/1 * * * ?")// 1분 마다 실행
     public void recruitmentExpireSchedule() {
-        recruitmentService.expireRecruitment();
+        recruitmentService.expire();
     }
 }
