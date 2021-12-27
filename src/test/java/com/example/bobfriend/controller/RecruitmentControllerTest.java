@@ -3,6 +3,7 @@ package com.example.bobfriend.controller;
 import com.example.bobfriend.model.dto.recruitment.*;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.service.CommentService;
+import com.example.bobfriend.service.RecruitmentFindService;
 import com.example.bobfriend.service.RecruitmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +50,8 @@ class RecruitmentControllerTest {
 
     @MockBean
     RecruitmentService recruitmentService;
+    @MockBean
+    RecruitmentFindService recruitmentFindService;
     @MockBean
     CommentService commentService;
 
@@ -134,7 +137,7 @@ class RecruitmentControllerTest {
 
         PageImpl<SimpleResponse> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
-        given(recruitmentService.findAll(any()))
+        given(recruitmentFindService.findAll(any()))
                 .willReturn(responsePage);
 
         mvc.perform(requestBuilderWithAuthorizationHeader(
@@ -162,7 +165,7 @@ class RecruitmentControllerTest {
         PageImpl<SimpleResponse> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
 
-        when(recruitmentService.findMyRecruitments(any()))
+        when(recruitmentFindService.findMyRecruitments(any()))
                 .thenReturn(responsePage);
 
         mvc.perform(requestBuilderWithAuthorizationHeader(
@@ -192,7 +195,7 @@ class RecruitmentControllerTest {
         String testRestaurantAddress = "testRestaurantAddress";
         PageImpl<SimpleResponse> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
-        given(recruitmentService.findAllByRestaurantAddress(any(), any()))
+        given(recruitmentFindService.findAllByRestaurantAddress(any(), any()))
                 .willReturn(responsePage);
         mvc.perform(requestBuilderWithAuthorizationHeader(
                         get("/api/recruitments"))
@@ -263,7 +266,7 @@ class RecruitmentControllerTest {
         addressDto.setCount(1);
 
         Addresses value = new Addresses(List.of(addressDto));
-        given(recruitmentService.findAllLocations(any(), any(), any()))
+        given(recruitmentFindService.findAllLocations(any(), any(), any()))
                 .willReturn(value);
 
         mvc.perform(requestBuilderWithAuthorizationHeader(
@@ -295,7 +298,7 @@ class RecruitmentControllerTest {
     void getRecruitment() throws Exception {
         DetailResponse detailResponseDto =
                 new DetailResponse(testRecruitment);
-        given(recruitmentService.findById(any()))
+        given(recruitmentFindService.findById(any()))
                 .willReturn(detailResponseDto);
 
         mvc.perform(requestBuilderWithAuthorizationHeader(
