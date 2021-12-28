@@ -158,7 +158,7 @@ class MemberControllerTest {
     void deleteMember() throws Exception {
         Delete delete = new Delete(testMember.getPassword());
         mvc.perform(getRequestBuilder(
-                        delete("/api"))
+                        delete("/api/user"))
                         .content(objectMapper.writeValueAsString(delete)))
                 .andExpect(status().isOk())
                 .andDo(document("member/delete",
