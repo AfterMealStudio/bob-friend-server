@@ -2,19 +2,18 @@ package com.example.bobfriend.model.dto.comment;
 
 import com.example.bobfriend.model.dto.member.Preview;
 import com.example.bobfriend.model.entity.Comment;
-
-import com.example.bobfriend.model.entity.Reply;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@EqualsAndHashCode(exclude = {"replies"})
 public class Response {
     private Long id;
     private Preview author;
@@ -35,17 +34,5 @@ public class Response {
         this.createdAt = comment.getCreatedAt();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Response response = (Response) o;
-        return Objects.equals(id, response.id) && Objects.equals(author, response.author);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, author);
-    }
 }
 
