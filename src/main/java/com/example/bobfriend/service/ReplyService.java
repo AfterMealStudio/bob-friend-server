@@ -1,6 +1,7 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.ReplyDto;
+import com.example.bobfriend.model.dto.reply.Create;
+import com.example.bobfriend.model.dto.reply.Response;
 import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Reply;
@@ -25,9 +26,9 @@ public class ReplyService {
 
 
     @Transactional
-    public ReplyDto.Response create(
+    public Response create(
             Long commentId,
-            ReplyDto.Request replyDto) {
+            Create replyDto) {
         Member author = memberService.getCurrentMember();
         Comment comment = getComment(commentId);
 
@@ -38,7 +39,7 @@ public class ReplyService {
                 .build();
 
         Reply save = replyRepository.save(reply);
-        return new ReplyDto.Response(save);
+        return new Response(save);
     }
 
 
@@ -47,11 +48,11 @@ public class ReplyService {
         Member author = memberService.getCurrentMember();
         Reply reply = getReply(replyId);
         if (reply.getAuthor().equals(author)) {
-            reportRepository.deleteAllByWriting(reply); // 신고 내역 삭제
+            reportRepository.deleteAllByWriting(reply);
             replyRepository.delete(reply);
             Comment comment = reply.getComment();
             if (comment.getAuthor().isUnknown() &&
-                    comment.getReplies().size() <= 1) {// 원 댓글이 삭제된 상태이고 대댓글이 하나도 남지 않았다면 원 댓글 db에서 삭제
+                    comment.getReplies().size() <= 1) {
                 commentRepository.delete(comment);
             }
         } else {
@@ -77,6 +78,6 @@ public class ReplyService {
 
     private Comment getComment(Long commentId) {
         return commentRepository.findById(commentId)
-                .orElseThrow(()-> new CommentNotFoundException(commentId));
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
     }
 }
