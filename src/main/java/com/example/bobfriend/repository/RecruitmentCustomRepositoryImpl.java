@@ -87,10 +87,20 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 recruitment.members.contains(currentMember).not(),
                 recruitment.sexRestriction.eq(currentMember.getSex()).or(
                         recruitment.sexRestriction.eq(Sex.NONE)
-                ));
+                ),
+                betweenAgeRestrictionRange(currentMember)
+        });
         return getPage(pageable, query);
     }
 
+
+    private BooleanExpression betweenAgeRestrictionRange(Member currentMember) {
+        BooleanExpression restrictExist = recruitment.ageRestrictionStart.loe(currentMember.getAge())// less or equal
+                .and(recruitment.ageRestrictionEnd.goe(currentMember.getAge()));
+        BooleanExpression restrictNotExist = recruitment.ageRestrictionStart.isNull()
+                .and(recruitment.ageRestrictionEnd.isNull());
+        return restrictExist.or(restrictNotExist);// greater or equal
+    }
 
     @Override
     public Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable) {
@@ -142,7 +152,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        return PageableExecutionUtils.getPage(list, pageable, () -> where.fetchCount());
+        return PageableExecutionUtils.getPage(list, pageable, where::fetchCount);
     }
 
 

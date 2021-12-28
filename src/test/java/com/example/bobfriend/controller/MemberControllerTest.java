@@ -158,15 +158,12 @@ class MemberControllerTest {
     void deleteMember() throws Exception {
         Delete delete = new Delete(testMember.getPassword());
         mvc.perform(getRequestBuilder(
-                        delete("/api/user/{userId}", testMember.getId()))
+                        delete("/api"))
                         .content(objectMapper.writeValueAsString(delete)))
                 .andExpect(status().isOk())
                 .andDo(document("member/delete",
                         getDocumentRequest(),
                         getDocumentResponse(),
-                        pathParameters(
-                                parameterWithName("userId").description("유저의 Id 값(식별자)")
-                        ),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )
@@ -187,6 +184,45 @@ class MemberControllerTest {
                         pathParameters(
                                 parameterWithName("nickname").description("닉네임")
                         ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )));
+    }
+
+
+    @Test
+    void updateMemberTest() throws Exception {
+        MemberDto.Update update = new MemberDto.Update();
+        update.setNickname("update nickname");
+        update.setBirth(LocalDate.now().minusYears(1));
+        update.setPassword("update password");
+        update.setAgree(false);
+        update.setSex(Sex.NONE);
+
+        Member incoming = Member.builder()
+                .nickname(update.getNickname())
+                .birth(update.getBirth())
+                .password(update.getPassword())
+                .sex(update.getSex())
+                .agree(update.getAgree())
+                .build();
+        testMember.update(incoming);
+        MemberDto.Response response = new MemberDto.Response(testMember);
+
+        when(memberService.update(any()))
+                .thenReturn(response);
+
+        mvc.perform(getRequestBuilder(
+                        put("/api/user")
+                                .content(
+                                        objectMapper.writeValueAsString(update))))
+                .andExpect(status().isOk())
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(response)
+                ))
+                .andDo(document("member/update",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )));

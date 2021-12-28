@@ -117,12 +117,12 @@ public class AuthenticationControllerTest {
                 .id(testMember.getId())
                 .email(testMember.getEmail())
                 .nickname(testMember.getNickname())
-                .birth(testMember.getBirth())
+                .age(testMember.getAge())
                 .sex(testMember.getSex())
                 .rating(testMember.getRating())
                 .accumulatedReports(testMember.getAccumulatedReports())
                 .reportCount(testMember.getReportCount())
-                .agree(testMember.isAgree())
+                .agree(testMember.getAgree())
                 .active(testMember.isActive())
                 .build();
 

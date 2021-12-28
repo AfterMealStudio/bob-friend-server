@@ -146,6 +146,10 @@ public class RecruitmentService {
             throw new AlreadyJoined(currentMember.getNickname());
         }
 
+        // 연령 체크
+        if (!recruitment.isAgeRestrictionSatisfied(currentMember.getAge()))
+            throw new RestrictionFailedException(currentMember.getEmail());
+
         if (!checkSexRestriction(recruitment, currentMember))
             throw new RestrictionFailedException(currentMember.getEmail());
 

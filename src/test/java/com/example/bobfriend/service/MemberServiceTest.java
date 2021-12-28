@@ -125,8 +125,12 @@ public class MemberServiceTest {
         when(commentRepository.findAllByAuthor(any()))
                 .thenReturn(Arrays.asList(comment));
 
-        memberService.deleteById(testMember.getId());
+        when(passwordEncoder.matches(any(), any()))
+                .thenReturn(true);
 
+        MemberDto.Delete delete = new MemberDto.Delete();
+        delete.setPassword(testMember.getPassword());
+        memberService.delete(delete);
 
         assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
         assertThat(comment.getAuthor().getEmail(), equalTo("unknown"));
@@ -154,6 +158,20 @@ public class MemberServiceTest {
                 memberService.rateMember(testMember.getNickname(), rate);
 
         assertThat(response.getRating(), equalTo(rate.getScore()));
+    }
+
+
+    @Test
+    void updateTest() {
+        login();
+        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(testMember));
+        MemberDto.Update incoming = new MemberDto.Update();
+        incoming.setNickname("update");
+
+        MemberDto.Response updatedMember = memberService.update(incoming);
+
+        assertThat(updatedMember.getNickname(), equalTo(incoming.getNickname()));
     }
 
 

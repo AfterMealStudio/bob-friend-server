@@ -56,6 +56,14 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+
+    @PutMapping("/user")
+    public ResponseEntity updateUserInfo(
+            @RequestBody MemberDto.Update update) {
+        return ResponseEntity.ok(memberService.update(update));
+    }
+
+
     @PostMapping("/user/{nickname}/score")
     public ResponseEntity rateMember(
             @PathVariable String nickname,

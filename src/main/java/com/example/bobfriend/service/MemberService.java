@@ -6,14 +6,16 @@ import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
-import com.example.bobfriend.model.exception.MemberNotAllowedException;
+import com.example.bobfriend.model.exception.MemberDuplicatedException;
 import com.example.bobfriend.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class MemberService {
     private final ReplyRepository replyRepository;
     private final CommentRepository commentRepository;
     private final WritingReportRepository reportRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Transactional(readOnly = true)
@@ -41,13 +44,6 @@ public class MemberService {
         return new Response(member);
     }
 
-    @Transactional
-    public Member getCurrentMember() {
-        String currentUsername = getCurrentUsername();
-        Member currentMember = getMember(currentUsername);
-        return currentMember;
-    }
-
 
     @Transactional
     public void checkMemberWithCode(String email, String code) {
@@ -60,10 +56,13 @@ public class MemberService {
 
 
     @Transactional
-    public void deleteById(Long memberId) {
+    public void delete(MemberDto.Delete delete) {
         Member currentMember = getCurrentMember();
-        if (currentMember.getId() != memberId)
-            throw new MemberNotAllowedException(currentMember.getNickname());
+
+        if (!passwordEncoder.matches(delete.getPassword(),
+                currentMember.getPassword())) {
+            throw new BadCredentialsException("password not correct");
+        }
 
         reportRepository.deleteAllByMember(currentMember);
 
@@ -83,8 +82,19 @@ public class MemberService {
 //        }
         replyRepository.deleteAllByAuthor(currentMember);
 
-        memberRepository.deleteById(memberId);
+        memberRepository.delete(currentMember);
     }
+
+
+    @Transactional
+    public MemberDto.Response update(MemberDto.Update update) {
+        if (memberRepository.existsMemberByNickname(update.getNickname()))
+            throw new MemberDuplicatedException(update.getNickname());
+        Member currentMember = getCurrentMember();
+        Member incoming = convertToEntity(update);
+        return new MemberDto.Response(currentMember.update(incoming));
+    }
+
 
     public boolean isExistByEmail(String email) {
         return memberRepository.existsMemberByEmail(email);
@@ -147,5 +157,24 @@ public class MemberService {
         return username;
     }
 
+
+    @Transactional
+    Member getCurrentMember() {
+        String currentUsername = getCurrentUsername();
+        Member currentMember = getMember(currentUsername);
+        return currentMember;
+    }
+
+
+    Member convertToEntity(MemberDto.Request request) {
+        return Member.builder()
+                .email(request.getEmail())
+                .nickname(request.getNickname())
+                .password((request.getPassword() == null) ? null : passwordEncoder.encode(request.getPassword()))
+                .birth(request.getBirth())
+                .sex(request.getSex())
+                .agree(request.getAgree())
+                .build();
+    }
 
 }
