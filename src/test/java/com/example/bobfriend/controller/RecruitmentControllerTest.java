@@ -2,9 +2,7 @@ package com.example.bobfriend.controller;
 
 import com.example.bobfriend.model.dto.RecruitmentDto;
 import com.example.bobfriend.model.entity.*;
-import com.example.bobfriend.service.CommentService;
-import com.example.bobfriend.service.RecruitmentFindService;
-import com.example.bobfriend.service.RecruitmentService;
+import com.example.bobfriend.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,6 +50,8 @@ class RecruitmentControllerTest {
     RecruitmentService recruitmentService;
     @MockBean
     RecruitmentFindService recruitmentFindService;
+    @MockBean
+    RecruitmentSearchService recruitmentSearchService;
     @MockBean
     CommentService commentService;
 
@@ -452,7 +452,7 @@ class RecruitmentControllerTest {
                 new RecruitmentDto.Response(testRecruitment);
         PageImpl<RecruitmentDto.Response> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto));
-        when(recruitmentService.searchTitle(any(), any()))
+        when(recruitmentSearchService.searchTitle(any(), any()))
                 .thenReturn(new PageImpl<>(Arrays.asList(responseDto)));
         mvc.perform(getRequestBuilder(
                         get("/recruitments/search"))

@@ -217,23 +217,7 @@ class RecruitmentServiceTest {
     }
 
 
-    @Test
-    void search() {
-        List<Recruitment> recruitments = Arrays.asList(testRecruitment);
-        when(recruitmentRepository.searchByTitle(any(), any()))
-                .thenReturn(new PageImpl<>(recruitments));
-        PageRequest pageRequest = PageRequest.of(0, 1);
 
-        List<RecruitmentDto.Response> collect = recruitments.stream()
-                .map(RecruitmentDto.Response::new)
-                .collect(Collectors.toList());
-        Condition.Search search = new Condition.Search();
-        search.setKeyword(testRecruitment.getTitle());
-        Page<RecruitmentDto.Response> responsePage =
-                recruitmentService.searchTitle(search, pageRequest);
-
-        assertThat(responsePage, equalTo(new PageImpl<>(collect)));
-    }
 
 
 

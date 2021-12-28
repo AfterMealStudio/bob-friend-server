@@ -6,6 +6,7 @@ import com.example.bobfriend.model.exception.RecruitmentIsFullException;
 import com.example.bobfriend.model.exception.RecruitmentNotActiveException;
 import com.example.bobfriend.model.exception.RecruitmentNotFoundException;
 import com.example.bobfriend.service.RecruitmentFindService;
+import com.example.bobfriend.service.RecruitmentSearchService;
 import com.example.bobfriend.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,8 @@ import javax.validation.Valid;
 public class RecruitmentController {
     private final RecruitmentService recruitmentService;
     private final RecruitmentFindService recruitmentFindService;
+    private final RecruitmentSearchService recruitmentSearchService;
+
 
     @GetMapping()
     public ResponseEntity getAll(
@@ -119,16 +122,16 @@ public class RecruitmentController {
         Page<RecruitmentDto.Response> searchResult = null;
         switch (category) {
             case place:
-                searchResult = recruitmentService.searchRestaurant(searchCondition, pageable);
+                searchResult = recruitmentSearchService.searchRestaurant(searchCondition, pageable);
                 break;
             case title:
-                searchResult = recruitmentService.searchTitle(searchCondition, pageable);
+                searchResult = recruitmentSearchService.searchTitle(searchCondition, pageable);
                 break;
             case content:
-                searchResult = recruitmentService.searchContent(searchCondition, pageable);
+                searchResult = recruitmentSearchService.searchContent(searchCondition, pageable);
                 break;
             case all:
-                searchResult = recruitmentService.searchByAllCondition(searchCondition, pageable);
+                searchResult = recruitmentSearchService.searchByAllCondition(searchCondition, pageable);
                 break;
         }
         return searchResult;
