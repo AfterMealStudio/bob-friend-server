@@ -39,7 +39,7 @@ public class RecruitmentService {
 
 
     @Transactional
-    public DetailResponse createRecruitment(Create recruitmentRequestDto) {
+    public DetailResponse create(Create recruitmentRequestDto) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
         recruitment.setAuthor(currentMember);
@@ -49,7 +49,7 @@ public class RecruitmentService {
 
 
     @Transactional
-    public void deleteRecruitment(Long recruitmentId) {
+    public void delete(Long recruitmentId) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (currentMember.equals(recruitment.getAuthor())) {
@@ -72,7 +72,7 @@ public class RecruitmentService {
 
 
     @Transactional
-    public Page<SimpleResponse> findAllAvailableRecruitments(Pageable pageable) {
+    public Page<SimpleResponse> findAllAvailable(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         return recruitmentRepository
                 .findAllAvailable(currentMember, pageable)
@@ -106,7 +106,7 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public Page<SimpleResponse> findAllJoinedRecruitments(Pageable pageable) {
+    public Page<SimpleResponse> findAllJoined(Pageable pageable) {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllJoined(author, pageable)
                 .map(SimpleResponse::new);
@@ -120,7 +120,7 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public DetailResponse closeRecruitment(Long recruitmentId) {
+    public DetailResponse close(Long recruitmentId) {
         Member author = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (author.equals(recruitment.getAuthor())) {
@@ -186,14 +186,14 @@ public class RecruitmentService {
     }
 
 
-    public void reportRecruitment(Long recruitmentId) {
+    public void reportById(Long recruitmentId) {
         Recruitment recruitment = getRecruitment(recruitmentId);
         Member member = memberService.getCurrentMember();
         reportService.reportWriting(member, recruitment);
     }
 
     @Transactional
-    public void expireRecruitment() {
+    public void expire() {
         List<Recruitment> allByActiveTrue = recruitmentRepository.findAllByActiveTrue();
         for (Recruitment recruitment :
                 allByActiveTrue) {
