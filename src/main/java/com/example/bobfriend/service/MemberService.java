@@ -3,9 +3,7 @@ package com.example.bobfriend.service;
 import com.example.bobfriend.model.dto.member.DuplicationCheck;
 import com.example.bobfriend.model.dto.member.Response;
 import com.example.bobfriend.model.dto.member.Score;
-import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
-import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +23,7 @@ public class MemberService {
     private final ReplyRepository replyRepository;
     private final CommentRepository commentRepository;
     private final WritingReportRepository reportRepository;
-
+    private final RecruitmentMemberRepository recruitmentMemberRepository;
 
     @Transactional(readOnly = true)
     public Response getMemberWithAuthorities(String email) {
@@ -64,24 +62,10 @@ public class MemberService {
         Member currentMember = getCurrentMember();
         if (currentMember.getId() != memberId)
             throw new MemberNotAllowedException(currentMember.getNickname());
+        recruitmentMemberRepository.deleteAllByMember(currentMember);
+        currentMember.delete();
 
         reportRepository.deleteAllByMember(currentMember);
-
-        for (Recruitment recruitment :
-                recruitmentRepository.findAllByAuthor(currentMember)) {
-            recruitment.setAuthor(null);
-        }
-
-        for (Comment comment :
-                commentRepository.findAllByAuthor(currentMember)) {
-            comment.clear();
-        }
-
-//        for (Reply reply:
-//        replyRepository.findAllByAuthor(currentMember)) {
-//            replyRepository.delete(reply);
-//        }
-        replyRepository.deleteAllByAuthor(currentMember);
 
         memberRepository.deleteById(memberId);
     }

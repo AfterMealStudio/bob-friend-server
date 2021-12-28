@@ -1,6 +1,5 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.*;
 import com.example.bobfriend.model.dto.comment.Create;
 import com.example.bobfriend.model.dto.comment.Response;
 import com.example.bobfriend.model.entity.Comment;
@@ -36,7 +35,7 @@ public class CommentService {
 
     @Transactional
     public Response create(Create commentDto,
-                          Long recruitmentId) {
+                           Long recruitmentId) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
 
@@ -45,6 +44,8 @@ public class CommentService {
                 .author(currentMember)
                 .recruitment(recruitment)
                 .build();
+
+        currentMember.addToCreatedWritings(comment);
 
         return new Response(commentRepository.save(comment));
     }
@@ -55,6 +56,7 @@ public class CommentService {
         Member author = memberService.getCurrentMember();
         Comment comment = getComment(commentId);
         if (comment.getAuthor().equals(author)) {
+            author.removeFromCreatedWritings(comment);
             reportRepository.deleteAllByWriting(comment);
             if (comment.getReplies().size() > 0) // 대댓글이 달려있으면 내용만 삭제
                 comment.clear();
@@ -79,7 +81,6 @@ public class CommentService {
                     throw new CommentNotFoundException(commentId);
                 });
     }
-
 
 
     private Recruitment getRecruitment(Long recruitmentId) {

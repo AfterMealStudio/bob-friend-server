@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -91,7 +92,7 @@ public class ReplyServiceTest {
                 .replies(List.of(testReply))
                 .createdAt(LocalDateTime.now())
                 .build();
-
+        testAuthor.setup();
     }
 
 

@@ -96,6 +96,7 @@ public class CommentServiceTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
+        testAuthor.setup();
     }
 
     @Test
@@ -161,11 +162,6 @@ public class CommentServiceTest {
         assertThat(allComment, equalTo(
                 responseList));
     }
-
-
-
-
-
 
 
 }

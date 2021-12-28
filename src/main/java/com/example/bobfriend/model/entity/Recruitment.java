@@ -9,7 +9,9 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @SuperBuilder
@@ -71,10 +73,6 @@ public class Recruitment extends Writing {
                 ", id=" + id +
                 ", author=" + this.getAuthor() +
                 '}';
-    }
-
-    public void setAuthor(Member author) {
-        this.author = author;
     }
 
 

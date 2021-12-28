@@ -1,8 +1,8 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.dto.recruitment.*;
 import com.example.bobfriend.model.dto.member.Preview;
+import com.example.bobfriend.model.dto.recruitment.*;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.model.exception.AlreadyJoined;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
@@ -97,6 +97,8 @@ class RecruitmentServiceTest {
                 .active(true)
                 .build();
 
+
+        testAuthor.setup();
     }
 
 

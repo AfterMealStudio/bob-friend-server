@@ -38,6 +38,8 @@ public class ReplyService {
                 .comment(comment)
                 .build();
 
+        author.addToCreatedWritings(reply);
+
         Reply save = replyRepository.save(reply);
         return new Response(save);
     }
@@ -48,6 +50,7 @@ public class ReplyService {
         Member author = memberService.getCurrentMember();
         Reply reply = getReply(replyId);
         if (reply.getAuthor().equals(author)) {
+            author.removeFromCreatedWritings(reply);
             reportRepository.deleteAllByWriting(reply);
             replyRepository.delete(reply);
             Comment comment = reply.getComment();

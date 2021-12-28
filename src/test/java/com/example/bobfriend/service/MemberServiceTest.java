@@ -18,7 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -42,13 +45,15 @@ public class MemberServiceTest {
     EmailService emailService;
     @Mock
     WritingReportRepository reportRepository;
+    @Mock
+    RecruitmentMemberRepository recruitmentMemberRepository;
     @InjectMocks
     MemberService memberService;
-    Member testMember;
+    Member testAuthor;
 
     @BeforeEach
     void setUp() {
-        testMember = Member.builder()
+        testAuthor = Member.builder()
                 .id(0L)
                 .email("testEmail")
                 .nickname("testUser")
@@ -64,27 +69,27 @@ public class MemberServiceTest {
                 .active(true)
                 .build();
 
-
+        testAuthor.setup();
     }
 
     @Test
     @DisplayName("get_member_by_email")
     void getMemberWithAuthoritiesTest() {
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
-                .thenReturn(Optional.ofNullable(testMember));
+                .thenReturn(Optional.ofNullable(testAuthor));
 
-        Response getMember = memberService.getMemberWithAuthorities(testMember.getEmail());
+        Response getMember = memberService.getMemberWithAuthorities(testAuthor.getEmail());
 
-        assertThat(new Response(testMember), equalTo(getMember));
+        assertThat(new Response(testAuthor), equalTo(getMember));
     }
 
 
     @Test
     @DisplayName(value = "check_member_with_code")
     void checkMemberWithCodeTest() {
-        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.ofNullable(testMember));
-        memberService.checkMemberWithCode(testMember.getEmail(), String.valueOf(testMember.hashCode()));
-        assertTrue(testMember.isEmailVerified());
+        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.ofNullable(testAuthor));
+        memberService.checkMemberWithCode(testAuthor.getEmail(), String.valueOf(testAuthor.hashCode()));
+        assertTrue(testAuthor.isEmailVerified());
     }
 
 
@@ -94,7 +99,7 @@ public class MemberServiceTest {
 
         Recruitment recruitment = Recruitment.builder()
                 .id(1L)
-                .author(testMember)
+                .author(testAuthor)
                 .active(true)
                 .appointmentTime(LocalDateTime.now())
                 .totalNumberOfPeople(4)
@@ -114,18 +119,15 @@ public class MemberServiceTest {
                 .content("test content")
                 .recruitment(recruitment)
                 .createdAt(LocalDateTime.now())
-                .author(testMember)
+                .author(testAuthor)
                 .replies(new LinkedList<>())
                 .build();
-
+        testAuthor.addToCreatedWritings(recruitment);
+        testAuthor.addToCreatedWritings(comment);
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
-                .thenReturn(Optional.ofNullable(testMember));
-        when(recruitmentRepository.findAllByAuthor(any()))
-                .thenReturn(Arrays.asList(recruitment));
-        when(commentRepository.findAllByAuthor(any()))
-                .thenReturn(Arrays.asList(comment));
+                .thenReturn(Optional.ofNullable(testAuthor));
 
-        memberService.deleteById(testMember.getId());
+        memberService.deleteById(testAuthor.getId());
 
 
         assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
@@ -136,22 +138,22 @@ public class MemberServiceTest {
     @Test
     void getCurrentMember() {
         login();
-        when(memberRepository.findMemberWithAuthoritiesByEmail(testMember.getEmail()))
-                .thenReturn(Optional.ofNullable(testMember));
+        when(memberRepository.findMemberWithAuthoritiesByEmail(testAuthor.getEmail()))
+                .thenReturn(Optional.ofNullable(testAuthor));
         Member currentMember = memberService.getCurrentMember();
 
-        assertThat(currentMember, equalTo(testMember));
+        assertThat(currentMember, equalTo(testAuthor));
     }
 
 
     @Test
     void rateMemberTest() {
-        when(memberRepository.findMemberByNickname(testMember.getNickname()))
-                .thenReturn(Optional.ofNullable(testMember));
+        when(memberRepository.findMemberByNickname(testAuthor.getNickname()))
+                .thenReturn(Optional.ofNullable(testAuthor));
         Score rate = new Score();
         rate.setScore(3.0);
         Response response =
-                memberService.rateMember(testMember.getNickname(), rate);
+                memberService.rateMember(testAuthor.getNickname(), rate);
 
         assertThat(response.getRating(), equalTo(rate.getScore()));
     }
@@ -160,8 +162,8 @@ public class MemberServiceTest {
     private void login() {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(
-                        testMember.getEmail(),
-                        testMember.getPassword(),
+                        testAuthor.getEmail(),
+                        testAuthor.getPassword(),
                         Collections.singleton(
                                 new SimpleGrantedAuthority("ROLE_USER"))
                 ));
