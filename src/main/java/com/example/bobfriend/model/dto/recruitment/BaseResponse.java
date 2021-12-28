@@ -4,6 +4,7 @@ import com.example.bobfriend.model.dto.member.Preview;
 import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.entity.Sex;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@EqualsAndHashCode(of =
+        {"id", "author", "latitude", "longitude", "createdAt"})
 public abstract class BaseResponse {
     protected Long id;
     protected String title;

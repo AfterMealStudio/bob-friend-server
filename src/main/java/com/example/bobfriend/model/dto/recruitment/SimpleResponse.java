@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class SimpleResponse extends BaseResponse{
     public SimpleResponse(Recruitment recruitment) {
         super(recruitment);

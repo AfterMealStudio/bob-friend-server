@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class DetailResponse extends BaseResponse {
     private List<com.example.bobfriend.model.dto.comment.Response> comments;
 

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"replies"})
+@EqualsAndHashCode(exclude = {"content", "reportCount", "replies"})
 public class Response {
     private Long id;
     private Preview author;
