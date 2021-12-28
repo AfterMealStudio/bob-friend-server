@@ -39,7 +39,7 @@ public class RecruitmentService {
 
 
     @Transactional
-    public DeailResponse create(Create recruitmentRequestDto) {
+    public DetailResponse create(Create recruitmentRequestDto) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
         recruitment.setAuthor(currentMember);

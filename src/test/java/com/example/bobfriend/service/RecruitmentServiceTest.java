@@ -252,7 +252,7 @@ class RecruitmentServiceTest {
         given(recruitmentRepository.findAllJoined(any(), any()))
                 .willReturn(new PageImpl<>(recruitmentList));
 
-        Page<SimpleResponseList> responseDtoList =
+        Page<SimpleResponse> responseDtoList =
                 recruitmentService.findAllJoined(pageRequest);
 
         assertThat(responseDtoList.toList(),
