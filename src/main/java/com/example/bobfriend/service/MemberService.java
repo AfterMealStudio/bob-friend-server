@@ -1,8 +1,6 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.member.DuplicationCheck;
-import com.example.bobfriend.model.dto.member.Response;
-import com.example.bobfriend.model.dto.member.Score;
+import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
@@ -56,7 +54,7 @@ public class MemberService {
 
 
     @Transactional
-    public void delete(MemberDto.Delete delete) {
+    public void delete(Delete delete) {
         Member currentMember = getCurrentMember();
 
         if (!passwordEncoder.matches(delete.getPassword(),
@@ -87,12 +85,12 @@ public class MemberService {
 
 
     @Transactional
-    public MemberDto.Response update(MemberDto.Update update) {
+    public Response update(Update update) {
         if (memberRepository.existsMemberByNickname(update.getNickname()))
             throw new MemberDuplicatedException(update.getNickname());
         Member currentMember = getCurrentMember();
         Member incoming = convertToEntity(update);
-        return new MemberDto.Response(currentMember.update(incoming));
+        return new Response(currentMember.update(incoming));
     }
 
 
@@ -166,7 +164,7 @@ public class MemberService {
     }
 
 
-    Member convertToEntity(MemberDto.Request request) {
+    Member convertToEntity(Request request) {
         return Member.builder()
                 .email(request.getEmail())
                 .nickname(request.getNickname())

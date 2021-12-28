@@ -2,6 +2,7 @@ package com.example.bobfriend.controller;
 
 import com.example.bobfriend.model.dto.member.Delete;
 import com.example.bobfriend.model.dto.member.Score;
+import com.example.bobfriend.model.dto.member.Update;
 import com.example.bobfriend.service.AuthService;
 import com.example.bobfriend.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +60,7 @@ public class MemberController {
 
     @PutMapping("/user")
     public ResponseEntity updateUserInfo(
-            @RequestBody MemberDto.Update update) {
+            @RequestBody Update update) {
         return ResponseEntity.ok(memberService.update(update));
     }
 

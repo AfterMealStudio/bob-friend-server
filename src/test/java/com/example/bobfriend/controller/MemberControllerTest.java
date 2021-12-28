@@ -1,9 +1,6 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.member.Delete;
-import com.example.bobfriend.model.dto.member.DuplicationCheck;
-import com.example.bobfriend.model.dto.member.Response;
-import com.example.bobfriend.model.dto.member.Score;
+import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
@@ -192,7 +189,7 @@ class MemberControllerTest {
 
     @Test
     void updateMemberTest() throws Exception {
-        MemberDto.Update update = new MemberDto.Update();
+        Update update = new Update();
         update.setNickname("update nickname");
         update.setBirth(LocalDate.now().minusYears(1));
         update.setPassword("update password");
@@ -207,7 +204,7 @@ class MemberControllerTest {
                 .agree(update.getAgree())
                 .build();
         testMember.update(incoming);
-        MemberDto.Response response = new MemberDto.Response(testMember);
+        Response response = new Response(testMember);
 
         when(memberService.update(any()))
                 .thenReturn(response);
