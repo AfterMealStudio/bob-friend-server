@@ -73,13 +73,13 @@ public class RecruitmentController {
     @PostMapping
     public ResponseEntity create(
             @Valid @RequestBody Create recruitmentRequestDto) {
-        DetailResponse createdRecruitment = recruitmentService.createRecruitment(recruitmentRequestDto);
+        DetailResponse createdRecruitment = recruitmentService.create(recruitmentRequestDto);
         return ResponseEntity.ok(createdRecruitment);
     }
 
     @PatchMapping("/{recruitmentId}/close")
     public ResponseEntity close(@PathVariable Long recruitmentId) {
-        recruitmentService.closeById(recruitmentId);
+        recruitmentService.close(recruitmentId);
         return ResponseEntity.ok().build();
     }
 

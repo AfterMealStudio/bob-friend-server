@@ -436,7 +436,7 @@ class RecruitmentServiceTest {
                 .thenReturn(Optional.ofNullable(testRecruitment));
         when(memberService.getCurrentMember())
                 .thenReturn(testAuthor);
-        recruitmentService.closeById(testRecruitment.getId());
+        recruitmentService.close(testRecruitment.getId());
 
         assertThat(testRecruitment.isActive(), equalTo(false));
     }
