@@ -9,13 +9,11 @@ import com.example.bobfriend.model.exception.*;
 import com.example.bobfriend.repository.RecruitmentRepository;
 import com.example.bobfriend.repository.WritingReportRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -90,34 +88,6 @@ public class RecruitmentService {
             recruitment.addMember(currentMember);
 
         return new DetailResponse(recruitment);
-    }
-
-
-    public Page<DetailResponse> searchTitle(Condition.Search search, Pageable pageable) {
-        return recruitmentRepository
-                .searchByTitle(search, pageable)
-                .map(DetailResponse::new);
-    }
-
-
-    public Page<DetailResponse> searchContent(Condition.Search search, Pageable pageable) {
-        return recruitmentRepository
-                .searchByContent(search, pageable)
-                .map(DetailResponse::new);
-    }
-
-
-    public Page<DetailResponse> searchRestaurant(Condition.Search search, Pageable pageable) {
-        return recruitmentRepository
-                .searchByRestaurant(search, pageable)
-                .map(DetailResponse::new);
-    }
-
-
-    public Page<DetailResponse> searchByAllCondition(Condition.Search search, Pageable pageable) {
-        return recruitmentRepository
-                .searchByAll(search, pageable)
-                .map(DetailResponse::new);
     }
 
 
