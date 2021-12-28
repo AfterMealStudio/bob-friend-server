@@ -365,6 +365,7 @@ include::{snippets}/auth/issue/http-response.adoc[]
 액세스토큰이 만료되었는지를 true/false로 반환한다.
 ```
 
+
 request::
 include::{snippets}/auth/validate/http-request.adoc[]
 header::

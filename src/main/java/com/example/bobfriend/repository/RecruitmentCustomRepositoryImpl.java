@@ -1,7 +1,9 @@
 package com.example.bobfriend.repository;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.entity.*;
+import com.example.bobfriend.model.entity.Member;
+import com.example.bobfriend.model.entity.Recruitment;
+import com.example.bobfriend.model.entity.Sex;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -88,8 +90,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 recruitment.sexRestriction.eq(currentMember.getSex()).or(
                         recruitment.sexRestriction.eq(Sex.NONE)
                 ),
-                betweenAgeRestrictionRange(currentMember)
-        });
+                betweenAgeRestrictionRange(currentMember));
         return getPage(pageable, query);
     }
 
@@ -110,55 +111,50 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
     }
 
 
-    @Override
-    public List<Recruitment> findAllByLocation(Double latitude,
-                                               Double longitude,
-                                               Double bound) {
-        return getFilteringQueryFromPredicates(new Predicate[]{
-                recruitment.latitude.between(latitude - bound, latitude + bound).and(
-                        recruitment.longitude.between(longitude - bound, longitude + bound)
-                )
-        }).fetch();
+        @Override
+        public List<Recruitment> findAllByLocation (Double latitude,
+                Double longitude,
+                Double bound){
+            return getFilteringQueryFromPredicates(new Predicate[]{
+                    recruitment.latitude.between(latitude - bound, latitude + bound).and(
+                            recruitment.longitude.between(longitude - bound, longitude + bound)
+                    )
+            }).fetch();
+        }
+
+
+        private JPAQuery<Recruitment> getFilteringQueryFromPredicates (Predicate...predicates){
+        return jpaQueryFactory.selectFrom(recruitment)
+                .where(recruitment.active.eq(true))
+                    .where(predicates);
+        }
+
+
+        private BooleanExpression eqRestaurantName (String restaurantName){
+            if (!StringUtils.hasLength(restaurantName)) return null;
+            return recruitment.restaurantName.eq(restaurantName);
+        }
+
+
+        private BooleanExpression betweenTime (LocalDateTime start, LocalDateTime end){
+            if (start == null) return null;
+            if (end == null) return null;
+            return recruitment.appointmentTime.between(start, end);
+        }
+
+
+        private BooleanExpression eqRestaurantAddress (String restaurantAddress){
+            if (!StringUtils.hasLength(restaurantAddress)) return null;
+            return recruitment.restaurantAddress.eq(restaurantAddress);
+        }
+
+
+        private Page getPage (Pageable pageable, JPAQuery < Recruitment > where){
+            List list = where
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+        return PageableExecutionUtils.getPage(list, pageable, () -> where.fetchCount());
+        }
+
     }
-
-
-    private JPAQuery<Recruitment> getFilteringQueryFromPredicates(Predicate... predicates) {
-        return getActiveRecruitments()
-                .where(predicates);
-    }
-
-
-    private BooleanExpression eqRestaurantName(String restaurantName) {
-        if (!StringUtils.hasLength(restaurantName)) return null;
-        return recruitment.restaurantName.eq(restaurantName);
-    }
-
-
-    private BooleanExpression betweenTime(LocalDateTime start, LocalDateTime end) {
-        if (start == null) return null;
-        if (end == null) return null;
-        return recruitment.appointmentTime.between(start, end);
-    }
-
-
-    private BooleanExpression eqRestaurantAddress(String restaurantAddress) {
-        if (!StringUtils.hasLength(restaurantAddress)) return null;
-        return recruitment.restaurantAddress.eq(restaurantAddress);
-    }
-
-
-    private Page getPage(Pageable pageable, JPAQuery<Recruitment> where) {
-        List list = where
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-        return PageableExecutionUtils.getPage(list, pageable, where::fetchCount);
-    }
-
-
-    private JPAQuery<Recruitment> getActiveRecruitments() {
-        return jpaQueryFactory.selectFrom(recruitment).where(
-                recruitment.active.eq(true)
-        );
-    }
-}
