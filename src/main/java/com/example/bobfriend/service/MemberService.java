@@ -25,6 +25,7 @@ public class MemberService {
     private final ReplyRepository replyRepository;
     private final CommentRepository commentRepository;
     private final WritingReportRepository reportRepository;
+    private final RecruitmentMemberRepository recruitmentMemberRepository;
     private final PasswordEncoder passwordEncoder;
 
 
@@ -63,6 +64,7 @@ public class MemberService {
         }
 
         reportRepository.deleteAllByMember(currentMember);
+        recruitmentMemberRepository.deleteAllByMember(currentMember);
 
         for (Recruitment recruitment :
                 recruitmentRepository.findAllByAuthor(currentMember)) {
