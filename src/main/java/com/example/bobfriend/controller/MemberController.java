@@ -50,10 +50,8 @@ public class MemberController {
 
     @DeleteMapping("/user")
     public ResponseEntity deleteUserById(
-            @PathVariable Long memberId,
             @Valid @RequestBody Delete deleteDto) {
-        authService.checkPassword(deleteDto);
-        memberService.deleteById(memberId);
+        memberService.delete(deleteDto);
         return ResponseEntity.ok().build();
     }
 

@@ -44,6 +44,8 @@ public class MemberServiceTest {
     EmailService emailService;
     @Mock
     WritingReportRepository reportRepository;
+    @Mock
+    RecruitmentMemberRepository recruitmentMemberRepository;
     @InjectMocks
     MemberService memberService;
     Member testMember;

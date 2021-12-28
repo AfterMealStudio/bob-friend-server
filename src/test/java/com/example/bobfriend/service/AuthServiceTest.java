@@ -79,8 +79,8 @@ public class AuthServiceTest {
                 .thenReturn(signupTest);
 
 
-        MemberDto.Response responseDto = authService.signup(memberSignupDto);
-        MemberDto.Response memberResponseDto = new MemberDto.Response(signupTest);
+        Response responseDto = authService.signup(memberSignupDto);
+        Response memberResponseDto = new Response(signupTest);
 
         assertThat(responseDto, equalTo(memberResponseDto));
     }

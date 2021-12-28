@@ -16,7 +16,7 @@ public class Response {
     private Long id;
     private String email;
     private String nickname;
-    private LocalDate birth;
+    private Integer age;
     private Sex sex;
     private Integer reportCount;
     private Integer accumulatedReports;
@@ -28,12 +28,12 @@ public class Response {
         this.id = member.getId();
         this.email = member.getEmail();
         this.nickname = member.getNickname();
-        this.birth = member.getBirth();
+        this.age = member.getAge();
         this.sex = member.getSex();
         this.reportCount = member.getReportCount();
         this.accumulatedReports = member.getAccumulatedReports();
         this.rating = member.getRating();
-        this.agree = member.isAgree();
+        this.agree = member.getAgree();
         this.active = member.isActive();
     }
 
@@ -42,11 +42,11 @@ public class Response {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Response that = (Response) o;
-        return id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(nickname, that.nickname) && Objects.equals(birth, that.birth) && sex == that.sex;
+        return id.equals(that.id) && Objects.equals(email, that.email) && Objects.equals(nickname, that.nickname) && sex == that.sex;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, nickname, birth, sex);
+        return Objects.hash(id, email, nickname, sex);
     }
 }

@@ -19,6 +19,7 @@ public class EmailService {
         mailMessage.setTo(to);
         mailMessage.setSubject(title);
         mailMessage.setText(text);
+        mailMessage.setFrom("qww1552@naver.com");
         mailSender.send(mailMessage);
     }
 
