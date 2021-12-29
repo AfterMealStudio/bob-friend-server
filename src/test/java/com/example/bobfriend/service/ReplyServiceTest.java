@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -77,19 +76,19 @@ public class ReplyServiceTest {
                 .active(true)
                 .build();
 
-        testReply = Reply.builder()
-                .id(1L)
-                .author(testAuthor)
-                .comment(testComment)
-                .content("test reply")
-                .createdAt(LocalDateTime.now())
-                .build();
         testComment = Comment.builder()
                 .id(1L)
                 .author(testAuthor)
                 .recruitment(testRecruitment)
                 .content("test comment")
-                .replies(List.of(testReply))
+                .replies(List.of())
+                .createdAt(LocalDateTime.now())
+                .build();
+        testReply = Reply.builder()
+                .id(1L)
+                .author(testAuthor)
+                .comment(testComment)
+                .content("test reply")
                 .createdAt(LocalDateTime.now())
                 .build();
         testAuthor.setup();
@@ -115,26 +114,25 @@ public class ReplyServiceTest {
         assertThat(replyDto.getAuthor(), equalTo(
                 new Preview(testAuthor)
         ));
+
+        assertThat(testReply.getAuthor().getCreatedWritings().size(),
+                equalTo(1));
     }
 
 
     @Test
     void deleteReplyTest() {
-        testReply = Reply.builder()
-                .id(1L)
-                .author(testAuthor)
-                .comment(testComment)
-                .content("test reply")
-                .createdAt(LocalDateTime.now())
-                .build();
         when(memberService.getCurrentMember())
                 .thenReturn(testAuthor);
 
         when(replyRepository.findById(any()))
                 .thenReturn(java.util.Optional.ofNullable(testReply));
+        Member author = testReply.getAuthor();
 
         replyService.delete(testReply.getId());
 
+        assertThat(author.getCreatedWritings().size(),
+                equalTo(0));
     }
 
 

@@ -34,11 +34,10 @@ public class ReplyService {
 
         Reply reply = Reply.builder()
                 .content(replyDto.getContent())
-                .author(author)
                 .comment(comment)
                 .build();
 
-        author.addToCreatedWritings(reply);
+        reply.setAuthor(author);
 
         Reply save = replyRepository.save(reply);
         return new Response(save);

@@ -42,8 +42,9 @@ public class RecruitmentService {
     public DetailResponse create(Create recruitmentRequestDto) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
+
         recruitment.setAuthor(currentMember);
-        currentMember.addToCreatedWritings(recruitment);
+
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
         return new DetailResponse(savedRecruitment);
     }

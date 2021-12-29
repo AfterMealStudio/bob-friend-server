@@ -3,7 +3,9 @@ package com.example.bobfriend.service;
 import com.example.bobfriend.model.dto.member.Response;
 import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.entity.*;
-import com.example.bobfriend.repository.*;
+import com.example.bobfriend.repository.MemberRepository;
+import com.example.bobfriend.repository.RecruitmentMemberRepository;
+import com.example.bobfriend.repository.WritingReportRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,12 +33,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
-    @Mock
-    RecruitmentRepository recruitmentRepository;
-    @Mock
-    CommentRepository commentRepository;
-    @Mock
-    ReplyRepository replyRepository;
     @Mock
     MemberRepository memberRepository;
     @Mock
@@ -95,8 +91,6 @@ public class MemberServiceTest {
 
     @Test
     void deleteMember() {
-        login();
-
         Recruitment recruitment = Recruitment.builder()
                 .id(1L)
                 .author(testAuthor)
@@ -122,8 +116,10 @@ public class MemberServiceTest {
                 .author(testAuthor)
                 .replies(new LinkedList<>())
                 .build();
+        login();
         testAuthor.addToCreatedWritings(recruitment);
         testAuthor.addToCreatedWritings(comment);
+
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
                 .thenReturn(Optional.ofNullable(testAuthor));
 

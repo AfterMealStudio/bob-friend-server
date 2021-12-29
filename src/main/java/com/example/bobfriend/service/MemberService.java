@@ -5,7 +5,9 @@ import com.example.bobfriend.model.dto.member.Response;
 import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
-import com.example.bobfriend.repository.*;
+import com.example.bobfriend.repository.MemberRepository;
+import com.example.bobfriend.repository.RecruitmentMemberRepository;
+import com.example.bobfriend.repository.WritingReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -19,9 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final RecruitmentRepository recruitmentRepository;
-    private final ReplyRepository replyRepository;
-    private final CommentRepository commentRepository;
     private final WritingReportRepository reportRepository;
     private final RecruitmentMemberRepository recruitmentMemberRepository;
 
@@ -62,7 +61,9 @@ public class MemberService {
         Member currentMember = getCurrentMember();
         if (currentMember.getId() != memberId)
             throw new MemberNotAllowedException(currentMember.getNickname());
+
         recruitmentMemberRepository.deleteAllByMember(currentMember);
+
         currentMember.delete();
 
         reportRepository.deleteAllByMember(currentMember);

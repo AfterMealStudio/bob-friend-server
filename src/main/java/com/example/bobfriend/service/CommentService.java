@@ -41,11 +41,10 @@ public class CommentService {
 
         Comment comment = Comment.builder()
                 .content(commentDto.getContent())
-                .author(currentMember)
                 .recruitment(recruitment)
                 .build();
 
-        currentMember.addToCreatedWritings(comment);
+        comment.setAuthor(currentMember);
 
         return new Response(commentRepository.save(comment));
     }

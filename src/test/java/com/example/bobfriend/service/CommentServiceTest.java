@@ -115,6 +115,9 @@ public class CommentServiceTest {
                 new Preview(testAuthor)));
         assertThat(commentDto.getContent(), equalTo(
                 testComment.getContent()));
+
+        assertThat(testComment.getAuthor().getCreatedWritings().size(),
+                equalTo(1));
     }
 
 
@@ -125,11 +128,16 @@ public class CommentServiceTest {
         when(commentRepository.findById(any()))
                 .thenReturn(java.util.Optional.ofNullable(testComment));
 
+        Member author = testReply.getAuthor();
+
         commentService.delete(testComment.getId());
 
         assertThat(testComment.getAuthor().getEmail(), equalTo("unknown"));
 
         assertThat(testComment.getContent(), equalTo(null));
+
+        assertThat(author.getCreatedWritings().size(),
+                equalTo(0));
     }
 
 
