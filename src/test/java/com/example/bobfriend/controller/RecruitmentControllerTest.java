@@ -124,6 +124,8 @@ class RecruitmentControllerTest {
                 .active(true)
                 .reportCount(0)
                 .build();
+        testAuthor.setup();
+        testMember.setup();
         testRecruitment.addMember(testMember);
     }
 
@@ -393,6 +395,7 @@ class RecruitmentControllerTest {
                 .agree(true)
                 .active(true)
                 .build();
+        testMember2.setup();
         testRecruitment.addMember(testMember2);
         DetailResponse detailResponse = new DetailResponse(testRecruitment);
         when(recruitmentService.joinOrUnjoin(any()))

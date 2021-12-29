@@ -75,6 +75,9 @@ public class Member {
     @OneToMany(mappedBy = "author")
     private List<Writing> createdWritings;
 
+    @ManyToMany(mappedBy = "members")
+    private List<Recruitment> joinedRecruitment;
+
 
     public void addToCreatedWritings(Writing writing) {
         this.createdWritings.add(writing);
@@ -121,6 +124,7 @@ public class Member {
         this.active = true;
 
         this.createdWritings = new ArrayList<>();
+        this.joinedRecruitment = new ArrayList<>();
     }
 
     public void addRating(Double score) {

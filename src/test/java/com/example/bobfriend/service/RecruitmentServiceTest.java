@@ -180,6 +180,7 @@ class RecruitmentServiceTest {
                 .rating(0.0)
                 .numberOfJoin(0)
                 .build();
+        testMember.setup();
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
         given(recruitmentRepository.findById(testRecruitment.getId()))
@@ -206,6 +207,7 @@ class RecruitmentServiceTest {
                 .rating(0.0)
                 .numberOfJoin(0)
                 .build();
+        testMember.setup();
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
         given(recruitmentRepository.findById(testRecruitment.getId()))
