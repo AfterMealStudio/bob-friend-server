@@ -1,6 +1,7 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.CommentDto;
+import com.example.bobfriend.model.dto.comment.*;
+import com.example.bobfriend.model.dto.comment.Response;
 import com.example.bobfriend.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -17,7 +19,7 @@ public class CommentController {
 
     @GetMapping()
     public ResponseEntity getAll(@PathVariable Long recruitmentId) {
-        List<CommentDto.Response> allCommentByRecruitmentId = commentService
+        List<Response> allCommentByRecruitmentId = commentService
                 .getAllCommentByRecruitmentId(recruitmentId);
         return ResponseEntity.ok(allCommentByRecruitmentId);
     }
@@ -25,10 +27,10 @@ public class CommentController {
     @PostMapping()
     public ResponseEntity create(
             @PathVariable Long recruitmentId,
-            @Valid @RequestBody CommentDto.Request commentRequestDto) {
-        CommentDto.Response comment =
+            @Valid @RequestBody Create createDto) {
+        Response comment =
                 commentService.create(
-                        commentRequestDto, recruitmentId);
+                        createDto, recruitmentId);
         return ResponseEntity.ok(comment);
     }
 
