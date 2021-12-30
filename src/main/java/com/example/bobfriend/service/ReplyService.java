@@ -34,11 +34,10 @@ public class ReplyService {
 
         Reply reply = Reply.builder()
                 .content(replyDto.getContent())
-                .comment(comment)
                 .build();
 
         reply.setAuthor(author);
-
+        reply.setComment(comment);
         Reply save = replyRepository.save(reply);
         return new Response(save);
     }
@@ -48,17 +47,17 @@ public class ReplyService {
     public void delete(Long replyId) {
         Member author = memberService.getCurrentMember();
         Reply reply = getReply(replyId);
-        if (reply.getAuthor().equals(author)) {
-            author.removeFromCreatedWritings(reply);
-            reportRepository.deleteAllByWriting(reply);
-            replyRepository.delete(reply);
-            Comment comment = reply.getComment();
-            if (comment.getAuthor().isUnknown() &&
-                    comment.getReplies().size() <= 1) {
-                commentRepository.delete(comment);
-            }
-        } else {
+        if (!reply.getAuthor().equals(author))
             throw new MemberNotAllowedException(author.getNickname());
+
+        author.removeFromCreatedWritings(reply);
+        reportRepository.deleteAllByWriting(reply);
+        Comment comment = reply.getComment();
+        reply.delete();
+
+        if (comment.getAuthor().isUnknown() &&
+                comment.getReplies().size() == 0) {
+            commentRepository.delete(comment);
         }
     }
 

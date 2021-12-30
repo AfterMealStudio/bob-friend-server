@@ -17,8 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -81,16 +81,15 @@ public class ReplyServiceTest {
                 .author(testAuthor)
                 .recruitment(testRecruitment)
                 .content("test comment")
-                .replies(List.of())
+                .replies(new ArrayList<>())
                 .createdAt(LocalDateTime.now())
                 .build();
         testReply = Reply.builder()
                 .id(1L)
-                .author(testAuthor)
-                .comment(testComment)
                 .content("test reply")
                 .createdAt(LocalDateTime.now())
                 .build();
+
         testAuthor.setup();
     }
 
@@ -103,6 +102,7 @@ public class ReplyServiceTest {
                 .thenReturn(java.util.Optional.ofNullable(testComment));
         when(replyRepository.save(any()))
                 .thenReturn(testReply);
+
         Create requestDto = new Create();
         requestDto.setContent(testReply.getContent());
 
@@ -110,18 +110,17 @@ public class ReplyServiceTest {
                 replyService.create(
                         testComment.getId(), requestDto);
 
-        assertThat(replyDto.getId(), equalTo(testReply.getId()));
-        assertThat(replyDto.getAuthor(), equalTo(
-                new Preview(testAuthor)
-        ));
-
-        assertThat(testReply.getAuthor().getCreatedWritings().size(),
+        assertThat(testAuthor.getCreatedWritings().size(),
                 equalTo(1));
+        assertThat(testComment.getReplies().size(), equalTo(1));
     }
 
 
     @Test
     void deleteReplyTest() {
+        testReply.setAuthor(testAuthor);
+        testReply.setComment(testComment);
+
         when(memberService.getCurrentMember())
                 .thenReturn(testAuthor);
 
@@ -131,8 +130,11 @@ public class ReplyServiceTest {
 
         replyService.delete(testReply.getId());
 
+        assertThat(testReply.getComment(), equalTo(null));
+        assertThat(testComment.getReplies().size(), equalTo(0));
         assertThat(author.getCreatedWritings().size(),
                 equalTo(0));
+
     }
 
 
