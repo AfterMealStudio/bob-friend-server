@@ -163,8 +163,7 @@ class RecruitmentServiceTest {
         DetailResponse byId = recruitmentService.findById(testRecruitment.getId());
 
         assertThat(add, equalTo(byId));
-        assertThat(testRecruitment.getAuthor().getCreatedWritings().size(),
-                equalTo(1));
+
     }
 
 
@@ -415,8 +414,8 @@ class RecruitmentServiceTest {
 
         recruitmentService.delete(testRecruitment.getId());
 
-        assertThat(author.getCreatedWritings().size(),
-                equalTo(0));
+//        assertThat(author.getCreatedWritings().size(),
+//                equalTo(0));
     }
 
     @Test

@@ -55,8 +55,7 @@ public class RecruitmentService {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (currentMember.equals(recruitment.getAuthor())) {
-//            recruitmentMemberRepository.deleteAllByRecruitment(recruitment);
-            currentMember.removeFromCreatedWritings(recruitment);
+
             reportRepository.deleteAllByWriting(recruitment);
             recruitmentRepository.delete(recruitment);
         } else

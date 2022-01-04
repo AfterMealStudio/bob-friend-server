@@ -110,8 +110,6 @@ public class ReplyServiceTest {
                 replyService.create(
                         testComment.getId(), requestDto);
 
-        assertThat(testAuthor.getCreatedWritings().size(),
-                equalTo(1));
         assertThat(testComment.getReplies().size(), equalTo(1));
     }
 
@@ -132,8 +130,6 @@ public class ReplyServiceTest {
 
         assertThat(testReply.getComment(), equalTo(null));
         assertThat(testComment.getReplies().size(), equalTo(0));
-        assertThat(author.getCreatedWritings().size(),
-                equalTo(0));
 
     }
 

@@ -4,10 +4,12 @@ import com.example.bobfriend.model.dto.member.DuplicationCheck;
 import com.example.bobfriend.model.dto.member.Response;
 import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.entity.Member;
+import com.example.bobfriend.model.entity.Writing;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.repository.MemberRepository;
 import com.example.bobfriend.repository.RecruitmentMemberRepository;
 import com.example.bobfriend.repository.WritingReportRepository;
+import com.example.bobfriend.repository.WritingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -23,6 +25,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final WritingReportRepository reportRepository;
     private final RecruitmentMemberRepository recruitmentMemberRepository;
+    private final WritingRepository writingRepository;
 
     @Transactional(readOnly = true)
     public Response getMemberWithAuthorities(String email) {
@@ -64,7 +67,9 @@ public class MemberService {
 
         recruitmentMemberRepository.deleteAllByMember(currentMember);
 
-        currentMember.delete();
+        for (Writing writing : writingRepository.findAllByAuthor(currentMember)) {
+            writing.setAuthor(null);
+        }
 
         reportRepository.deleteAllByMember(currentMember);
 

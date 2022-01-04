@@ -50,7 +50,6 @@ public class ReplyService {
         if (!reply.getAuthor().equals(author))
             throw new MemberNotAllowedException(author.getNickname());
 
-        author.removeFromCreatedWritings(reply);
         reportRepository.deleteAllByWriting(reply);
         Comment comment = reply.getComment();
         reply.delete();

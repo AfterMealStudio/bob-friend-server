@@ -116,8 +116,6 @@ public class CommentServiceTest {
         assertThat(commentDto.getContent(), equalTo(
                 testComment.getContent()));
 
-        assertThat(testComment.getAuthor().getCreatedWritings().size(),
-                equalTo(1));
     }
 
 
@@ -136,8 +134,8 @@ public class CommentServiceTest {
 
         assertThat(testComment.getContent(), equalTo(null));
 
-        assertThat(author.getCreatedWritings().size(),
-                equalTo(0));
+//        assertThat(author.getCreatedWritings().size(),
+//                equalTo(0));
     }
 
 

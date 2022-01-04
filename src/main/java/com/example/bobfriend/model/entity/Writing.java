@@ -43,9 +43,6 @@ public abstract class Writing {
     }
 
     public void setAuthor(Member author) {
-        if (author != null) {
-            author.addToCreatedWritings(this);
-        }
         this.author = author;
     }
 

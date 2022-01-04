@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -72,29 +70,6 @@ public class Member {
     @Column(name = "number_of_join")
     private Integer numberOfJoin;
 
-    @OneToMany(mappedBy = "author")
-    private List<Writing> createdWritings;
-
-    @ManyToMany(mappedBy = "members")
-    private List<Recruitment> joinedRecruitment;
-
-
-    public void addToCreatedWritings(Writing writing) {
-        this.createdWritings.add(writing);
-    }
-
-
-    public void removeFromCreatedWritings(Writing writing) {
-        this.createdWritings.remove(writing);
-    }
-
-
-    public void delete() {
-        for (Writing writing : this.createdWritings) {
-            writing.setAuthor(null);
-        }
-
-    }
 
     @ElementCollection
     @JoinColumn(name = "authority")
@@ -123,8 +98,6 @@ public class Member {
         this.accumulatedReports = 0;
         this.active = true;
 
-        this.createdWritings = new ArrayList<>();
-        this.joinedRecruitment = new ArrayList<>();
     }
 
     public void addRating(Double score) {

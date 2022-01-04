@@ -89,11 +89,9 @@ public class Recruitment extends Writing {
 
     public void addMember(Member member) {
         if (this.getAuthor().equals(member))
-            // 작성자가 탈퇴했거나 작성자가 참여하려고 할 경우 종료
             return;
         if (getCurrentNumberOfPeople() < totalNumberOfPeople) {
             this.members.add(member);
-            member.getJoinedRecruitment().add(this);
         } else {
             throw new RecruitmentIsFullException(this.id);
         }
@@ -101,7 +99,6 @@ public class Recruitment extends Writing {
 
     public void removeMember(Member member) {
         getMembers().remove(member);
-        member.getJoinedRecruitment().remove(this);
     }
 
     public boolean hasMember(Member member) {

@@ -55,7 +55,6 @@ public class CommentService {
         Member author = memberService.getCurrentMember();
         Comment comment = getComment(commentId);
         if (comment.getAuthor().equals(author)) {
-            author.removeFromCreatedWritings(comment);
             reportRepository.deleteAllByWriting(comment);
             if (comment.getReplies().size() > 0) // 대댓글이 달려있으면 내용만 삭제
                 comment.clear();

@@ -6,6 +6,7 @@ import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.repository.MemberRepository;
 import com.example.bobfriend.repository.RecruitmentMemberRepository;
 import com.example.bobfriend.repository.WritingReportRepository;
+import com.example.bobfriend.repository.WritingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,10 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -43,6 +41,9 @@ public class MemberServiceTest {
     WritingReportRepository reportRepository;
     @Mock
     RecruitmentMemberRepository recruitmentMemberRepository;
+    @Mock
+    WritingRepository writingRepository;
+
     @InjectMocks
     MemberService memberService;
     Member testAuthor;
@@ -117,12 +118,11 @@ public class MemberServiceTest {
                 .replies(new LinkedList<>())
                 .build();
         login();
-        testAuthor.addToCreatedWritings(recruitment);
-        testAuthor.addToCreatedWritings(comment);
 
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
                 .thenReturn(Optional.ofNullable(testAuthor));
-
+        when(writingRepository.findAllByAuthor(any()))
+                .thenReturn(List.of(recruitment, comment));
         memberService.deleteById(testAuthor.getId());
 
 
