@@ -1,7 +1,7 @@
 package com.example.bobfriend.model.exception;
 
 public class AlreadyJoined extends BusinessConflictException {
-    public AlreadyJoined(String currentMember) {
-        super(currentMember+" is already joined in this recruitment");
+    public AlreadyJoined() {
+        super("이미 참여 중입니다.");
     }
 }

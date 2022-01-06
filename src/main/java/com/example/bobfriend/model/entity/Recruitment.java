@@ -94,7 +94,7 @@ public class Recruitment extends Writing {
         if (getCurrentNumberOfPeople() < totalNumberOfPeople) {
             this.members.add(member);
         } else {
-            throw new RecruitmentIsFullException(this.id);
+            throw new RecruitmentIsFullException();
         }
     }
 

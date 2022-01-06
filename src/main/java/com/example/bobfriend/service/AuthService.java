@@ -43,7 +43,7 @@ public class AuthService {
     public Response signup(Signup memberSignupDto) {
         if (memberRepository
                 .existsMemberByEmail(memberSignupDto.getEmail())) {
-            throw new MemberDuplicatedException(memberSignupDto.getEmail());
+            throw new MemberDuplicatedException();
         }
 
         Authority authority = Authority.ROLE_USER;

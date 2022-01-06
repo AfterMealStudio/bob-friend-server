@@ -1,7 +1,7 @@
 package com.example.bobfriend.model.exception;
 
 public class RecruitmentNotActiveException extends BusinessForbiddenException {
-    public RecruitmentNotActiveException(Long recruitmentId) {
-        super("Recruitmet "+ recruitmentId + " is not active");
+    public RecruitmentNotActiveException() {
+        super("유효하지 않은 게시글입니다.");
     }
 }

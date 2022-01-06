@@ -3,7 +3,7 @@ package com.example.bobfriend.service;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Report;
 import com.example.bobfriend.model.entity.Writing;
-import com.example.bobfriend.model.exception.AlreadyReportedExeption;
+import com.example.bobfriend.model.exception.AlreadyReportedException;
 import com.example.bobfriend.repository.WritingReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class ReportService {
     @Transactional
     public void reportWriting(Member member, Writing writing) {
         if (reportRepository.existsByMemberAndWriting(member , writing))
-            throw new AlreadyReportedExeption(writing);
+            throw new AlreadyReportedException();
         else {
             writing.report();
             Report report = Report.builder()

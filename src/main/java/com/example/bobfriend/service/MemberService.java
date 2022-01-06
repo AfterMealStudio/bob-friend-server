@@ -63,7 +63,7 @@ public class MemberService {
     public void deleteById(Long memberId) {
         Member currentMember = getCurrentMember();
         if (currentMember.getId() != memberId)
-            throw new MemberNotAllowedException(currentMember.getNickname());
+            throw new MemberNotAllowedException();
 
         reportRepository.deleteAllByMember(currentMember);
 

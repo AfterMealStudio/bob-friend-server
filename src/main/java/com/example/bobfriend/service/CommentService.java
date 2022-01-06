@@ -1,6 +1,5 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.*;
 import com.example.bobfriend.model.dto.comment.Create;
 import com.example.bobfriend.model.dto.comment.Response;
 import com.example.bobfriend.model.entity.Comment;
@@ -61,7 +60,7 @@ public class CommentService {
             else
                 commentRepository.delete(comment);
         } else {
-            throw new MemberNotAllowedException(author.getNickname());
+            throw new MemberNotAllowedException();
         }
     }
 
@@ -76,7 +75,7 @@ public class CommentService {
     private Comment getComment(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> {
-                    throw new CommentNotFoundException(commentId);
+                    throw new CommentNotFoundException();
                 });
     }
 
@@ -85,7 +84,7 @@ public class CommentService {
     private Recruitment getRecruitment(Long recruitmentId) {
         return recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> {
-                    throw new RecruitmentNotFoundException(recruitmentId);
+                    throw new RecruitmentNotFoundException();
                 });
     }
 }

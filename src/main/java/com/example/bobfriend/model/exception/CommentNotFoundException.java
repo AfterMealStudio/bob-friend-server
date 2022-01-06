@@ -1,7 +1,7 @@
 package com.example.bobfriend.model.exception;
 
 public class CommentNotFoundException extends BusinessNotFoundException {
-    public CommentNotFoundException(Long commentId) {
-        super("Comment (" + commentId + ") is not found");
+    public CommentNotFoundException() {
+        super("댓글을 찾을 수 없습니다.");
     }
 }

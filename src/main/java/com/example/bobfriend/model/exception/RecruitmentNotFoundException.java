@@ -1,7 +1,7 @@
 package com.example.bobfriend.model.exception;
 
 public class RecruitmentNotFoundException extends BusinessNotFoundException {
-    public RecruitmentNotFoundException(Long recruitmentId) {
-        super("Recruitment (" + recruitmentId + ") is not found");
+    public RecruitmentNotFoundException() {
+        super("게시글을 찾을 수 없습니다.");
     }
 }

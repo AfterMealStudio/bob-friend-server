@@ -1,12 +1,7 @@
 package com.example.bobfriend.model.exception;
 
 public class RecruitmentIsFullException extends BusinessConflictException {
-    public RecruitmentIsFullException(Long recruitmentId) {
-        super("Recruitment(" + recruitmentId + ") is full");
+    public RecruitmentIsFullException() {
+        super("만석입니다.");
     }
-
-//    @Override
-//    public HttpStatus getHttpStatus() {
-//        return HttpStatus.CONFLICT;
-//    }
 }

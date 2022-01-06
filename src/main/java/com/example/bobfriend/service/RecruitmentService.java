@@ -57,7 +57,7 @@ public class RecruitmentService {
             reportRepository.deleteAllByWriting(recruitment);
             recruitmentRepository.delete(recruitment);
         } else
-            throw new MemberNotAllowedException(currentMember.getEmail());
+            throw new MemberNotAllowedException();
     }
 
 
@@ -126,7 +126,7 @@ public class RecruitmentService {
         if (author.equals(recruitment.getAuthor())) {
             recruitment.close();
         } else {
-            throw new MemberNotAllowedException(author.getNickname());
+            throw new MemberNotAllowedException();
         }
         return new DetailResponse(recruitment);
     }
@@ -141,14 +141,14 @@ public class RecruitmentService {
         Member author = recruitment.getAuthor();
 
         if (author.isUnknown() || !recruitment.isActive())
-            throw new RecruitmentNotActiveException(recruitmentId);
+            throw new RecruitmentNotActiveException();
 
         if (currentMember.equals(author)) {
-            throw new AlreadyJoined(currentMember.getNickname());
+            throw new AlreadyJoined();
         }
 
         if (!checkSexRestriction(recruitment, currentMember))
-            throw new RestrictionFailedException(currentMember.getEmail());
+            throw new RestrictionFailedException();
 
         if (recruitment.hasMember(currentMember))
             recruitment.removeMember(currentMember);
@@ -205,10 +205,10 @@ public class RecruitmentService {
     private Recruitment getRecruitment(Long recruitmentId) {
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> {
-                    throw new RecruitmentNotFoundException(recruitmentId);
+                    throw new RecruitmentNotFoundException();
                 });
         if (!recruitment.isActive()) {
-            throw new RecruitmentNotActiveException(recruitmentId);
+            throw new RecruitmentNotActiveException();
         }
         return recruitment;
     }

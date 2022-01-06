@@ -56,7 +56,7 @@ public class ReplyService {
                 commentRepository.delete(comment);
             }
         } else {
-            throw new MemberNotAllowedException(author.getNickname());
+            throw new MemberNotAllowedException();
         }
     }
 
@@ -71,13 +71,13 @@ public class ReplyService {
     private Reply getReply(Long replyId) {
         return replyRepository.findById(replyId)
                 .orElseThrow(() -> {
-                    throw new ReplyNotFoundException(replyId);
+                    throw new ReplyNotFoundException();
                 });
     }
 
 
     private Comment getComment(Long commentId) {
         return commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException(commentId));
+                .orElseThrow(() -> new CommentNotFoundException());
     }
 }

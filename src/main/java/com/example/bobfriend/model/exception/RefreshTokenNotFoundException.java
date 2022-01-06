@@ -2,6 +2,6 @@ package com.example.bobfriend.model.exception;
 
 public class RefreshTokenNotFoundException extends BusinessNotFoundException {
     public RefreshTokenNotFoundException() {
-        super("refresh token is not exist in database");
+        super("리프레시 토큰을 찾을 수 없습니다.");
     }
 }
