@@ -1,13 +1,11 @@
 package com.example.bobfriend.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Getter
 @Table(name = "refresh_token")
@@ -25,5 +23,16 @@ public class RefreshToken {
         return this;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RefreshToken that = (RefreshToken) o;
+        return Objects.equals(token, that.token);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(token);
+    }
 }

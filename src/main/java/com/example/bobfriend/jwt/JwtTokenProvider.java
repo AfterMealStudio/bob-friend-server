@@ -2,6 +2,7 @@ package com.example.bobfriend.jwt;
 
 import com.example.bobfriend.model.dto.token.Token;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -93,8 +94,10 @@ public class JwtTokenProvider implements InitializingBean {
 
     public boolean validateAccessToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(token);
-            return true;
+            Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(token);
+            return claimsJws.getBody().getExpiration().after(
+                    Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC))
+            );
         } catch (Exception e) {
             return false;
         }
@@ -102,8 +105,10 @@ public class JwtTokenProvider implements InitializingBean {
 
     public boolean validateRefreshToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(refreshKey).build().parseClaimsJws(token);
-            return true;
+            Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(refreshKey).build().parseClaimsJws(token);
+            return claimsJws.getBody().getExpiration().after(
+                    Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC))
+            );
         } catch (Exception e) {
             return false;
         }

@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/signup/**/",
                         "/api/nickname/**/",
                         "/api/email/**/",
-                        "/api/validate/**/",
+                        "/api/validate",
                         "/api/",
                         "/api/issue",
                         "/docs/api-doc.html").permitAll()
