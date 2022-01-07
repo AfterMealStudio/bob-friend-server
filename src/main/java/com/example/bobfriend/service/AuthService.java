@@ -102,6 +102,7 @@ public class AuthService {
     }
 
 
+
     private Authentication getAuthentication(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(email, password);
