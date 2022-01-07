@@ -62,11 +62,10 @@ public class RecruitmentService {
 
 
     @Transactional
-    public Page<SimpleResponse> findAllByRestaurant(
-            Condition.Search searchCondition,
-            Pageable pageable) {
+    public Page<SimpleResponse> findAllByRestaurantAddress(
+            String address, Pageable pageable) {
         return recruitmentRepository
-                .findAllByRestaurant(searchCondition, pageable)
+                .findAllByAddress(address, pageable)
                 .map(SimpleResponse::new);
     }
 

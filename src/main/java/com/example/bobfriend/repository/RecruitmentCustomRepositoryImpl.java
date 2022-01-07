@@ -33,6 +33,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         return getPage(pageable, query);
     }
 
+
     @Override
     public Page<Recruitment> searchByContent(Condition.Search search, Pageable pageable) {
         JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
@@ -40,6 +41,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 betweenTime(search.getStart(), search.getEnd()));
         return getPage(pageable, query);
     }
+
 
     @Override
     public Page<Recruitment> searchByRestaurant(Condition.Search search, Pageable pageable) {
@@ -69,19 +71,15 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         return getPage(pageable, query);
     }
 
+
     @Override
-    public Page<Recruitment> findAll(Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates();
+    public Page<Recruitment> findAllByAddress(String address, Pageable pageable) {
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
+                eqRestaurantAddress(address)
+        );
         return getPage(pageable, query);
     }
 
-    @Override
-    public Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
-                eqRestaurantName(searchCondition.getRestaurantName()),
-                eqRestaurantAddress(searchCondition.getRestaurantAddress()));
-        return getPage(pageable, query);
-    }
 
     @Override
     public Page<Recruitment> findAllAvailable(Member currentMember, Pageable pageable) {
@@ -96,6 +94,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         return getPage(pageable, query);
     }
 
+
     private BooleanExpression betweenAgeRestrictionRange(Member currentMember) {
         BooleanExpression restrictExist = recruitment.ageRestrictionStart.loe(currentMember.getAge())// less or equal
                 .and(recruitment.ageRestrictionEnd.goe(currentMember.getAge()));
@@ -103,6 +102,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 .and(recruitment.ageRestrictionEnd.isNull());
         return restrictExist.or(restrictNotExist);// greater or equal
     }
+
 
     @Override
     public Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable) {

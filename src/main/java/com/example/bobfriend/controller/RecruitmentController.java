@@ -28,7 +28,7 @@ public class RecruitmentController {
     @GetMapping()
     public ResponseEntity getAll(
             @RequestParam(name = "type", defaultValue = "all") Condition.SearchType type,
-            Condition.Search searchCondition,
+            @RequestParam(required = false) String address,
             @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.ASC) Pageable pageable) {
         Page<SimpleResponse> responseDtoList = null;
 
@@ -45,13 +45,17 @@ public class RecruitmentController {
                 responseDtoList = recruitmentService
                         .findAllAvailable(pageable);
                 break;
+            case specific: // 특정 위치에 있는
+                responseDtoList = recruitmentService
+                        .findAllByRestaurantAddress(address, pageable);
+                break;
             case all: // 전체
                 responseDtoList = recruitmentService
-                        .findAllByRestaurant(searchCondition, pageable);
+                        .findAll(pageable);
+                break;
         }
         return ResponseEntity.ok(responseDtoList);
     }
-
 
 
     @GetMapping("/locations")
@@ -111,12 +115,6 @@ public class RecruitmentController {
             Condition.Search searchCondition,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        Page<DetailResponse> searchResult = getResponses(category, searchCondition, pageable);
-
-        return ResponseEntity.ok(searchResult);
-    }
-
-    private Page<DetailResponse> getResponses(Condition.SearchCategory category, Condition.Search searchCondition, Pageable pageable) {
         Page<DetailResponse> searchResult = null;
         switch (category) {
             case place:
@@ -132,7 +130,8 @@ public class RecruitmentController {
                 searchResult = recruitmentService.searchByAllCondition(searchCondition, pageable);
                 break;
         }
-        return searchResult;
+
+        return ResponseEntity.ok(searchResult);
     }
 
 }
