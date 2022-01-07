@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Signup {
+public class Signup  extends Request{
     @Email
     private String email;
     @NotBlank
@@ -29,15 +29,4 @@ public class Signup {
     private LocalDate birth;
     @NotNull
     private Boolean agree;
-
-    public Member convertToEntityWithPasswordEncoder(PasswordEncoder passwordEncoder) {
-        return Member.builder()
-                .email(this.email)
-                .nickname(this.nickname)
-                .password(passwordEncoder.encode(this.password))
-                .birth(this.birth)
-                .sex(this.sex)
-                .agree(this.agree)
-                .build();
-    }
 }
