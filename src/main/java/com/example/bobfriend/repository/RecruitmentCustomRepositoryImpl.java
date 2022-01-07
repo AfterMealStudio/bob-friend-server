@@ -4,8 +4,12 @@ import com.example.bobfriend.model.dto.Condition;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.entity.Sex;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -154,6 +158,16 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         List list = where
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(pageable.getSort().get()
+                        .map(order -> {
+                            Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
+                            Path<Recruitment> fieldPath =
+                                    Expressions.path(
+                                            Recruitment.class,
+                                            recruitment,
+                                            order.getProperty());
+                            return new OrderSpecifier(direction, fieldPath);
+                        }).toArray(OrderSpecifier[]::new))
                 .fetch();
         return PageableExecutionUtils.getPage(list, pageable, () -> where.fetchCount());
     }

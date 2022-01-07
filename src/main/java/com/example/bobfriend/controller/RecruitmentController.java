@@ -29,7 +29,7 @@ public class RecruitmentController {
     public ResponseEntity getAll(
             @RequestParam(name = "type", defaultValue = "all") Condition.SearchType type,
             @RequestParam(required = false) String address,
-            @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.ASC) Pageable pageable) {
+            @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<SimpleResponse> responseDtoList = null;
 
         switch (type) {
