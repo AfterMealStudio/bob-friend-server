@@ -6,14 +6,15 @@ import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
-import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class MemberService {
     private final ReplyRepository replyRepository;
     private final CommentRepository commentRepository;
     private final WritingReportRepository reportRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Transactional(readOnly = true)
@@ -60,10 +62,13 @@ public class MemberService {
 
 
     @Transactional
-    public void deleteById(Long memberId) {
+    public void delete(MemberDto.Delete delete) {
         Member currentMember = getCurrentMember();
-        if (currentMember.getId() != memberId)
-            throw new MemberNotAllowedException(currentMember.getNickname());
+
+        if (!passwordEncoder.matches(delete.getPassword(),
+                currentMember.getPassword())) {
+            throw new BadCredentialsException("password not correct");
+        }
 
         reportRepository.deleteAllByMember(currentMember);
 
@@ -83,7 +88,7 @@ public class MemberService {
 //        }
         replyRepository.deleteAllByAuthor(currentMember);
 
-        memberRepository.deleteById(memberId);
+        memberRepository.delete(currentMember);
     }
 
     public boolean isExistByEmail(String email) {

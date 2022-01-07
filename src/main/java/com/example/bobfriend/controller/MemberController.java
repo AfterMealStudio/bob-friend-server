@@ -17,7 +17,6 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 public class MemberController {
     private final MemberService memberService;
-    private final AuthService authService;
 
     @GetMapping("")
     public ResponseEntity verifyEmail(@RequestParam String email, @RequestParam String code) {
@@ -47,12 +46,10 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberWithAuthorities(username));
     }
 
-    @DeleteMapping("/user/{memberId}")
-    public ResponseEntity deleteUserById(
-            @PathVariable Long memberId,
-            @Valid @RequestBody Delete deleteDto) {
-        authService.checkPassword(deleteDto);
-        memberService.deleteById(memberId);
+    @DeleteMapping("/user")
+    public ResponseEntity delete(
+            @Valid @RequestBody Delete delete) {
+        memberService.delete(delete);
         return ResponseEntity.ok().build();
     }
 

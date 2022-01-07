@@ -125,8 +125,12 @@ public class MemberServiceTest {
         when(commentRepository.findAllByAuthor(any()))
                 .thenReturn(Arrays.asList(comment));
 
-        memberService.deleteById(testMember.getId());
+        when(passwordEncoder.matches(any(), any()))
+                .thenReturn(true);
 
+        MemberDto.Delete delete = new MemberDto.Delete();
+        delete.setPassword(testMember.getPassword());
+        memberService.delete(delete);
 
         assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
         assertThat(comment.getAuthor().getEmail(), equalTo("unknown"));

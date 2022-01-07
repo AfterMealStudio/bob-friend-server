@@ -158,15 +158,12 @@ class MemberControllerTest {
     void deleteMember() throws Exception {
         Delete delete = new Delete(testMember.getPassword());
         mvc.perform(getRequestBuilder(
-                        delete("/api/user/{userId}", testMember.getId()))
+                        delete("/api/user"))
                         .content(objectMapper.writeValueAsString(delete)))
                 .andExpect(status().isOk())
                 .andDo(document("member/delete",
                         getDocumentRequest(),
                         getDocumentResponse(),
-                        pathParameters(
-                                parameterWithName("userId").description("유저의 Id 값(식별자)")
-                        ),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )

@@ -103,10 +103,6 @@ public class AuthService {
     }
 
 
-    public void checkPassword(Delete delete) {
-        Member currentMember = memberService.getCurrentMember();
-        getAuthentication(currentMember.getEmail(), delete.getPassword());
-    }
 
     private Authentication getAuthentication(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
