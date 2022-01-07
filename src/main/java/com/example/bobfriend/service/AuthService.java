@@ -48,8 +48,7 @@ public class AuthService {
 
         Authority authority = Authority.ROLE_USER;
 
-        Member member = memberSignupDto
-                .convertToEntityWithPasswordEncoder(passwordEncoder);
+        Member member = memberService.convertToEntity(memberSignupDto);
         member.setAuthorities(Collections.singleton(authority));
         Member save = memberRepository.save(member);
 

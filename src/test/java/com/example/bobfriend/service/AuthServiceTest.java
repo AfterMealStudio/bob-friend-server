@@ -32,6 +32,8 @@ public class AuthServiceTest {
     @Mock
     PasswordEncoder passwordEncoder;
     @Mock
+    MemberService memberService;
+    @Mock
     EmailService emailService;
 
     @InjectMocks
@@ -73,6 +75,9 @@ public class AuthServiceTest {
                 .thenReturn(signupTest);
         when(emailService.makeMailText(any()))
                 .thenReturn("http://localhost:8080/api/?email=qww1552@naver.com&code=-150140394");
+        when(memberService.convertToEntity(any()))
+                .thenReturn(signupTest);
+
         Response responseDto = authService.signup(memberSignupDto);
         Response memberResponseDto = new Response(signupTest);
 

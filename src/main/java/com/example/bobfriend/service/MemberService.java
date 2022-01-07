@@ -1,11 +1,10 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.member.DuplicationCheck;
-import com.example.bobfriend.model.dto.member.Response;
-import com.example.bobfriend.model.dto.member.Score;
+import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
+import com.example.bobfriend.model.exception.MemberDuplicatedException;
 import com.example.bobfriend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -43,13 +42,6 @@ public class MemberService {
         return new Response(member);
     }
 
-    @Transactional
-    public Member getCurrentMember() {
-        String currentUsername = getCurrentUsername();
-        Member currentMember = getMember(currentUsername);
-        return currentMember;
-    }
-
 
     @Transactional
     public void checkMemberWithCode(String email, String code) {
@@ -62,7 +54,7 @@ public class MemberService {
 
 
     @Transactional
-    public void delete(MemberDto.Delete delete) {
+    public void delete(Delete delete) {
         Member currentMember = getCurrentMember();
 
         if (!passwordEncoder.matches(delete.getPassword(),
@@ -90,6 +82,17 @@ public class MemberService {
 
         memberRepository.delete(currentMember);
     }
+
+
+    @Transactional
+    public Response update(Update update) {
+        if (memberRepository.existsMemberByNickname(update.getNickname()))
+            throw new MemberDuplicatedException(update.getNickname());
+        Member currentMember = getCurrentMember();
+        Member incoming = convertToEntity(update);
+        return new Response(currentMember.update(incoming));
+    }
+
 
     public boolean isExistByEmail(String email) {
         return memberRepository.existsMemberByEmail(email);
@@ -152,5 +155,24 @@ public class MemberService {
         return username;
     }
 
+
+    @Transactional
+    Member getCurrentMember() {
+        String currentUsername = getCurrentUsername();
+        Member currentMember = getMember(currentUsername);
+        return currentMember;
+    }
+
+
+    Member convertToEntity(Request request) {
+        return Member.builder()
+                .email(request.getEmail())
+                .nickname(request.getNickname())
+                .password((request.getPassword() == null) ? null : passwordEncoder.encode(request.getPassword()))
+                .birth(request.getBirth())
+                .sex(request.getSex())
+                .agree(request.getAgree())
+                .build();
+    }
 
 }

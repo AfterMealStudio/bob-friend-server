@@ -1,9 +1,6 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.member.Delete;
-import com.example.bobfriend.model.dto.member.DuplicationCheck;
-import com.example.bobfriend.model.dto.member.Response;
-import com.example.bobfriend.model.dto.member.Score;
+import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
@@ -184,6 +181,45 @@ class MemberControllerTest {
                         pathParameters(
                                 parameterWithName("nickname").description("닉네임")
                         ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )));
+    }
+
+
+    @Test
+    void updateMemberTest() throws Exception {
+        Update update = new Update();
+        update.setNickname("update nickname");
+        update.setBirth(LocalDate.now().minusYears(1));
+        update.setPassword("update password");
+        update.setAgree(false);
+        update.setSex(Sex.NONE);
+
+        Member incoming = Member.builder()
+                .nickname(update.getNickname())
+                .birth(update.getBirth())
+                .password(update.getPassword())
+                .sex(update.getSex())
+                .agree(update.getAgree())
+                .build();
+        testMember.update(incoming);
+        Response response = new Response(testMember);
+
+        when(memberService.update(any()))
+                .thenReturn(response);
+
+        mvc.perform(getRequestBuilder(
+                        put("/api/user")
+                                .content(
+                                        objectMapper.writeValueAsString(update))))
+                .andExpect(status().isOk())
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(response)
+                ))
+                .andDo(document("member/update",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )));

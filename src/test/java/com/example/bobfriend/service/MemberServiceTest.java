@@ -1,7 +1,9 @@
 package com.example.bobfriend.service;
 
+import com.example.bobfriend.model.dto.member.Delete;
 import com.example.bobfriend.model.dto.member.Response;
 import com.example.bobfriend.model.dto.member.Score;
+import com.example.bobfriend.model.dto.member.Update;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -128,7 +130,7 @@ public class MemberServiceTest {
         when(passwordEncoder.matches(any(), any()))
                 .thenReturn(true);
 
-        MemberDto.Delete delete = new MemberDto.Delete();
+        Delete delete = new Delete();
         delete.setPassword(testMember.getPassword());
         memberService.delete(delete);
 
@@ -158,6 +160,20 @@ public class MemberServiceTest {
                 memberService.rateMember(testMember.getNickname(), rate);
 
         assertThat(response.getRating(), equalTo(rate.getScore()));
+    }
+
+
+    @Test
+    void updateTest() {
+        login();
+        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(testMember));
+        Update incoming = new Update();
+        incoming.setNickname("update");
+
+        Response updatedMember = memberService.update(incoming);
+
+        assertThat(updatedMember.getNickname(), equalTo(incoming.getNickname()));
     }
 
 
