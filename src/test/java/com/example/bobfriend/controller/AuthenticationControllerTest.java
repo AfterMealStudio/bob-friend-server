@@ -33,8 +33,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -113,16 +112,17 @@ public class AuthenticationControllerTest {
                 .sex(Sex.MALE)
                 .agree(true)
                 .build();
+
         Response response = Response.builder()
                 .id(testMember.getId())
                 .email(testMember.getEmail())
                 .nickname(testMember.getNickname())
-                .birth(testMember.getBirth())
+                .age(testMember.getAge())
                 .sex(testMember.getSex())
                 .rating(testMember.getRating())
                 .accumulatedReports(testMember.getAccumulatedReports())
                 .reportCount(testMember.getReportCount())
-                .agree(testMember.isAgree())
+                .agree(testMember.getAgree())
                 .active(testMember.isActive())
                 .build();
 

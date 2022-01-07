@@ -62,11 +62,10 @@ public class RecruitmentService {
 
 
     @Transactional
-    public Page<SimpleResponse> findAllByRestaurant(
-            Condition.Search searchCondition,
-            Pageable pageable) {
+    public Page<SimpleResponse> findAllByRestaurantAddress(
+            String address, Pageable pageable) {
         return recruitmentRepository
-                .findAllByRestaurant(searchCondition, pageable)
+                .findAllByAddress(address, pageable)
                 .map(SimpleResponse::new);
     }
 
@@ -146,6 +145,10 @@ public class RecruitmentService {
         if (currentMember.equals(author)) {
             throw new AlreadyJoined();
         }
+
+        // 연령 체크
+        if (!recruitment.isAgeRestrictionSatisfied(currentMember.getAge()))
+            throw new RestrictionFailedException(currentMember.getEmail());
 
         if (!checkSexRestriction(recruitment, currentMember))
             throw new RestrictionFailedException();

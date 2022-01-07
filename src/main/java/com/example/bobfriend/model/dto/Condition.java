@@ -12,21 +12,18 @@ public class Condition {
     }
 
     public enum SearchType {
-        available, all, joined, owned
+        available, all, joined, owned, specific
     }
 
     @Setter
     @Getter
     public static class Search {
-        private String restaurantName;
-        private String restaurantAddress;
         private String keyword;
         private LocalDateTime start, end;
         private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
         public void setStart(String start) {
             this.start = LocalDateTime.parse(start, formatter);
         }
-
         public void setEnd(String end) {
             this.end = LocalDateTime.parse(end, formatter);
         }

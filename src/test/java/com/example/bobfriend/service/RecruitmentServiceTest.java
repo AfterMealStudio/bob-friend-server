@@ -356,39 +356,14 @@ class RecruitmentServiceTest {
     @Test
     void findAllByRestaurantAddress() {
         PageRequest pageRequest = PageRequest.of(0, 1);
-        when(recruitmentRepository.findAllByRestaurant(
+        when(recruitmentRepository.findAllByAddress(
                 any(), any()
         )).thenReturn(new PageImpl<>(Arrays.asList(testRecruitment)));
 
         String restaurantAddress = "restaurantAddress";
-        Condition.Search searchCondition = new Condition.Search();
-        searchCondition.setRestaurantAddress(restaurantAddress);
+
         Page<SimpleResponse> restaurantList = recruitmentService
-                .findAllByRestaurant(searchCondition, pageRequest);
-
-        assertThat(restaurantList.toList(),
-                equalTo(Arrays.asList(
-                        new SimpleResponse(testRecruitment)
-                )));
-    }
-
-    @Test
-    void findAllByRestaurantNameAndAddress() {
-        PageRequest pageRequest = PageRequest.of(0, 1);
-        when(recruitmentRepository.findAllByRestaurant(
-                any(), any()
-        )).thenReturn(new PageImpl<>(Arrays.asList(testRecruitment)));
-
-        String restaurantName = "restaurantName";
-        String restaurantAddress = "restaurantAddress";
-
-        Condition.Search searchCondition = new Condition.Search();
-        searchCondition.setRestaurantName(restaurantName);
-        searchCondition.setRestaurantAddress(restaurantAddress);
-        Page<SimpleResponse> restaurantList = recruitmentService
-                .findAllByRestaurant(
-                        searchCondition,
-                        pageRequest);
+                .findAllByRestaurantAddress(restaurantAddress, pageRequest);
 
         assertThat(restaurantList.toList(),
                 equalTo(Arrays.asList(

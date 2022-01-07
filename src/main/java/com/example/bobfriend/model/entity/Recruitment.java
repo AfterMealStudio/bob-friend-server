@@ -9,7 +9,9 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @SuperBuilder
@@ -62,6 +64,11 @@ public class Recruitment extends Writing {
     @Convert(converter = SexConverter.class)
     private Sex sexRestriction;
 
+    @Column(name = "age_restriction_start")
+    private Integer ageRestrictionStart;
+
+    @Column(name = "age_restriction_end")
+    private Integer ageRestrictionEnd;
 
     @Override
     public String toString() {
@@ -77,6 +84,12 @@ public class Recruitment extends Writing {
         this.author = author;
     }
 
+    public boolean isAgeRestrictionSatisfied(Integer age) {
+        if (this.getAgeRestrictionStart() == null &&
+                this.getAgeRestrictionEnd() == null)
+            return true;
+        return this.getAgeRestrictionStart() <= age && age <= this.getAgeRestrictionEnd();
+    }
 
     public void report() {
         this.reportCount++;

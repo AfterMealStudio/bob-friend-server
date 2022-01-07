@@ -1,7 +1,9 @@
 package com.example.bobfriend.service;
 
+import com.example.bobfriend.model.dto.member.Delete;
 import com.example.bobfriend.model.dto.member.Response;
 import com.example.bobfriend.model.dto.member.Score;
+import com.example.bobfriend.model.dto.member.Update;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -125,8 +127,12 @@ public class MemberServiceTest {
         when(commentRepository.findAllByAuthor(any()))
                 .thenReturn(Arrays.asList(comment));
 
-        memberService.deleteById(testMember.getId());
+        when(passwordEncoder.matches(any(), any()))
+                .thenReturn(true);
 
+        Delete delete = new Delete();
+        delete.setPassword(testMember.getPassword());
+        memberService.delete(delete);
 
         assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
         assertThat(comment.getAuthor().getEmail(), equalTo("unknown"));
@@ -154,6 +160,20 @@ public class MemberServiceTest {
                 memberService.rateMember(testMember.getNickname(), rate);
 
         assertThat(response.getRating(), equalTo(rate.getScore()));
+    }
+
+
+    @Test
+    void updateTest() {
+        login();
+        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(testMember));
+        Update incoming = new Update();
+        incoming.setNickname("update");
+
+        Response updatedMember = memberService.update(incoming);
+
+        assertThat(updatedMember.getNickname(), equalTo(incoming.getNickname()));
     }
 
 

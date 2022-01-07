@@ -17,13 +17,11 @@ public interface RecruitmentCustomRepository {
 
     Page<Recruitment> searchByAll(Condition.Search search, Pageable pageable);
 
-    Page<Recruitment> findAll(Pageable pageable);
-
     Page<Recruitment> findAllAvailable(Member currentMember ,Pageable pageable);
 
     Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable);
 
-    Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable);
+    Page<Recruitment> findAllByAddress(String address, Pageable pageable);
 
     Page<Recruitment> findAllByAuthor(Member author, Pageable pageable);
 
