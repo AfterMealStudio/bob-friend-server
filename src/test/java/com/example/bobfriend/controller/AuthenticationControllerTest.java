@@ -1,7 +1,9 @@
 package com.example.bobfriend.controller;
 
 import com.example.bobfriend.jwt.JwtTokenProvider;
-import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.member.Response;
+import com.example.bobfriend.model.dto.member.Signin;
+import com.example.bobfriend.model.dto.member.Signup;
 import com.example.bobfriend.model.dto.token.Token;
 import com.example.bobfriend.model.dto.token.Validation;
 import com.example.bobfriend.model.entity.Member;
@@ -31,8 +33,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -79,7 +80,7 @@ public class AuthenticationControllerTest {
         Token tokenDto = new Token("jwt-access-token-example", "jwt-refresh-token-example");
         when(authService.signin(any())).thenReturn(tokenDto);
 
-        MemberDto.Login login = MemberDto.Login.builder()
+        Signin login = Signin.builder()
                 .email(testMember.getEmail())
                 .password(testMember.getPassword())
                 .build();
@@ -103,7 +104,7 @@ public class AuthenticationControllerTest {
     @Test
     void signup() throws Exception {
         Token tokenDto = new Token("jwt-access-token-example", "jwt-refresh-token-example");
-        MemberDto.Signup signup = MemberDto.Signup.builder()
+        Signup signup = Signup.builder()
                 .email(testMember.getEmail())
                 .nickname(testMember.getNickname())
                 .password("1234")
@@ -111,16 +112,17 @@ public class AuthenticationControllerTest {
                 .sex(Sex.MALE)
                 .agree(true)
                 .build();
-        MemberDto.Response response = MemberDto.Response.builder()
+
+        Response response = Response.builder()
                 .id(testMember.getId())
                 .email(testMember.getEmail())
                 .nickname(testMember.getNickname())
-                .birth(testMember.getBirth())
+                .age(testMember.getAge())
                 .sex(testMember.getSex())
                 .rating(testMember.getRating())
                 .accumulatedReports(testMember.getAccumulatedReports())
                 .reportCount(testMember.getReportCount())
-                .agree(testMember.isAgree())
+                .agree(testMember.getAgree())
                 .active(testMember.isActive())
                 .build();
 

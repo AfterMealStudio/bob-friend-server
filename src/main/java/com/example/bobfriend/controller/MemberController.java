@@ -1,6 +1,8 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.member.Delete;
+import com.example.bobfriend.model.dto.member.Score;
+import com.example.bobfriend.model.dto.member.Update;
 import com.example.bobfriend.service.AuthService;
 import com.example.bobfriend.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,6 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 public class MemberController {
     private final MemberService memberService;
-    private final AuthService authService;
 
     @GetMapping("")
     public ResponseEntity verifyEmail(@RequestParam String email, @RequestParam String code) {
@@ -46,20 +47,26 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberWithAuthorities(username));
     }
 
-    @DeleteMapping("/user/{memberId}")
-    public ResponseEntity deleteUserById(
-            @PathVariable Long memberId,
-            @Valid @RequestBody MemberDto.Delete delete) {
-        authService.checkPassword(delete);
-        memberService.deleteById(memberId);
+    @DeleteMapping("/user")
+    public ResponseEntity delete(
+            @Valid @RequestBody Delete delete) {
+        memberService.delete(delete);
         return ResponseEntity.ok().build();
     }
+
+
+    @PutMapping("/user")
+    public ResponseEntity updateUserInfo(
+            @RequestBody Update update) {
+        return ResponseEntity.ok(memberService.update(update));
+    }
+
 
     @PostMapping("/user/{nickname}/score")
     public ResponseEntity rateMember(
             @PathVariable String nickname,
-            @Valid @RequestBody MemberDto.Rate rate) {
-        memberService.rateMember(nickname, rate);
+            @Valid @RequestBody Score scoreDto) {
+        memberService.rateMember(nickname, scoreDto);
         return ResponseEntity.ok().build();
     }
 }

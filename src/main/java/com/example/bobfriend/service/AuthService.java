@@ -1,7 +1,10 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.jwt.JwtTokenProvider;
-import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.member.Delete;
+import com.example.bobfriend.model.dto.member.Response;
+import com.example.bobfriend.model.dto.member.Signin;
+import com.example.bobfriend.model.dto.member.Signup;
 import com.example.bobfriend.model.dto.token.Token;
 import com.example.bobfriend.model.entity.Authority;
 import com.example.bobfriend.model.entity.Member;
@@ -37,7 +40,7 @@ public class AuthService {
 
 
     @Transactional
-    public MemberDto.Response signup(MemberDto.Signup memberSignupDto) {
+    public Response signup(Signup memberSignupDto) {
         if (memberRepository
                 .existsMemberByEmail(memberSignupDto.getEmail())) {
             throw new MemberDuplicatedException(memberSignupDto.getEmail());
@@ -45,19 +48,18 @@ public class AuthService {
 
         Authority authority = Authority.ROLE_USER;
 
-        Member member = memberSignupDto
-                .convertToEntityWithPasswordEncoder(passwordEncoder);
+        Member member = memberService.convertToEntity(memberSignupDto);
         member.setAuthorities(Collections.singleton(authority));
         Member save = memberRepository.save(member);
 
         emailService.sendMail(save.getEmail(), save.getEmail(),
                 emailService.makeMailText(member));
 
-        return new MemberDto.Response(save);
+        return new Response(save);
     }
 
     @Transactional
-    public Token signin(MemberDto.Login loginDto) {
+    public Token signin(Signin loginDto) {
         if (!memberRepository.existsMemberByEmail(loginDto.getEmail())) {
             throw new UsernameNotFoundException(loginDto.getEmail());
         }
@@ -100,11 +102,6 @@ public class AuthService {
     }
 
 
-    public void checkPassword(MemberDto.Delete delete) {
-        // usernamepassword filter를 통과시켜서 비밀번호가 맞는지 검사
-        Member currentMember = memberService.getCurrentMember();
-        getAuthentication(currentMember.getEmail(), delete.getPassword());
-    }
 
     private Authentication getAuthentication(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken =

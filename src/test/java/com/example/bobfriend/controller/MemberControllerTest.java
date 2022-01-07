@@ -1,6 +1,6 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
@@ -70,7 +70,7 @@ class MemberControllerTest {
 
     @Test
     public void getMyUserInfo() throws Exception {
-        MemberDto.Response responseDto = new MemberDto.Response(testMember);
+        Response responseDto = new Response(testMember);
         when(memberService.getMyMemberWithAuthorities())
                 .thenReturn(responseDto);
         mvc.perform(getRequestBuilder(
@@ -89,7 +89,7 @@ class MemberControllerTest {
 
     @Test
     public void getUserInfo() throws Exception {
-        MemberDto.Response responseDto = new MemberDto.Response(testMember);
+        Response responseDto = new Response(testMember);
         when(memberService.getMemberWithAuthorities(any()))
                 .thenReturn(responseDto);
         mvc.perform(getRequestBuilder(
@@ -112,11 +112,11 @@ class MemberControllerTest {
     @Test
     public void checkEmail() throws Exception {
         when(memberService.checkExistByEmail(any()))
-                .thenReturn(new MemberDto.DuplicationCheck(false));
+                .thenReturn(new DuplicationCheck(false));
         mvc.perform(get("/api/email/{email}", testMember.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(
-                        new MemberDto.DuplicationCheck(false)
+                        new DuplicationCheck(false)
                 )))
                 .andDo(document("member/check-email",
                         getDocumentRequest(),
@@ -132,13 +132,13 @@ class MemberControllerTest {
     public void checkNickname() throws Exception {
         when(memberService.checkExistByNickname(any()))
                 .thenReturn(
-                        new MemberDto.DuplicationCheck(false)
+                        new DuplicationCheck(false)
                 );
         mvc.perform(get("/api/nickname/{nickname}", testMember.getNickname()))
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json(objectMapper.writeValueAsString(
-                                new MemberDto.DuplicationCheck(false)
+                                new DuplicationCheck(false)
                         )))
                 .andDo(document("member/check-nickname",
                         getDocumentRequest(),
@@ -153,17 +153,14 @@ class MemberControllerTest {
 
     @Test
     void deleteMember() throws Exception {
-        MemberDto.Delete delete = new MemberDto.Delete(testMember.getPassword());
+        Delete delete = new Delete(testMember.getPassword());
         mvc.perform(getRequestBuilder(
-                        delete("/api/user/{userId}", testMember.getId()))
+                        delete("/api/user"))
                         .content(objectMapper.writeValueAsString(delete)))
                 .andExpect(status().isOk())
                 .andDo(document("member/delete",
                         getDocumentRequest(),
                         getDocumentResponse(),
-                        pathParameters(
-                                parameterWithName("userId").description("유저의 Id 값(식별자)")
-                        ),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )
@@ -172,7 +169,7 @@ class MemberControllerTest {
 
     @Test
     void rateMemberTest() throws Exception {
-        MemberDto.Rate rate = new MemberDto.Rate();
+        Score rate = new Score();
         rate.setScore(3.2);
         mvc.perform(getRequestBuilder(
                         post("/api/user/{nickname}/score", testMember.getNickname()))
@@ -184,6 +181,45 @@ class MemberControllerTest {
                         pathParameters(
                                 parameterWithName("nickname").description("닉네임")
                         ),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )));
+    }
+
+
+    @Test
+    void updateMemberTest() throws Exception {
+        Update update = new Update();
+        update.setNickname("update nickname");
+        update.setBirth(LocalDate.now().minusYears(1));
+        update.setPassword("update password");
+        update.setAgree(false);
+        update.setSex(Sex.NONE);
+
+        Member incoming = Member.builder()
+                .nickname(update.getNickname())
+                .birth(update.getBirth())
+                .password(update.getPassword())
+                .sex(update.getSex())
+                .agree(update.getAgree())
+                .build();
+        testMember.update(incoming);
+        Response response = new Response(testMember);
+
+        when(memberService.update(any()))
+                .thenReturn(response);
+
+        mvc.perform(getRequestBuilder(
+                        put("/api/user")
+                                .content(
+                                        objectMapper.writeValueAsString(update))))
+                .andExpect(status().isOk())
+                .andExpect(content().json(
+                        objectMapper.writeValueAsString(response)
+                ))
+                .andDo(document("member/update",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )));
