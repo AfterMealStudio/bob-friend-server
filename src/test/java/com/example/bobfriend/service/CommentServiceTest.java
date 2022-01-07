@@ -1,7 +1,8 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.CommentDto;
-import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.comment.Create;
+import com.example.bobfriend.model.dto.comment.Response;
+import com.example.bobfriend.model.dto.member.Preview;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.repository.CommentRepository;
@@ -103,14 +104,14 @@ public class CommentServiceTest {
         when(commentRepository.save(any())).thenReturn(testComment);
         when(recruitmentRepository.findById(any()))
                 .thenReturn(java.util.Optional.ofNullable(testRecruitment));
-        CommentDto.Request commentRequestDto = new CommentDto.Request();
+        Create commentRequestDto = new Create();
         commentRequestDto.setContent(testComment.getContent());
-        CommentDto.Response commentDto =
+        Response commentDto =
                 commentService.create(commentRequestDto,
                         testRecruitment.getId());
 
         assertThat(commentDto.getAuthor(), equalTo(
-                new MemberDto.Preview(testAuthor)));
+                new Preview(testAuthor)));
         assertThat(commentDto.getContent(), equalTo(
                 testComment.getContent()));
     }
@@ -151,11 +152,11 @@ public class CommentServiceTest {
         List<Comment> commentList = Arrays.asList(testComment);
         when(commentRepository.findAllByRecruitmentId(any()))
                 .thenReturn(commentList);
-        List<CommentDto.Response> allComment =
+        List<Response> allComment =
                 commentService.getAllCommentByRecruitmentId(
                         testRecruitment.getId());
-        List<CommentDto.Response> responseList = commentList.stream()
-                .map((comment) -> new CommentDto.Response(comment))
+        List<Response> responseList = commentList.stream()
+                .map((comment) -> new Response(comment))
                 .collect(Collectors.toList());
         assertThat(allComment, equalTo(
                 responseList));

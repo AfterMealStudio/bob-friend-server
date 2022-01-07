@@ -1,6 +1,7 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.member.Response;
+import com.example.bobfriend.model.dto.member.Signup;
 import com.example.bobfriend.model.entity.Authority;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
@@ -59,7 +60,7 @@ public class AuthServiceTest {
                 .active(true)
                 .build();
 
-        MemberDto.Signup memberSignupDto = MemberDto.Signup.builder()
+        Signup memberSignupDto = Signup.builder()
                 .email("signupTestEmail")
                 .nickname("signupTestUser")
                 .password("1234")
@@ -77,9 +78,8 @@ public class AuthServiceTest {
         when(memberService.convertToEntity(any()))
                 .thenReturn(signupTest);
 
-
-        MemberDto.Response responseDto = authService.signup(memberSignupDto);
-        MemberDto.Response memberResponseDto = new MemberDto.Response(signupTest);
+        Response responseDto = authService.signup(memberSignupDto);
+        Response memberResponseDto = new Response(signupTest);
 
         assertThat(responseDto, equalTo(memberResponseDto));
     }
@@ -87,7 +87,7 @@ public class AuthServiceTest {
     @Test
     @DisplayName(value = "signup_fail_MemberDuplicated")
     void signupFail() {
-        MemberDto.Signup memberSignupDto = MemberDto.Signup.builder()
+        Signup memberSignupDto = Signup.builder()
                 .email("signupTestEmail")
                 .nickname("signupTestUser")
                 .password("1234")

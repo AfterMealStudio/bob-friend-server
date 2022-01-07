@@ -1,7 +1,9 @@
 package com.example.bobfriend.controller;
 
 import com.example.bobfriend.jwt.JwtTokenProvider;
-import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.member.Response;
+import com.example.bobfriend.model.dto.member.Signin;
+import com.example.bobfriend.model.dto.member.Signup;
 import com.example.bobfriend.model.dto.token.Token;
 import com.example.bobfriend.model.dto.token.Validation;
 import com.example.bobfriend.model.entity.Member;
@@ -78,7 +80,7 @@ public class AuthenticationControllerTest {
         Token tokenDto = new Token("jwt-access-token-example", "jwt-refresh-token-example");
         when(authService.signin(any())).thenReturn(tokenDto);
 
-        MemberDto.Login login = MemberDto.Login.builder()
+        Signin login = Signin.builder()
                 .email(testMember.getEmail())
                 .password(testMember.getPassword())
                 .build();
@@ -102,7 +104,7 @@ public class AuthenticationControllerTest {
     @Test
     void signup() throws Exception {
         Token tokenDto = new Token("jwt-access-token-example", "jwt-refresh-token-example");
-        MemberDto.Signup signup = MemberDto.Signup.builder()
+        Signup signup = Signup.builder()
                 .email(testMember.getEmail())
                 .nickname(testMember.getNickname())
                 .password("1234")
@@ -111,7 +113,7 @@ public class AuthenticationControllerTest {
                 .agree(true)
                 .build();
 
-        MemberDto.Response response = MemberDto.Response.builder()
+        Response response = Response.builder()
                 .id(testMember.getId())
                 .email(testMember.getEmail())
                 .nickname(testMember.getNickname())

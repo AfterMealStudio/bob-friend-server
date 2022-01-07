@@ -1,6 +1,7 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.CommentDto;
+import com.example.bobfriend.model.dto.comment.Create;
+import com.example.bobfriend.model.dto.comment.Response;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.service.CommentService;
 import com.example.bobfriend.service.ReportService;
@@ -125,9 +126,9 @@ public class CommentControllerTest {
 
     @Test
     void getAllComments() throws Exception {
-        CommentDto.Response commentDto = new CommentDto.Response(testComment);
+        Response commentDto = new Response(testComment);
 
-        List<CommentDto.Response> responseList = Arrays.asList(commentDto);
+        List<Response> responseList = Arrays.asList(commentDto);
         when(commentService.getAllCommentByRecruitmentId(any()))
                 .thenReturn(responseList);
 
@@ -151,8 +152,9 @@ public class CommentControllerTest {
 
     @Test
     void createComment() throws Exception {
-        CommentDto.Request requestDto = new CommentDto.Request(testComment);
-        CommentDto.Response responseDto = new CommentDto.Response(testComment);
+        Create requestDto = new Create();
+        requestDto.setContent(testComment.getContent());
+        Response responseDto = new Response(testComment);
 
         when(commentService.create(any(), any()))
                 .thenReturn(responseDto);

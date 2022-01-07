@@ -1,6 +1,7 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.ReplyDto;
+import com.example.bobfriend.model.dto.reply.Create;
+import com.example.bobfriend.model.dto.reply.Response;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.service.ReplyService;
 import com.example.bobfriend.service.ReportService;
@@ -124,8 +125,8 @@ public class ReplyControllerTest {
 
     @Test
     void createReplyToComment() throws Exception {
-        ReplyDto.Request requestDto = new ReplyDto.Request(testReply);
-        ReplyDto.Response responseDto = new ReplyDto.Response(testReply);
+        Create requestDto = new Create(testReply);
+        Response responseDto = new Response(testReply);
 
         when(replyService.create(any(), any()))
                 .thenReturn(responseDto);
