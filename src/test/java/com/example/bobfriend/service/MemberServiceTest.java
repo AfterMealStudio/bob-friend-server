@@ -1,6 +1,7 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.member.Response;
+import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,9 +73,9 @@ public class MemberServiceTest {
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
                 .thenReturn(Optional.ofNullable(testMember));
 
-        MemberDto.Response getMember = memberService.getMemberWithAuthorities(testMember.getEmail());
+        Response getMember = memberService.getMemberWithAuthorities(testMember.getEmail());
 
-        assertThat(new MemberDto.Response(testMember), equalTo(getMember));
+        assertThat(new Response(testMember), equalTo(getMember));
     }
 
 
@@ -151,9 +152,9 @@ public class MemberServiceTest {
     void rateMemberTest() {
         when(memberRepository.findMemberByNickname(testMember.getNickname()))
                 .thenReturn(Optional.ofNullable(testMember));
-        MemberDto.Rate rate = new MemberDto.Rate();
+        Score rate = new Score();
         rate.setScore(3.0);
-        MemberDto.Response response =
+        Response response =
                 memberService.rateMember(testMember.getNickname(), rate);
 
         assertThat(response.getRating(), equalTo(rate.getScore()));

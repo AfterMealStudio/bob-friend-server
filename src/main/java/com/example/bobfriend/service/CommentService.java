@@ -1,6 +1,8 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.CommentDto;
+import com.example.bobfriend.model.dto.*;
+import com.example.bobfriend.model.dto.comment.Create;
+import com.example.bobfriend.model.dto.comment.Response;
 import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
@@ -26,16 +28,15 @@ public class CommentService {
     private final WritingReportRepository reportRepository;
     private final MemberService memberService;
 
-    public List<CommentDto.Response> getAllCommentByRecruitmentId(Long recruitmentId) {
+    public List<Response> getAllCommentByRecruitmentId(Long recruitmentId) {
         return commentRepository.findAllByRecruitmentId(recruitmentId).stream()
-                .map(CommentDto.Response::new)
+                .map(Response::new)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public CommentDto.Response create(
-            CommentDto.Request commentDto,
-            Long recruitmentId) {
+    public Response create(Create commentDto,
+                          Long recruitmentId) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
 
@@ -45,7 +46,7 @@ public class CommentService {
                 .recruitment(recruitment)
                 .build();
 
-        return new CommentDto.Response(commentRepository.save(comment));
+        return new Response(commentRepository.save(comment));
     }
 
 

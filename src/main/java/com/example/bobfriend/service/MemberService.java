@@ -1,6 +1,8 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.MemberDto;
+import com.example.bobfriend.model.dto.member.DuplicationCheck;
+import com.example.bobfriend.model.dto.member.Response;
+import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
@@ -28,17 +30,17 @@ public class MemberService {
 
 
     @Transactional(readOnly = true)
-    public MemberDto.Response getMemberWithAuthorities(String email) {
+    public Response getMemberWithAuthorities(String email) {
         Member member = getMember(email);
-        return new MemberDto.Response(member);
+        return new Response(member);
     }
 
     @Transactional(readOnly = true)
-    public MemberDto.Response getMyMemberWithAuthorities() {
+    public Response getMyMemberWithAuthorities() {
         String currentUsername = getCurrentUsername();
 
         Member member = getMember(currentUsername);
-        return new MemberDto.Response(member);
+        return new Response(member);
     }
 
     @Transactional
@@ -93,22 +95,22 @@ public class MemberService {
         return memberRepository.existsMemberByEmail(email);
     }
 
-    public MemberDto.DuplicationCheck checkExistByEmail(String email) {
-        return new MemberDto.DuplicationCheck(
+    public DuplicationCheck checkExistByEmail(String email) {
+        return new DuplicationCheck(
                 memberRepository.existsMemberByEmail(email));
     }
 
-    public MemberDto.DuplicationCheck checkExistByNickname(String nickname) {
-        return new MemberDto.DuplicationCheck(
+    public DuplicationCheck checkExistByNickname(String nickname) {
+        return new DuplicationCheck(
                 memberRepository.existsMemberByNickname(nickname));
     }
 
     @Transactional
-    public MemberDto.Response rateMember(String nickname, MemberDto.Rate rate) {
+    public Response rateMember(String nickname, Score rate) {
         Member member = getMemberByNickname(nickname);
         Double score = rate.getScore();
         member.addRating(score);
-        return new MemberDto.Response(member);
+        return new Response(member);
     }
 
     private Member getMemberByNickname(String nickname) {

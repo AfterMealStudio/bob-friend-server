@@ -1,7 +1,7 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.dto.RecruitmentDto;
+import com.example.bobfriend.model.dto.recruitment.*;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.entity.Sex;
@@ -26,30 +26,30 @@ public class RecruitmentService {
     private final MemberService memberService;
 
     @Transactional
-    public RecruitmentDto.Response findById(Long recruitmentId) {
+    public DetailResponse findById(Long recruitmentId) {
         Recruitment recruitment = getRecruitment(recruitmentId);
-        return new RecruitmentDto.Response(recruitment);
+        return new DetailResponse(recruitment);
     }
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAll(Pageable pageable) {
+    public Page<SimpleResponse> findAll(Pageable pageable) {
         return recruitmentRepository.findAll(pageable)
-                .map(RecruitmentDto.ResponseList::new);
+                .map(SimpleResponse::new);
     }
 
 
     @Transactional
-    public RecruitmentDto.Response createRecruitment(RecruitmentDto.Request recruitmentRequestDto) {
+    public DetailResponse create(Create recruitmentRequestDto) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
         recruitment.setAuthor(currentMember);
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
-        return new RecruitmentDto.Response(savedRecruitment);
+        return new DetailResponse(savedRecruitment);
     }
 
 
     @Transactional
-    public void deleteRecruitment(Long recruitmentId) {
+    public void delete(Long recruitmentId) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (currentMember.equals(recruitment.getAuthor())) {
@@ -62,26 +62,26 @@ public class RecruitmentService {
 
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllByRestaurant(
+    public Page<SimpleResponse> findAllByRestaurant(
             Condition.Search searchCondition,
             Pageable pageable) {
         return recruitmentRepository
                 .findAllByRestaurant(searchCondition, pageable)
-                .map(RecruitmentDto.ResponseList::new);
+                .map(SimpleResponse::new);
     }
 
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllAvailableRecruitments(Pageable pageable) {
+    public Page<SimpleResponse> findAllAvailable(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         return recruitmentRepository
                 .findAllAvailable(currentMember, pageable)
-                .map(RecruitmentDto.ResponseList::new);
+                .map(SimpleResponse::new);
     }
 
     @Transactional
-    public RecruitmentDto.AddressCollection findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
-        Map<RecruitmentDto.Address, Integer> addressMap = new HashMap();
+    public AddressCollection findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
+        Map<Address, Integer> addressMap = new HashMap();
 
         // 0.05가 지도 상에서 대충 500m 정도
         // 줌 레벨이 -2 ~ 12까지의 값을 가짐
@@ -93,34 +93,34 @@ public class RecruitmentService {
 
         while (iterator.hasNext()) {
             Recruitment recruitment = iterator.next();
-            RecruitmentDto.Address address =
-                    new RecruitmentDto.Address(recruitment);
+            Address address =
+                    new Address(recruitment);
             addressMap.put(address, addressMap.getOrDefault(address, 0) + 1);
         }
 
-        for (Map.Entry<RecruitmentDto.Address, Integer> entry :
+        for (Map.Entry<Address, Integer> entry :
                 addressMap.entrySet()) {
             entry.getKey().setCount(entry.getValue());
         }
-        return new RecruitmentDto.AddressCollection(new ArrayList<>(addressMap.keySet()));
+        return new AddressCollection(new ArrayList<>(addressMap.keySet()));
     }
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllJoinedRecruitments(Pageable pageable) {
+    public Page<SimpleResponse> findAllJoined(Pageable pageable) {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllJoined(author, pageable)
-                .map(RecruitmentDto.ResponseList::new);
+                .map(SimpleResponse::new);
     }
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findMyRecruitments(Pageable pageable) {
+    public Page<SimpleResponse> findMyRecruitments(Pageable pageable) {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllByAuthor(author, pageable)
-                .map(RecruitmentDto.ResponseList::new);
+                .map(SimpleResponse::new);
     }
 
     @Transactional
-    public RecruitmentDto.Response closeRecruitment(Long recruitmentId) {
+    public DetailResponse close(Long recruitmentId) {
         Member author = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (author.equals(recruitment.getAuthor())) {
@@ -128,12 +128,12 @@ public class RecruitmentService {
         } else {
             throw new MemberNotAllowedException(author.getNickname());
         }
-        return new RecruitmentDto.Response(recruitment);
+        return new DetailResponse(recruitment);
     }
 
 
     @Transactional
-    public RecruitmentDto.Response joinOrUnjoin(Long recruitmentId)
+    public DetailResponse joinOrUnjoin(Long recruitmentId)
             throws RecruitmentIsFullException, RecruitmentNotActiveException {
         Member currentMember = memberService.getCurrentMember();
 
@@ -155,53 +155,45 @@ public class RecruitmentService {
         else
             recruitment.addMember(currentMember);
 
-        return new RecruitmentDto.Response(recruitment);
+        return new DetailResponse(recruitment);
     }
 
 
-    public Page<RecruitmentDto.Response> searchTitle(Condition.Search search, Pageable pageable) {
+    public Page<DetailResponse> searchTitle(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
                 .searchByTitle(search, pageable)
-                .map(RecruitmentDto.Response::new);
+                .map(DetailResponse::new);
     }
 
 
-    public Page<RecruitmentDto.Response> searchContent(Condition.Search search, Pageable pageable) {
+    public Page<DetailResponse> searchContent(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
                 .searchByContent(search, pageable)
-                .map(RecruitmentDto.Response::new);
+                .map(DetailResponse::new);
     }
 
-    public Page<RecruitmentDto.Response> searchRestaurant(Condition.Search search, Pageable pageable) {
+    public Page<DetailResponse> searchRestaurant(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
                 .searchByRestaurant(search, pageable)
-                .map(RecruitmentDto.Response::new);
+                .map(DetailResponse::new);
     }
 
-//    public Page<RecruitmentDto.Response> searchAppointmentTime(String start, String end, Pageable pageable) {
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-//        LocalDateTime startTime = LocalDateTime.parse(start, formatter);
-//        LocalDateTime endTime = LocalDateTime.parse(end, formatter);
-//        return recruitmentRepository.searchByAppointmentTime(
-//                        startTime, endTime, pageable)
-//                .map(RecruitmentDto.Response::new);
-//    }
 
-    public Page<RecruitmentDto.Response> searchByAllCondition(Condition.Search search, Pageable pageable) {
+    public Page<DetailResponse> searchByAllCondition(Condition.Search search, Pageable pageable) {
         return recruitmentRepository
                 .searchByAll(search, pageable)
-                .map(RecruitmentDto.Response::new);
+                .map(DetailResponse::new);
     }
 
 
-    public void reportRecruitment(Long recruitmentId) {
+    public void reportById(Long recruitmentId) {
         Recruitment recruitment = getRecruitment(recruitmentId);
         Member member = memberService.getCurrentMember();
         reportService.reportWriting(member, recruitment);
     }
 
     @Transactional
-    public void expireRecruitment() {
+    public void expire() {
         List<Recruitment> allByActiveTrue = recruitmentRepository.findAllByActiveTrue();
         for (Recruitment recruitment :
                 allByActiveTrue) {

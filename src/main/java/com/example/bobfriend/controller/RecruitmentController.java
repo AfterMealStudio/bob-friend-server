@@ -1,7 +1,9 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.RecruitmentDto;
 import com.example.bobfriend.model.dto.Condition;
+import com.example.bobfriend.model.dto.recruitment.Create;
+import com.example.bobfriend.model.dto.recruitment.DetailResponse;
+import com.example.bobfriend.model.dto.recruitment.SimpleResponse;
 import com.example.bobfriend.model.exception.RecruitmentIsFullException;
 import com.example.bobfriend.model.exception.RecruitmentNotActiveException;
 import com.example.bobfriend.model.exception.RecruitmentNotFoundException;
@@ -24,11 +26,11 @@ public class RecruitmentController {
 
 
     @GetMapping()
-    public ResponseEntity getAllRecruitment(
+    public ResponseEntity getAll(
             @RequestParam(name = "type", defaultValue = "all") Condition.SearchType type,
             Condition.Search searchCondition,
             @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<RecruitmentDto.ResponseList> responseDtoList = null;
+        Page<SimpleResponse> responseDtoList = null;
 
         switch (type) {
             case owned: // 자기가 작성한
@@ -37,11 +39,11 @@ public class RecruitmentController {
                 break;
             case joined:// 자기가 참여한
                 responseDtoList = recruitmentService
-                        .findAllJoinedRecruitments(pageable);
+                        .findAllJoined(pageable);
                 break;
             case available:// 참여 가능한
                 responseDtoList = recruitmentService
-                        .findAllAvailableRecruitments(pageable);
+                        .findAllAvailable(pageable);
                 break;
             case all: // 전체
                 responseDtoList = recruitmentService
@@ -64,58 +66,58 @@ public class RecruitmentController {
     @GetMapping("/{recruitmentId}")
     public ResponseEntity getRecruitment(@PathVariable Long recruitmentId)
             throws RecruitmentNotFoundException {
-        RecruitmentDto.Response recruitmentResponseDto = recruitmentService.findById(recruitmentId);
-        return ResponseEntity.ok(recruitmentResponseDto);
+        DetailResponse recruitmentDetailResponseDto = recruitmentService.findById(recruitmentId);
+        return ResponseEntity.ok(recruitmentDetailResponseDto);
     }
 
     @PostMapping
-    public ResponseEntity createRecruitment(
-            @Valid @RequestBody RecruitmentDto.Request recruitmentRequestDto) {
-        RecruitmentDto.Response createdRecruitment = recruitmentService.createRecruitment(recruitmentRequestDto);
+    public ResponseEntity create(
+            @Valid @RequestBody Create recruitmentRequestDto) {
+        DetailResponse createdRecruitment = recruitmentService.create(recruitmentRequestDto);
         return ResponseEntity.ok(createdRecruitment);
     }
 
     @PatchMapping("/{recruitmentId}/close")
-    public ResponseEntity closeRecruitment(@PathVariable Long recruitmentId) {
-        recruitmentService.closeRecruitment(recruitmentId);
+    public ResponseEntity close(@PathVariable Long recruitmentId) {
+        recruitmentService.close(recruitmentId);
         return ResponseEntity.ok().build();
     }
 
 
     @DeleteMapping("/{recruitmentId}")
-    public ResponseEntity deleteRecruitment(
+    public ResponseEntity delete(
             @PathVariable Long recruitmentId) {
-        recruitmentService.deleteRecruitment(recruitmentId);
+        recruitmentService.delete(recruitmentId);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{recruitmentId}")
-    public ResponseEntity joinRecruitment(@PathVariable Long recruitmentId)
+    public ResponseEntity join(@PathVariable Long recruitmentId)
             throws RecruitmentIsFullException, RecruitmentNotActiveException {
-        RecruitmentDto.Response join = recruitmentService.joinOrUnjoin(recruitmentId);
+        DetailResponse join = recruitmentService.joinOrUnjoin(recruitmentId);
         return ResponseEntity.ok(join);
     }
 
     @PatchMapping("/{recruitmentId}/report")
     public ResponseEntity report(@PathVariable Long recruitmentId) {
-        recruitmentService.reportRecruitment(recruitmentId);
+        recruitmentService.reportById(recruitmentId);
         return ResponseEntity.ok().build();
     }
 
 
     @GetMapping("/search")
-    public ResponseEntity searchRecruitment(
+    public ResponseEntity search(
             @RequestParam(defaultValue = "all", name = "category") Condition.SearchCategory category,
             Condition.Search searchCondition,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        Page<RecruitmentDto.Response> searchResult = getResponses(category, searchCondition, pageable);
+        Page<DetailResponse> searchResult = getResponses(category, searchCondition, pageable);
 
         return ResponseEntity.ok(searchResult);
     }
 
-    private Page<RecruitmentDto.Response> getResponses(Condition.SearchCategory category, Condition.Search searchCondition, Pageable pageable) {
-        Page<RecruitmentDto.Response> searchResult = null;
+    private Page<DetailResponse> getResponses(Condition.SearchCategory category, Condition.Search searchCondition, Pageable pageable) {
+        Page<DetailResponse> searchResult = null;
         switch (category) {
             case place:
                 searchResult = recruitmentService.searchRestaurant(searchCondition, pageable);
