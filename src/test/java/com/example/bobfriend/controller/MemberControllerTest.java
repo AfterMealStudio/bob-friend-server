@@ -62,7 +62,7 @@ class MemberControllerTest {
                 .birth(LocalDate.now())
                 .agree(true)
                 .active(true)
-                .emailVerified(false)
+                .verified(false)
                 .rating(0.0)
                 .numberOfJoin(0)
                 .build();

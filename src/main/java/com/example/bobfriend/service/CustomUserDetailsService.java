@@ -37,7 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .collect(Collectors.toList());
         return new User(member.getEmail(),
                 member.getPassword(),
-                member.isEmailVerified(),
+                member.isVerified(),
                 true,
                 true,
                 member.isActive(),

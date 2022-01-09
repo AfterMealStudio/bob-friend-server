@@ -9,6 +9,7 @@ import com.example.bobfriend.model.dto.token.Validation;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
+import com.example.bobfriend.service.VerificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,8 +55,8 @@ public class AuthenticationControllerTest {
     ObjectMapper objectMapper;
 
     Member testMember;
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    @MockBean
+    private VerificationService verificationService;
 
     @BeforeEach
     public void setup() {
@@ -70,7 +71,7 @@ public class AuthenticationControllerTest {
                 .rating(0.0)
                 .agree(true)
                 .active(true)
-                .emailVerified(false)
+                .verified(false)
                 .build();
     }
 

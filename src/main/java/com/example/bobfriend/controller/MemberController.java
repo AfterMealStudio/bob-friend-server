@@ -19,11 +19,6 @@ import javax.validation.Valid;
 public class MemberController {
     private final MemberService memberService;
 
-    @GetMapping("")
-    public ResponseEntity verifyEmail(@RequestParam String email, @RequestParam String code) {
-        memberService.checkMemberWithCode(email, code);
-        return ResponseEntity.ok().build();
-    }
 
     @GetMapping("/email/{email}")
     public ResponseEntity checkEmail(@PathVariable String email) {

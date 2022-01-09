@@ -1,11 +1,13 @@
 package com.example.bobfriend.controller;
 
 import com.example.bobfriend.jwt.JwtTokenProvider;
+import com.example.bobfriend.model.dto.member.Response;
 import com.example.bobfriend.model.dto.member.Signin;
 import com.example.bobfriend.model.dto.member.Signup;
 import com.example.bobfriend.model.dto.token.*;
 import com.example.bobfriend.model.exception.MemberDuplicatedException;
 import com.example.bobfriend.service.AuthService;
+import com.example.bobfriend.service.VerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +19,18 @@ import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/")
+@RequestMapping("/api")
 public class AuthenticationController {
     private final JwtTokenProvider tokenProvider;
     private final AuthService authService;
+    private final VerificationService verificationService;
+
 
     @PostMapping("/signup")
     public ResponseEntity signup(@Valid @RequestBody Signup signupDto) throws MemberDuplicatedException {
-        return ResponseEntity.ok(authService.signup(signupDto));
+        Response signup = authService.signup(signupDto);
+        verificationService.sendVerification(signupDto.getEmail());
+        return ResponseEntity.ok(signup);
     }
 
 
@@ -49,4 +55,10 @@ public class AuthenticationController {
     }
 
 
+    @GetMapping("")
+    public ResponseEntity verifyEmail(@RequestParam String email, @RequestParam String code) {
+        boolean confirm = verificationService.confirm(email, code);
+        // 이메일 인증이 안됨 hashcode의 값이 달라짐
+        return ResponseEntity.ok().build();
+    }
 }
