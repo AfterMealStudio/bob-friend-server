@@ -34,6 +34,8 @@ public abstract class BaseResponse {
     protected Double latitude;
     protected Double longitude;
     protected Sex sexRestriction;
+    protected Integer ageRestrictionStart;
+    protected Integer ageRestrictionEnd;
     protected Integer reportCount;
     protected LocalDateTime appointmentTime;
     protected LocalDate createdAt;
@@ -56,6 +58,8 @@ public abstract class BaseResponse {
         this.longitude = recruitment.getLongitude();
         this.appointmentTime = recruitment.getAppointmentTime();
         this.sexRestriction = recruitment.getSexRestriction();
+        this.ageRestrictionStart = recruitment.getAgeRestrictionStart();
+        this.ageRestrictionEnd = recruitment.getAgeRestrictionEnd();
         this.createdAt = recruitment.getCreatedAt().toLocalDate();
         this.reportCount = recruitment.getReportCount();
     }
