@@ -36,6 +36,9 @@ public class Create {
     @FutureOrPresent
     private LocalDateTime appointmentTime;
 
+    private Integer ageRestrictStart;
+    private Integer ageRestrictEnd;
+
     public Create(Recruitment recruitment) {
         this.title = recruitment.getTitle();
         this.content = recruitment.getContent();
@@ -45,6 +48,8 @@ public class Create {
         this.latitude = recruitment.getLatitude();
         this.longitude = recruitment.getLongitude();
         this.sexRestriction = recruitment.getSexRestriction();
+        this.ageRestrictStart = recruitment.getAgeRestrictionStart();
+        this.ageRestrictEnd = recruitment.getAgeRestrictionEnd();
         this.appointmentTime = recruitment.getAppointmentTime();
     }
 
@@ -58,6 +63,8 @@ public class Create {
                 .latitude(this.latitude)
                 .longitude(this.longitude)
                 .sexRestriction(this.sexRestriction)
+                .ageRestrictionStart(this.ageRestrictStart)
+                .ageRestrictionEnd(this.ageRestrictEnd)
                 .appointmentTime(this.appointmentTime)
                 .build();
     }
