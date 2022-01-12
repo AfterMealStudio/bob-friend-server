@@ -459,7 +459,7 @@ class RecruitmentServiceTest {
 
         Address address = new Address(recruitments.get(0));
         address.setCount(recruitments.size());
-        AddressCollection allLocations = recruitmentService.findAllLocations(lat, lon, 3);
+        Addresses allLocations = recruitmentService.findAllLocations(lat, lon, 3);
 
         assertThat(allLocations.getAddresses(), equalTo(List.of(address)));
     }
