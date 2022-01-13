@@ -37,7 +37,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("패스워드가 적합하지 않습니다"));
+        assertThat(violation.getMessage(), equalTo("{password.message}"));
     }
 
 
@@ -55,7 +55,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("패스워드가 적합하지 않습니다"));
+        assertThat(violation.getMessage(), equalTo("{password.message}"));
     }
 
 
@@ -73,7 +73,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("패스워드가 적합하지 않습니다"));
+        assertThat(violation.getMessage(), equalTo("{password.message}"));
     }
 
 
@@ -91,7 +91,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("패스워드가 적합하지 않습니다"));
+        assertThat(violation.getMessage(), equalTo("{password.message}"));
     }
 
 
@@ -109,7 +109,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("패스워드가 적합하지 않습니다"));
+        assertThat(violation.getMessage(), equalTo("{password.message}"));
     }
 
 
@@ -127,7 +127,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("패스워드가 적합하지 않습니다"));
+        assertThat(violation.getMessage(), equalTo("{password.message}"));
     }
 
 
@@ -145,7 +145,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("패스워드가 적합하지 않습니다"));
+        assertThat(violation.getMessage(), equalTo("{password.message}"));
     }
 
 
@@ -163,7 +163,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("패스워드가 적합하지 않습니다"));
+        assertThat(violation.getMessage(), equalTo("{password.message}"));
     }
 
     @Test
@@ -180,7 +180,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("패스워드가 적합하지 않습니다"));
+        assertThat(violation.getMessage(), equalTo("{password.message}"));
     }
 
 
@@ -198,7 +198,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("패스워드가 적합하지 않습니다"));
+        assertThat(violation.getMessage(), equalTo("{password.message}"));
     }
 
     @Test
