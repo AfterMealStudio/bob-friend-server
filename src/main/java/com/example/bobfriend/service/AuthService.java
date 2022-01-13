@@ -1,7 +1,6 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.jwt.JwtTokenProvider;
-import com.example.bobfriend.model.dto.member.Delete;
 import com.example.bobfriend.model.dto.member.Response;
 import com.example.bobfriend.model.dto.member.Signin;
 import com.example.bobfriend.model.dto.member.Signup;
@@ -21,7 +20,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +31,6 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
-    private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -100,7 +97,6 @@ public class AuthService {
 
         return token;
     }
-
 
 
     private Authentication getAuthentication(String email, String password) {

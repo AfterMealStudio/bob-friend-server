@@ -3,7 +3,6 @@ package com.example.bobfriend.controller;
 import com.example.bobfriend.model.dto.member.Delete;
 import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.dto.member.Update;
-import com.example.bobfriend.service.AuthService;
 import com.example.bobfriend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

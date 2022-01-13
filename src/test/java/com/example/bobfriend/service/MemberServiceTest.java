@@ -125,10 +125,10 @@ public class MemberServiceTest {
                 .thenReturn(Optional.ofNullable(testAuthor));
         when(writingRepository.findAllByAuthor(any()))
                 .thenReturn(List.of(recruitment, comment));
-        memberService.deleteById(testAuthor.getId());
-
+        when(passwordEncoder.matches(any(), any()))
+                .thenReturn(true);
         Delete delete = new Delete();
-        delete.setPassword(testMember.getPassword());
+        delete.setPassword(testAuthor.getPassword());
         memberService.delete(delete);
 
         assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
@@ -164,7 +164,7 @@ public class MemberServiceTest {
     void updateTest() {
         login();
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
-                .thenReturn(Optional.ofNullable(testMember));
+                .thenReturn(Optional.ofNullable(testAuthor));
         Update incoming = new Update();
         incoming.setNickname("update");
 

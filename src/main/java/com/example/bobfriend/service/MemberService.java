@@ -1,11 +1,13 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.member.*;
-import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
-import com.example.bobfriend.model.entity.Recruitment;
+import com.example.bobfriend.model.entity.Writing;
 import com.example.bobfriend.model.exception.MemberDuplicatedException;
-import com.example.bobfriend.repository.*;
+import com.example.bobfriend.repository.MemberRepository;
+import com.example.bobfriend.repository.RecruitmentMemberRepository;
+import com.example.bobfriend.repository.WritingReportRepository;
+import com.example.bobfriend.repository.WritingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -24,6 +26,7 @@ public class MemberService {
     private final WritingReportRepository reportRepository;
     private final RecruitmentMemberRepository recruitmentMemberRepository;
     private final WritingRepository writingRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public Response getMemberWithAuthorities(String email) {
