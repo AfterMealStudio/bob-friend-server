@@ -138,7 +138,7 @@ class RecruitmentControllerTest {
                 .willReturn(responsePage);
 
         mvc.perform(getRequestBuilder(
-                        get("/recruitments"))
+                        get("/api/recruitments"))
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(
@@ -166,7 +166,7 @@ class RecruitmentControllerTest {
                 .thenReturn(responsePage);
 
         mvc.perform(getRequestBuilder(
-                        get("/recruitments"))
+                        get("/api/recruitments"))
                         .param("type", "owned")
                 )
                 .andExpect(status().isOk())
@@ -195,8 +195,8 @@ class RecruitmentControllerTest {
         given(recruitmentService.findAllByRestaurantAddress(any(), any()))
                 .willReturn(responsePage);
         mvc.perform(getRequestBuilder(
-                        get("/recruitments"))
-                .param("type","specific")
+                        get("/api/recruitments"))
+                        .param("type", "specific")
                         .param("address", testRestaurantAddress))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
@@ -267,7 +267,7 @@ class RecruitmentControllerTest {
                 .willReturn(value);
 
         mvc.perform(getRequestBuilder(
-                        get("/recruitments/locations"))
+                        get("/api/recruitments/locations"))
                         .param("zoom", String.valueOf(3))
                         .param("longitude", String.valueOf(126.56207301534569))
                         .param("latitude", String.valueOf(33.4566084914484))
@@ -299,7 +299,7 @@ class RecruitmentControllerTest {
                 .willReturn(detailResponseDto);
 
         mvc.perform(getRequestBuilder(
-                        get("/recruitments/{recruitmentId}",
+                        get("/api/recruitments/{recruitmentId}",
                                 1))
                 )
                 .andExpect(status().isOk())
@@ -348,7 +348,7 @@ class RecruitmentControllerTest {
                 .willReturn(detailResponseDto);
 
         mvc.perform(getRequestBuilder(
-                        post("/recruitments"))
+                        post("/api/recruitments"))
                         .content(objectMapper.writeValueAsString(requestDto))
                 )
                 .andExpect(status().isOk())
@@ -402,7 +402,7 @@ class RecruitmentControllerTest {
                 .thenReturn(detailResponse);
 
         mvc.perform(getRequestBuilder(
-                        patch("/recruitments/{recruitmentId}",
+                        patch("/api/recruitments/{recruitmentId}",
                                 testRecruitment.getId())
                 ))
                 .andExpect(status().isOk())
@@ -426,7 +426,7 @@ class RecruitmentControllerTest {
     @Test
     void deleteRecruitment() throws Exception {
         mvc.perform(getRequestBuilder(
-                        delete("/recruitments/{recruitmentId}",
+                        delete("/api/recruitments/{recruitmentId}",
                                 1))
                 )
                 .andExpect(status().isOk())
@@ -455,7 +455,7 @@ class RecruitmentControllerTest {
         when(recruitmentService.searchTitle(any(), any()))
                 .thenReturn(new PageImpl<>(Arrays.asList(detailResponseDto)));
         mvc.perform(getRequestBuilder(
-                        get("/recruitments/search"))
+                        get("/api/recruitments/search"))
                         .param("category", "title")
                         .param("keyword", "ti")
                 )
@@ -481,7 +481,7 @@ class RecruitmentControllerTest {
     @Test
     void reportRecruitment() throws Exception {
         mvc.perform(getRequestBuilder(
-                        patch("/recruitments/{recruitmentId}/report",
+                        patch("/api/recruitments/{recruitmentId}/report",
                                 1)))
                 .andExpect(status().isOk())
                 .andDo(document("recruitment/report-recruitment",
@@ -499,7 +499,7 @@ class RecruitmentControllerTest {
     @Test
     void closeRecruitment() throws Exception {
         mvc.perform(getRequestBuilder(
-                        patch("/recruitments/{recruitmentId}/close",
+                        patch("/api/recruitments/{recruitmentId}/close",
                                 1)))
                 .andExpect(status().isOk())
                 .andDo(document("recruitment/close-recruitment",
