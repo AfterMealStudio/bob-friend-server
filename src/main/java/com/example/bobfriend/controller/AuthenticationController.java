@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -57,8 +58,9 @@ public class AuthenticationController {
 
 
     @GetMapping("/verify")
-    public ResponseEntity verifyEmail(@RequestParam String email, @RequestParam String code) {
+    public ModelAndView verifyEmail(@RequestParam String email, @RequestParam String code) {
         verificationService.confirm(email, code);
-        return ResponseEntity.ok().build();
+        ModelAndView modelAndView = new ModelAndView("/pages/emailVerification.html");
+        return modelAndView;
     }
 }

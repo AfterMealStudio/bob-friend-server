@@ -12,7 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RequiredArgsConstructor
 @Service
-public class EmailVerificationService implements VerificationService{
+public class EmailVerificationService implements VerificationService {
     private final JavaMailSender mailSender;
     private final MemberRepository memberRepository;
 
@@ -23,7 +23,7 @@ public class EmailVerificationService implements VerificationService{
         Member member = getMember(email);
         String code = generateCode();
         member.setVerificationCode(code);
-        sendMail(email,"밥친구함 verification mail", makeMailText(member));
+        sendMail(email, "밥친구함 verification mail", makeMailText(member));
     }
 
     private String generateCode() {
@@ -66,7 +66,7 @@ public class EmailVerificationService implements VerificationService{
         StringBuffer mailText = new StringBuffer(
                 ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
         );
-        mailText.append("/api/?");
+        mailText.append("/api/auth/verify?");
         mailText.append("email=");
         mailText.append(member.getEmail());
         mailText.append("&code=");
