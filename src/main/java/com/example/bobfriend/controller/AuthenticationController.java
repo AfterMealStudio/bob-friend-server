@@ -4,7 +4,8 @@ import com.example.bobfriend.jwt.JwtTokenProvider;
 import com.example.bobfriend.model.dto.member.Response;
 import com.example.bobfriend.model.dto.member.Signin;
 import com.example.bobfriend.model.dto.member.Signup;
-import com.example.bobfriend.model.dto.token.*;
+import com.example.bobfriend.model.dto.token.Token;
+import com.example.bobfriend.model.dto.token.Validation;
 import com.example.bobfriend.model.exception.MemberDuplicatedException;
 import com.example.bobfriend.service.AuthService;
 import com.example.bobfriend.service.VerificationService;
@@ -19,7 +20,7 @@ import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class AuthenticationController {
     private final JwtTokenProvider tokenProvider;
     private final AuthService authService;
@@ -55,10 +56,9 @@ public class AuthenticationController {
     }
 
 
-    @GetMapping("")
+    @GetMapping("/verify")
     public ResponseEntity verifyEmail(@RequestParam String email, @RequestParam String code) {
-        boolean confirm = verificationService.confirm(email, code);
-        // 이메일 인증이 안됨 hashcode의 값이 달라짐
+        verificationService.confirm(email, code);
         return ResponseEntity.ok().build();
     }
 }
