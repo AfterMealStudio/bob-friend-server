@@ -4,8 +4,6 @@ import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Getter
 @Setter
 @Builder
@@ -16,7 +14,7 @@ public class Response {
     private Long id;
     private String email;
     private String nickname;
-    private LocalDate birth;
+    private Integer age;
     private Sex sex;
     private Integer reportCount;
     private Integer accumulatedReports;
@@ -28,12 +26,12 @@ public class Response {
         this.id = member.getId();
         this.email = member.getEmail();
         this.nickname = member.getNickname();
-        this.birth = member.getBirth();
+        this.age = member.getAge();
         this.sex = member.getSex();
         this.reportCount = member.getReportCount();
         this.accumulatedReports = member.getAccumulatedReports();
         this.rating = member.getRating();
-        this.agree = member.isAgree();
+        this.agree = member.getAgree();
         this.active = member.isActive();
     }
 

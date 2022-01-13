@@ -136,7 +136,7 @@ class RecruitmentControllerTest {
 
         PageImpl<SimpleResponse> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
-        given(recruitmentService.findAllByRestaurant(any(), any()))
+        given(recruitmentService.findAll(any()))
                 .willReturn(responsePage);
 
         mvc.perform(getRequestBuilder(
@@ -194,18 +194,21 @@ class RecruitmentControllerTest {
         String testRestaurantAddress = "testRestaurantAddress";
         PageImpl<SimpleResponse> responsePage =
                 new PageImpl<>(Arrays.asList(responseDto1));
-        given(recruitmentService.findAllByRestaurant(any(), any()))
+        given(recruitmentService.findAllByRestaurantAddress(any(), any()))
                 .willReturn(responsePage);
         mvc.perform(getRequestBuilder(
                         get("/recruitments"))
-                        .param("restaurantAddress", testRestaurantAddress))
+                .param("type","specific")
+                        .param("address", testRestaurantAddress))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
                 .andDo(document("recruitment/get-all-recruitments-by-address",
                         getDocumentRequest(),
                         getDocumentResponse(),
                         requestParameters(
-                                parameterWithName("restaurantAddress")
+                                parameterWithName("type")
+                                        .description("specific"),
+                                parameterWithName("address")
                                         .description("식당 주소")
                         ),
                         requestHeaders(
@@ -215,44 +218,44 @@ class RecruitmentControllerTest {
                 ));
     }
 
-    @Test
-    void getAllRecruitments_restaurant() throws Exception {
-        SimpleResponse responseDto1 =
-                new SimpleResponse(testRecruitment);
-        PageImpl<SimpleResponse> responsePage =
-                new PageImpl<>(Arrays.asList(responseDto1));
-
-        String testRestaurantName = "testRestaurantName";
-        String testRestaurantAddress = "testRestaurantAddress";
-
-        given(recruitmentService
-                .findAllByRestaurant(
-                        any(),
-                        any()))
-                .willReturn(responsePage);
-
-        mvc.perform(getRequestBuilder(
-                        get("/recruitments"))
-                        .param("restaurantAddress", testRestaurantAddress)
-                        .param("restaurantName", testRestaurantName)
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
-                .andDo(document("recruitment/get-all-recruitments-by-restaurant",
-                        getDocumentRequest(),
-                        getDocumentResponse(),
-                        requestParameters(
-                                parameterWithName("restaurantName")
-                                        .description("식당 이름").optional(),
-                                parameterWithName("restaurantAddress")
-                                        .description("식당 주소").optional()
-                        ),
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION)
-                                        .description("토큰")
-                        )
-                ));
-    }
+//    @Test
+//    void getAllRecruitments_restaurant() throws Exception {
+//        RecruitmentDto.ResponseList responseDto1 =
+//                new RecruitmentDto.ResponseList(testRecruitment);
+//        PageImpl<RecruitmentDto.ResponseList> responsePage =
+//                new PageImpl<>(Arrays.asList(responseDto1));
+//
+//        String testRestaurantName = "testRestaurantName";
+//        String testRestaurantAddress = "testRestaurantAddress";
+//
+//        given(recruitmentService
+//                .findAllByRestaurant(
+//                        any(),
+//                        any()))
+//                .willReturn(responsePage);
+//
+//        mvc.perform(getRequestBuilder(
+//                        get("/recruitments"))
+//                        .param("restaurantAddress", testRestaurantAddress)
+//                        .param("restaurantName", testRestaurantName)
+//                )
+//                .andExpect(status().isOk())
+//                .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
+//                .andDo(document("recruitment/get-all-recruitments-by-restaurant",
+//                        getDocumentRequest(),
+//                        getDocumentResponse(),
+//                        requestParameters(
+//                                parameterWithName("restaurantName")
+//                                        .description("식당 이름").optional(),
+//                                parameterWithName("restaurantAddress")
+//                                        .description("식당 주소").optional()
+//                        ),
+//                        requestHeaders(
+//                                headerWithName(HttpHeaders.AUTHORIZATION)
+//                                        .description("토큰")
+//                        )
+//                ));
+//    }
 
     @Test
     void getAllLocations() throws Exception {
@@ -261,7 +264,7 @@ class RecruitmentControllerTest {
 
         addressDto.setCount(1);
 
-        AddressCollection value = new AddressCollection(List.of(addressDto));
+        Addresses value = new Addresses(List.of(addressDto));
         given(recruitmentService.findAllLocations(any(), any(), any()))
                 .willReturn(value);
 

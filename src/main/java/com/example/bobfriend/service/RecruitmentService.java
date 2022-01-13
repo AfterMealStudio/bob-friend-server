@@ -64,11 +64,10 @@ public class RecruitmentService {
 
 
     @Transactional
-    public Page<SimpleResponse> findAllByRestaurant(
-            Condition.Search searchCondition,
-            Pageable pageable) {
+    public Page<SimpleResponse> findAllByRestaurantAddress(
+            String address, Pageable pageable) {
         return recruitmentRepository
-                .findAllByRestaurant(searchCondition, pageable)
+                .findAllByAddress(address, pageable)
                 .map(SimpleResponse::new);
     }
 
@@ -82,7 +81,7 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public AddressCollection findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
+    public Addresses findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
         Map<Address, Integer> addressMap = new HashMap();
 
         // 0.05가 지도 상에서 대충 500m 정도
@@ -104,7 +103,7 @@ public class RecruitmentService {
                 addressMap.entrySet()) {
             entry.getKey().setCount(entry.getValue());
         }
-        return new AddressCollection(new ArrayList<>(addressMap.keySet()));
+        return new Addresses(new ArrayList<>(addressMap.keySet()));
     }
 
     @Transactional
@@ -148,6 +147,10 @@ public class RecruitmentService {
         if (currentMember.equals(author)) {
             throw new AlreadyJoined(currentMember.getNickname());
         }
+
+        // 연령 체크
+        if (!recruitment.isAgeRestrictionSatisfied(currentMember.getAge()))
+            throw new RestrictionFailedException(currentMember.getEmail());
 
         if (!checkSexRestriction(recruitment, currentMember))
             throw new RestrictionFailedException(currentMember.getEmail());

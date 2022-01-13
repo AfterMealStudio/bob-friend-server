@@ -1,9 +1,15 @@
 package com.example.bobfriend.repository;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.entity.*;
+import com.example.bobfriend.model.entity.Member;
+import com.example.bobfriend.model.entity.Recruitment;
+import com.example.bobfriend.model.entity.Sex;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +37,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         return getPage(pageable, query);
     }
 
+
     @Override
     public Page<Recruitment> searchByContent(Condition.Search search, Pageable pageable) {
         JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
@@ -38,6 +45,7 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 betweenTime(search.getStart(), search.getEnd()));
         return getPage(pageable, query);
     }
+
 
     @Override
     public Page<Recruitment> searchByRestaurant(Condition.Search search, Pageable pageable) {
@@ -67,19 +75,15 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         return getPage(pageable, query);
     }
 
+
     @Override
-    public Page<Recruitment> findAll(Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates();
+    public Page<Recruitment> findAllByAddress(String address, Pageable pageable) {
+        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
+                eqRestaurantAddress(address)
+        );
         return getPage(pageable, query);
     }
 
-    @Override
-    public Page<Recruitment> findAllByRestaurant(Condition.Search searchCondition, Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
-                eqRestaurantName(searchCondition.getRestaurantName()),
-                eqRestaurantAddress(searchCondition.getRestaurantAddress()));
-        return getPage(pageable, query);
-    }
 
     @Override
     public Page<Recruitment> findAllAvailable(Member currentMember, Pageable pageable) {
@@ -89,9 +93,20 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
                 recruitment.members.contains(currentMember).not(),
                 recruitment.sexRestriction.eq(currentMember.getSex()).or(
                         recruitment.sexRestriction.eq(Sex.NONE)
-                ));
+                ),
+                betweenAgeRestrictionRange(currentMember));
         return getPage(pageable, query);
     }
+
+
+    private BooleanExpression betweenAgeRestrictionRange(Member currentMember) {
+        BooleanExpression restrictExist = recruitment.ageRestrictionStart.loe(currentMember.getAge())// less or equal
+                .and(recruitment.ageRestrictionEnd.goe(currentMember.getAge()));
+        BooleanExpression restrictNotExist = recruitment.ageRestrictionStart.isNull()
+                .and(recruitment.ageRestrictionEnd.isNull());
+        return restrictExist.or(restrictNotExist);// greater or equal
+    }
+
 
     @Override
     public Page<Recruitment> findAllJoined(Member currentMember, Pageable pageable) {
@@ -114,7 +129,8 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
 
     private JPAQuery<Recruitment> getFilteringQueryFromPredicates(Predicate... predicates) {
-        return getActiveRecruitments()
+        return jpaQueryFactory.selectFrom(recruitment)
+                .where(recruitment.active.eq(true))
                 .where(predicates);
     }
 
@@ -142,13 +158,18 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
         List list = where
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(pageable.getSort().get()
+                        .map(order -> {
+                            Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
+                            Path<Recruitment> fieldPath =
+                                    Expressions.path(
+                                            Recruitment.class,
+                                            recruitment,
+                                            order.getProperty());
+                            return new OrderSpecifier(direction, fieldPath);
+                        }).toArray(OrderSpecifier[]::new))
                 .fetch();
         return PageableExecutionUtils.getPage(list, pageable, () -> where.fetchCount());
     }
 
-    private JPAQuery<Recruitment> getActiveRecruitments() {
-        return jpaQueryFactory.selectFrom(recruitment).where(
-                recruitment.active.eq(true)
-        );
-    }
 }

@@ -12,19 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -65,6 +66,7 @@ public class RecruitmentCustomRepositoryTest {
                 .author(testAuthor)
                 .totalNumberOfPeople(4)
                 .sexRestriction(Sex.FEMALE)
+                .members(Set.of(testAuthor))
                 .restaurantName("testRestaurantName 1")
                 .restaurantAddress("testRestaurantAddress 1")
                 .latitude(0.0)
@@ -78,6 +80,7 @@ public class RecruitmentCustomRepositoryTest {
                 .author(testAuthor)
                 .totalNumberOfPeople(4)
                 .sexRestriction(Sex.FEMALE)
+                .members(Set.of(testAuthor))
                 .restaurantName("testRestaurantName 2")
                 .restaurantAddress("testRestaurantAddress 2")
                 .latitude(0.0)
@@ -91,13 +94,6 @@ public class RecruitmentCustomRepositoryTest {
 
     }
 
-
-    @Test
-    void findAllTest() {
-        Page<Recruitment> all = recruitmentCustomRepository.findAll(Pageable.ofSize(10));
-
-        assertThat(all.getContent().size(), equalTo(2));
-    }
 
     @Test
     void searchByTitleTest() {
@@ -240,19 +236,17 @@ public class RecruitmentCustomRepositoryTest {
         assertThat(allByAuthor.getContent().size(), equalTo(2));
     }
 
+
     @Test
-    void findAllByRestaurantTest() {
-        String restaurantName = testRecruitment1.getRestaurantName();
+    void findAllByAddressTest() {
         String restaurantAddress = testRecruitment1.getRestaurantAddress();
-        Condition.Search search = new Condition.Search();
-        search.setRestaurantName(restaurantName);
-        search.setRestaurantAddress(restaurantAddress);
 
         Page<Recruitment> allByRestaurant =
                 recruitmentCustomRepository
-                        .findAllByRestaurant(search, Pageable.ofSize(10));
+                        .findAllByAddress(restaurantAddress, Pageable.ofSize(10));
         assertThat(allByRestaurant.getContent().size(), equalTo(1));
     }
+
 
     @Test
     void findAllAvailableTest() {
@@ -261,27 +255,50 @@ public class RecruitmentCustomRepositoryTest {
                 .nickname("testAuthor")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
+                .birth(LocalDate.parse(
+                        "1997-06-04"
+                ))
                 .build();
 
         Recruitment recruitment1 = Recruitment.builder()
                 .title("test")
                 .content("test")
-                .author(member1)
+                .author(testAuthor)
                 .totalNumberOfPeople(4)
                 .sexRestriction(Sex.FEMALE)
+                .members(Set.of(testAuthor))
                 .restaurantName("test")
                 .restaurantAddress("testRestaurantAddress")
                 .latitude(0.0)
                 .longitude(0.0)
                 .appointmentTime(LocalDateTime.now().plusHours(4))
                 .build();
+
+        Recruitment recruitment2 = Recruitment.builder()
+                .title("test")
+                .content("test")
+                .author(testAuthor)
+                .totalNumberOfPeople(4)
+                .sexRestriction(Sex.FEMALE)
+                .members(Set.of(testAuthor))
+                .ageRestrictionStart(0)
+                .ageRestrictionEnd(20)
+                .restaurantName("test")
+                .restaurantAddress("testRestaurantAddress")
+                .latitude(0.0)
+                .longitude(0.0)
+                .appointmentTime(LocalDateTime.now().plusHours(4))
+                .build();
+
         memberRepository.save(member1);
         recruitmentRepository.save(recruitment1);
+        recruitmentRepository.save(recruitment2);
+
         Page<Recruitment> allAvailable =
                 recruitmentCustomRepository
                         .findAllAvailable(member1, pageable);
-        assertThat(allAvailable.getContent().size(), equalTo(2));
+
+        assertThat(allAvailable.getContent().size(), equalTo(3));
     }
 
     @Test
@@ -291,7 +308,9 @@ public class RecruitmentCustomRepositoryTest {
                 .nickname("testAuthor")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
+                .birth(LocalDate.parse(
+                        "1997-06-04"
+                ))
                 .build();
 
         Recruitment recruitment1 = Recruitment.builder()
@@ -349,6 +368,50 @@ public class RecruitmentCustomRepositoryTest {
         }
 
         assertThat(allByLocation.size(), equalTo(cnt));
+    }
+
+
+    @Test
+    void findAllSortTest() {
+        recruitmentRepository.deleteAll();
+
+        List recruitmentList = new ArrayList();
+        long createdAt = 202111011726L;
+        for (int i = 0; i < 20; i++) {
+            createdAt += 10000L;
+            recruitmentList.add(Recruitment.builder()
+                    .title("sort")
+                    .content("content 1")
+                    .author(testAuthor)
+                    .totalNumberOfPeople(4)
+                    .sexRestriction(Sex.FEMALE)
+                    .members(Set.of(testAuthor))
+                    .restaurantName("testRestaurantName 1")
+                    .restaurantAddress("testRestaurantAddress 1")
+                    .latitude(0.0)
+                    .longitude(0.0)
+                    .appointmentTime(
+                            LocalDateTime.parse(String.valueOf(createdAt),
+                                    formatter))
+                    .createdAt(LocalDateTime.parse(String.valueOf(createdAt),
+                            formatter))
+                    .build());
+        }
+        recruitmentRepository.saveAll(recruitmentList);
+        Pageable pageable = PageRequest.of(0, 10,
+                Sort.Direction.ASC, "createdAt"
+        );
+        Page<Recruitment> allByAuthor = recruitmentCustomRepository.findAllByAuthor(testAuthor, pageable);
+        Iterator<Recruitment> iterator = allByAuthor.iterator();
+        Recruitment prev = iterator.next();
+        while (iterator.hasNext()) {
+            Recruitment current = iterator.next();
+            assertTrue(
+                    current.getCreatedAt().isAfter(
+                            prev.getCreatedAt()));
+            prev = current;
+
+        }
     }
 
 }

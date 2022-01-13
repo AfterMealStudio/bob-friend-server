@@ -48,8 +48,7 @@ public class AuthService {
 
         Authority authority = Authority.ROLE_USER;
 
-        Member member = memberSignupDto
-                .convertToEntityWithPasswordEncoder(passwordEncoder);
+        Member member = memberService.convertToEntity(memberSignupDto);
         member.setAuthorities(Collections.singleton(authority));
         Member save = memberRepository.save(member);
 
@@ -71,7 +70,7 @@ public class AuthService {
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .id(authentication.getName())
-                .token(tokenDto.getRefreshToken())
+                .refreshToken(tokenDto.getRefreshToken())
                 .build();
 
         refreshTokenRepository.save(refreshToken);
@@ -87,26 +86,22 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenRepository.findById(authentication.getName())
                 .orElseThrow(RefreshTokenNotFoundException::new);
 
-        if (!refreshToken.getToken().equals(tokenDto.getRefreshToken())) {
+        if (!refreshToken.getRefreshToken().equals(tokenDto.getRefreshToken())) {
             throw new RefreshTokenNotMatchException();
         }
 
-        if (!tokenProvider.validateRefreshToken(refreshToken.getToken())) {
+        if (!tokenProvider.validateRefreshToken(refreshToken.getRefreshToken())) {
             throw new JwtInvalidException();
         }
 
         Token token = tokenProvider.createToken(authentication);
 
-        refreshTokenRepository.save(refreshToken.updateToken(tokenDto.getRefreshToken()));
+        refreshToken.setRefreshToken(token.getRefreshToken());
 
         return token;
     }
 
 
-    public void checkPassword(Delete delete) {
-        Member currentMember = memberService.getCurrentMember();
-        getAuthentication(currentMember.getEmail(), delete.getPassword());
-    }
 
     private Authentication getAuthentication(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
