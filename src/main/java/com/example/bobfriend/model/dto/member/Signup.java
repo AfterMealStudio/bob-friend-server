@@ -1,9 +1,8 @@
 package com.example.bobfriend.model.dto.member;
 
-import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
+import com.example.bobfriend.validator.Password;
 import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -16,17 +15,17 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Signup  extends Request{
+public class Signup extends Request {
     @Email
-    private String email;
+    protected String email;
     @NotBlank
-    private String nickname;
-    @NotBlank
-    private String password;
+    protected String nickname;
+    @Password
+    protected String password;
     @NotNull
-    private Sex sex;
+    protected Sex sex;
     @Past
-    private LocalDate birth;
+    protected LocalDate birth;
     @NotNull
-    private Boolean agree;
+    protected Boolean agree;
 }
