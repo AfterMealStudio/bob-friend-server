@@ -109,12 +109,11 @@ public class AuthenticationControllerTest {
         Signup signup = Signup.builder()
                 .email(testMember.getEmail())
                 .nickname(testMember.getNickname())
-                .password("1234")
                 .birth(testMember.getBirth())
+                .password("1234567890!@#$asd")
                 .sex(Sex.MALE)
                 .agree(true)
                 .build();
-
         Response response = Response.builder()
                 .id(testMember.getId())
                 .email(testMember.getEmail())
