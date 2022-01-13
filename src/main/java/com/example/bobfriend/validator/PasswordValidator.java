@@ -22,8 +22,14 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
         if (isContainSpecialCharacter(s)) count++;
 
         int length = s.length();
+        if (length == 0) {
+            constraintValidatorContext
+                    .buildConstraintViolationWithTemplate("{password.too_short}");
+        }
         if (length >= 10 && count >= 2) return true;
         else if (length >= 8 && count >= 3) return true;
+        constraintValidatorContext
+                .buildConstraintViolationWithTemplate("{password.message}");
 
         return false;
     }
