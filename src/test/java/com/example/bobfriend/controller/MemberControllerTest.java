@@ -3,7 +3,7 @@ package com.example.bobfriend.controller;
 import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
-import com.example.bobfriend.service.AuthService;
+import com.example.bobfriend.service.EmailService;
 import com.example.bobfriend.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ class MemberControllerTest {
     @Autowired
     ObjectMapper objectMapper;
     @MockBean
-    AuthService authService;
+    EmailService emailService;
     @MockBean
     MemberService memberService;
 

@@ -31,6 +31,7 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2',
             'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
+    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
     implementation 'com.querydsl:querydsl-jpa:4.4.0'
 
@@ -63,7 +64,7 @@ test {
 
 asciidoctor {
     dependsOn test
-    attributes 'snippets':snippetsDir
+    attributes 'snippets': snippetsDir
     inputs.dir snippetsDir
 }
 
@@ -92,8 +93,9 @@ compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
 }
 tasks.withType(JavaCompile) {
-    options.generatedSourceOutputDirectory = file(querydslDir) }
-compileQuerydsl.doFirst { if(file(querydslDir).exists() ) delete(file(querydslDir)) }
+    options.generatedSourceOutputDirectory = file(querydslDir)
+}
+compileQuerydsl.doFirst { if (file(querydslDir).exists()) delete(file(querydslDir)) }
 compileQuerydsl.doLast {
     file(querydslDir).delete()
 }

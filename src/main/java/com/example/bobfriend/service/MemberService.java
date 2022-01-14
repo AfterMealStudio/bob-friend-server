@@ -5,8 +5,10 @@ import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.exception.MemberDuplicatedException;
+import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -174,5 +176,37 @@ public class MemberService {
                 .agree(request.getAgree())
                 .build();
     }
+
+
+    @Transactional
+    public String resetPassword(ResetPassword resetPassword) {
+        String email = resetPassword.getEmail();
+        Member member = getMember(email);
+        if (!member.getBirth().equals(resetPassword.getBirth()))
+            throw new MemberNotAllowedException(member.getEmail());
+
+        String newPassword = generatePassword();
+
+        Member incoming = convertToEntity(new Request() {
+            @Override
+            public String getPassword() {
+                return newPassword;
+            }
+        });
+
+        member.update(incoming);
+
+        return newPassword;
+    }
+
+
+    private String generatePassword() {
+        return new RandomStringGenerator.Builder()
+                .withinRange('0', 'z')
+                .filteredBy(codePoint -> codePoint != '\\')
+                .build()
+                .generate(10);
+    }
+
 
 }
