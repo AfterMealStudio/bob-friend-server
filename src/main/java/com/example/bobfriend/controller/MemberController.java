@@ -21,7 +21,6 @@ public class MemberController {
     private final EmailService emailService;
 
 
-
     @GetMapping("/email/{email}")
     public ResponseEntity checkEmail(@PathVariable String email) {
         return ResponseEntity.ok(memberService.checkExistByEmail(email));
@@ -66,7 +65,7 @@ public class MemberController {
     }
 
 
-    @PutMapping("/user/password")
+    @PutMapping("/password")
     public ResponseEntity resetPassword(@RequestBody ResetPassword resetPassword) {
         String newPassword = memberService.resetPassword(resetPassword);
         emailService.sendMail(resetPassword.getEmail(), "밥친구함 password 관련 메일", newPassword);
