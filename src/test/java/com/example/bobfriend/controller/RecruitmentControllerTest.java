@@ -262,7 +262,7 @@ class RecruitmentControllerTest {
 
         addressDto.setCount(1);
 
-        AddressCollection value = new AddressCollection(List.of(addressDto));
+        Addresses value = new Addresses(List.of(addressDto));
         given(recruitmentService.findAllLocations(any(), any(), any()))
                 .willReturn(value);
 

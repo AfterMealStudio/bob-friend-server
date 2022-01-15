@@ -6,10 +6,10 @@ import lombok.Setter;
 import java.util.Collection;
 @Getter
 @Setter
-public class AddressCollection {
+public class Addresses {
     private Collection<Address> addresses;
 
-    public AddressCollection(Collection<Address> addresses) {
+    public Addresses(Collection<Address> addresses) {
         this.addresses = addresses;
     }
 }

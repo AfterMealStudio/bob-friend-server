@@ -1,9 +1,6 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.member.Delete;
-import com.example.bobfriend.model.dto.member.Response;
-import com.example.bobfriend.model.dto.member.Score;
-import com.example.bobfriend.model.dto.member.Update;
+import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -174,6 +171,24 @@ public class MemberServiceTest {
         Response updatedMember = memberService.update(incoming);
 
         assertThat(updatedMember.getNickname(), equalTo(incoming.getNickname()));
+    }
+
+
+    @Test
+    void resetPasswordTest() {
+        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(testMember));
+        when(passwordEncoder.encode(any()))
+                .thenReturn("new-password");
+        ResetPassword resetPasswordDto = new ResetPassword();
+        resetPasswordDto.setEmail(testMember.getEmail());
+        resetPasswordDto.setBirth(testMember.getBirth());
+
+        String resetPassword = memberService.resetPassword(resetPasswordDto);
+
+        assertThat(testMember.getPassword(), equalTo(
+                passwordEncoder.encode(resetPassword)
+        ));
     }
 
 

@@ -12,20 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -368,6 +368,50 @@ public class RecruitmentCustomRepositoryTest {
         }
 
         assertThat(allByLocation.size(), equalTo(cnt));
+    }
+
+
+    @Test
+    void findAllSortTest() {
+        recruitmentRepository.deleteAll();
+
+        List recruitmentList = new ArrayList();
+        long createdAt = 202111011726L;
+        for (int i = 0; i < 20; i++) {
+            createdAt += 10000L;
+            recruitmentList.add(Recruitment.builder()
+                    .title("sort")
+                    .content("content 1")
+                    .author(testAuthor)
+                    .totalNumberOfPeople(4)
+                    .sexRestriction(Sex.FEMALE)
+                    .members(Set.of(testAuthor))
+                    .restaurantName("testRestaurantName 1")
+                    .restaurantAddress("testRestaurantAddress 1")
+                    .latitude(0.0)
+                    .longitude(0.0)
+                    .appointmentTime(
+                            LocalDateTime.parse(String.valueOf(createdAt),
+                                    formatter))
+                    .createdAt(LocalDateTime.parse(String.valueOf(createdAt),
+                            formatter))
+                    .build());
+        }
+        recruitmentRepository.saveAll(recruitmentList);
+        Pageable pageable = PageRequest.of(0, 10,
+                Sort.Direction.ASC, "createdAt"
+        );
+        Page<Recruitment> allByAuthor = recruitmentCustomRepository.findAllByAuthor(testAuthor, pageable);
+        Iterator<Recruitment> iterator = allByAuthor.iterator();
+        Recruitment prev = iterator.next();
+        while (iterator.hasNext()) {
+            Recruitment current = iterator.next();
+            assertTrue(
+                    current.getCreatedAt().isAfter(
+                            prev.getCreatedAt()));
+            prev = current;
+
+        }
     }
 
 }
