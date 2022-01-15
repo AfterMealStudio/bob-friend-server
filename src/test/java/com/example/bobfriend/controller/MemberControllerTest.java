@@ -60,7 +60,7 @@ class MemberControllerTest {
                 .birth(LocalDate.now())
                 .agree(true)
                 .active(true)
-                .emailVerified(false)
+                .verified(false)
                 .rating(0.0)
                 .numberOfJoin(0)
                 .build();
@@ -111,7 +111,7 @@ class MemberControllerTest {
     public void checkEmail() throws Exception {
         when(memberService.checkExistByEmail(any()))
                 .thenReturn(new DuplicationCheck(false));
-        mvc.perform(get("/api/email/{email}", testMember.getEmail()))
+        mvc.perform(get("/api/user/email/{email}", testMember.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(
                         new DuplicationCheck(false)
@@ -132,7 +132,7 @@ class MemberControllerTest {
                 .thenReturn(
                         new DuplicationCheck(false)
                 );
-        mvc.perform(get("/api/nickname/{nickname}", testMember.getNickname()))
+        mvc.perform(get("/api/user/nickname/{nickname}", testMember.getNickname()))
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json(objectMapper.writeValueAsString(

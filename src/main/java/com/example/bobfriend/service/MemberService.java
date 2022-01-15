@@ -46,16 +46,6 @@ public class MemberService {
 
 
     @Transactional
-    public void checkMemberWithCode(String email, String code) {
-        Member member = memberRepository.findMemberByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email));
-        if (Integer.parseInt(code) == (member.hashCode())) {
-            member.emailVerify();
-        }
-    }
-
-
-    @Transactional
     public void delete(Delete delete) {
         Member currentMember = getCurrentMember();
 

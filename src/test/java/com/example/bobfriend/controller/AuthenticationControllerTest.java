@@ -9,10 +9,10 @@ import com.example.bobfriend.model.dto.token.Validation;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
+import com.example.bobfriend.service.VerificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,7 +22,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -33,7 +32,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,8 +54,8 @@ public class AuthenticationControllerTest {
     ObjectMapper objectMapper;
 
     Member testMember;
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    @MockBean
+    private VerificationService verificationService;
 
     @BeforeEach
     public void setup() {
@@ -70,7 +70,7 @@ public class AuthenticationControllerTest {
                 .rating(0.0)
                 .agree(true)
                 .active(true)
-                .emailVerified(false)
+                .verified(false)
                 .build();
     }
 
@@ -85,7 +85,7 @@ public class AuthenticationControllerTest {
                 .password(testMember.getPassword())
                 .build();
 
-        mvc.perform(post("/api/signin")
+        mvc.perform(post("/api/auth/signin")
                         .content(objectMapper.writeValueAsString(login))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -130,7 +130,7 @@ public class AuthenticationControllerTest {
                 .thenReturn(response);
 
 
-        mvc.perform(post("/api/signup")
+        mvc.perform(post("/api/auth/signup")
                         .content(objectMapper.writeValueAsString(signup))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -147,14 +147,14 @@ public class AuthenticationControllerTest {
 
 
     @Test
-    void reissueTest() throws Exception {
+    void issueTest() throws Exception {
         Token tokenDto = Token.builder()
                 .accessToken("new-access-token-example")
                 .refreshToken("new-refresh-token-example")
                 .build();
         when(authService.issueToken(any()))
                 .thenReturn(tokenDto);
-        mvc.perform(post("/api/issue")
+        mvc.perform(post("/api/auth/issue")
                         .content(objectMapper.writeValueAsString(
                                 Token.builder()
                                         .accessToken("old-access-token")
@@ -177,7 +177,7 @@ public class AuthenticationControllerTest {
         when(tokenProvider.validateAccessToken(any()))
                 .thenReturn(true);
 
-        mvc.perform(getRequestBuilder(get("/api/validate")))
+        mvc.perform(getRequestBuilder(get("/api/auth/validate")))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(

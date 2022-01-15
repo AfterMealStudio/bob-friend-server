@@ -8,7 +8,6 @@ import com.example.bobfriend.service.EmailService;
 import com.example.bobfriend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,17 +15,12 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
 
 
-    @GetMapping("")
-    public ResponseEntity verifyEmail(@RequestParam String email, @RequestParam String code) {
-        memberService.checkMemberWithCode(email, code);
-        return ResponseEntity.ok().build();
-    }
 
     @GetMapping("/email/{email}")
     public ResponseEntity checkEmail(@PathVariable String email) {
@@ -38,19 +32,17 @@ public class MemberController {
         return ResponseEntity.ok(memberService.checkExistByNickname(nickname));
     }
 
-    @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @GetMapping
     public ResponseEntity getMyUserInfo() throws UsernameNotFoundException {
         return ResponseEntity.ok(memberService.getMyMemberWithAuthorities());
     }
 
-    @GetMapping("/user/{username}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{username}")
     public ResponseEntity getUserInfo(@PathVariable String username) throws UsernameNotFoundException {
         return ResponseEntity.ok(memberService.getMemberWithAuthorities(username));
     }
 
-    @DeleteMapping("/user")
+    @DeleteMapping
     public ResponseEntity delete(
             @Valid @RequestBody Delete delete) {
         memberService.delete(delete);
@@ -58,14 +50,14 @@ public class MemberController {
     }
 
 
-    @PutMapping("/user")
+    @PutMapping
     public ResponseEntity updateUserInfo(
             @RequestBody Update update) {
         return ResponseEntity.ok(memberService.update(update));
     }
 
 
-    @PostMapping("/user/{nickname}/score")
+    @PostMapping("/{nickname}/score")
     public ResponseEntity rateMember(
             @PathVariable String nickname,
             @Valid @RequestBody Score scoreDto) {
