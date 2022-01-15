@@ -73,7 +73,8 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/user/reset")
+
+    @PutMapping("/user/password")
     public ResponseEntity resetPassword(@RequestBody ResetPassword resetPassword) {
         String newPassword = memberService.resetPassword(resetPassword);
         emailService.sendMail(resetPassword.getEmail(), "밥친구함 password 관련 메일", newPassword);
