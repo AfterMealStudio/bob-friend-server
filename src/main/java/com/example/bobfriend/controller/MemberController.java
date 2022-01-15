@@ -1,9 +1,10 @@
 package com.example.bobfriend.controller;
 
 import com.example.bobfriend.model.dto.member.Delete;
+import com.example.bobfriend.model.dto.member.ResetPassword;
 import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.dto.member.Update;
-import com.example.bobfriend.service.AuthService;
+import com.example.bobfriend.service.EmailService;
 import com.example.bobfriend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 public class MemberController {
     private final MemberService memberService;
+    private final EmailService emailService;
+
 
     @GetMapping("")
     public ResponseEntity verifyEmail(@RequestParam String email, @RequestParam String code) {
@@ -69,4 +72,13 @@ public class MemberController {
         memberService.rateMember(nickname, scoreDto);
         return ResponseEntity.ok().build();
     }
+
+
+    @PutMapping("/user/password")
+    public ResponseEntity resetPassword(@RequestBody ResetPassword resetPassword) {
+        String newPassword = memberService.resetPassword(resetPassword);
+        emailService.sendMail(resetPassword.getEmail(), "밥친구함 password 관련 메일", newPassword);
+        return ResponseEntity.ok().build();
+    }
+
 }

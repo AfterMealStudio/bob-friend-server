@@ -3,12 +3,11 @@ package com.example.bobfriend.controller;
 import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
-import com.example.bobfriend.service.AuthService;
+import com.example.bobfriend.service.EmailService;
 import com.example.bobfriend.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -43,13 +42,12 @@ class MemberControllerTest {
     @Autowired
     ObjectMapper objectMapper;
     @MockBean
-    AuthService authService;
+    EmailService emailService;
     @MockBean
     MemberService memberService;
 
     Member testMember;
-    @Mock
-    private PasswordEncoder passwordEncoder;
+
 
     @BeforeEach
     public void setup() {
@@ -223,6 +221,26 @@ class MemberControllerTest {
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )));
+    }
+
+
+    @Test
+    void resetPasswordTest() throws Exception {
+        String newPassword = "new-password";
+        when(memberService.resetPassword(any()))
+                .thenReturn(newPassword);
+        ResetPassword resetPassword = new ResetPassword();
+        resetPassword.setEmail(testMember.getEmail());
+        resetPassword.setBirth(testMember.getBirth());
+
+        mvc.perform(put("/api/user/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(resetPassword)))
+                .andExpect(status().isOk())
+                .andDo(document("member/reset-password",
+                        getDocumentRequest(),
+                        getDocumentResponse()));
     }
 
 }
