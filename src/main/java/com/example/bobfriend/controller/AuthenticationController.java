@@ -63,4 +63,11 @@ public class AuthenticationController {
         ModelAndView modelAndView = new ModelAndView("/pages/emailVerification.html");
         return modelAndView;
     }
+
+
+    @GetMapping("/verify/retry")
+    public ResponseEntity retryVerify(@RequestParam String email) {
+        verificationService.sendVerification(email);
+        return ResponseEntity.ok().build();
+    }
 }
