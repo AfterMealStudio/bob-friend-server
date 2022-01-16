@@ -131,7 +131,7 @@ public class ReplyControllerTest {
         when(replyService.create(any(), any()))
                 .thenReturn(responseDto);
 
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         post("/recruitments/{recruitmentId}/comments/{commentId}/replies", 1, 1))
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
@@ -154,7 +154,7 @@ public class ReplyControllerTest {
 
     @Test
     void deleteReplyTest() throws Exception {
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         delete("/recruitments/{recruitmentId}" +
                                         "/comments/{commentId}" +
                                         "/replies/{replyId}",
@@ -177,7 +177,7 @@ public class ReplyControllerTest {
 
     @Test
     void reportReply() throws Exception {
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         patch(
                                 "/recruitments/{recruitmentId}" +
                                         "/comments/{commentId}" +

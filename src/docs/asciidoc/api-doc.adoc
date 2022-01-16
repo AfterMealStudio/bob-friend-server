@@ -149,10 +149,11 @@ include::{snippets}/recruitment/get-all-recruitments-locations/http-response.ado
 
 ==== 주소로 약속 조회
 
-```
+[source]
+----
 아래의 예는 type=specific인 경우를 나타낸다. 파라미터로 address가 추가로 주어져야 한다.
 
-```
+----
 
 request::
 include::{snippets}/recruitment/get-all-recruitments-by-address/http-request.adoc[]

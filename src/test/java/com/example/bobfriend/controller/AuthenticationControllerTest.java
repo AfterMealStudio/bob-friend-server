@@ -179,7 +179,7 @@ public class AuthenticationControllerTest {
         when(tokenProvider.validateAccessToken(any()))
                 .thenReturn(true);
 
-        mvc.perform(getRequestBuilder(get("/api/auth/validate")))
+        mvc.perform(requestBuilderWithAuthorizationHeader(get("/api/auth/validate")))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(
@@ -197,7 +197,7 @@ public class AuthenticationControllerTest {
 
     @Test
     void verifyEmailTest() throws Exception {
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         get("/api/auth/verify")
                                 .param("email", "testEmail@test.com")
                                 .param("code", "testCode")))
@@ -216,7 +216,7 @@ public class AuthenticationControllerTest {
 
     @Test
     void verifyEmailRetryTest() throws Exception {
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         get("/api/auth/verify/retry")
                                 .param("email", "testEmail@test.com")))
                 .andExpect(status().isOk())

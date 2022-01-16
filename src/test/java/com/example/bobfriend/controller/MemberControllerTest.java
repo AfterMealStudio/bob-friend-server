@@ -71,7 +71,7 @@ class MemberControllerTest {
         Response responseDto = new Response(testMember);
         when(memberService.getMyMemberWithAuthorities())
                 .thenReturn(responseDto);
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         get("/api/user"))
                 )
                 .andExpect(status().isOk())
@@ -90,7 +90,7 @@ class MemberControllerTest {
         Response responseDto = new Response(testMember);
         when(memberService.getMemberWithAuthorities(any()))
                 .thenReturn(responseDto);
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         get("/api/user/{email}", testMember.getEmail()))
                 )
                 .andExpect(status().isOk())
@@ -152,7 +152,7 @@ class MemberControllerTest {
     @Test
     void deleteMember() throws Exception {
         Delete delete = new Delete(testMember.getPassword());
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         delete("/api/user"))
                         .content(objectMapper.writeValueAsString(delete)))
                 .andExpect(status().isOk())
@@ -169,7 +169,7 @@ class MemberControllerTest {
     void rateMemberTest() throws Exception {
         Score rate = new Score();
         rate.setScore(3.2);
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         post("/api/user/{nickname}/score", testMember.getNickname()))
                         .content(objectMapper.writeValueAsString(rate)))
                 .andExpect(status().isOk())
@@ -207,7 +207,7 @@ class MemberControllerTest {
         when(memberService.update(any()))
                 .thenReturn(response);
 
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         put("/api/user")
                                 .content(
                                         objectMapper.writeValueAsString(update))))
