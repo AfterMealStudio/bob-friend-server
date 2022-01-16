@@ -17,9 +17,16 @@ public interface ApiDocumentUtils {
     }
 
 
-    static MockHttpServletRequestBuilder getRequestBuilder(MockHttpServletRequestBuilder mockHttpServletRequestBuilder) {
+    static MockHttpServletRequestBuilder requestBuilderWithAuthorizationHeader(MockHttpServletRequestBuilder mockHttpServletRequestBuilder) {
         return mockHttpServletRequestBuilder
                 .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3cxNTUyQG5hdmVyLmNvbSIsInJvbGVzIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjM1MzEzNjA5fQ.ljbhPUb2lQQ700-sUftbJUX_taxAnaVR4fVwCJDLi2s")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON);
+    }
+
+
+    static MockHttpServletRequestBuilder requestBuilderWithHeader(MockHttpServletRequestBuilder mockHttpServletRequestBuilder) {
+        return mockHttpServletRequestBuilder
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
     }

@@ -32,6 +32,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -177,7 +179,7 @@ public class AuthenticationControllerTest {
         when(tokenProvider.validateAccessToken(any()))
                 .thenReturn(true);
 
-        mvc.perform(getRequestBuilder(get("/api/auth/validate")))
+        mvc.perform(requestBuilderWithAuthorizationHeader(get("/api/auth/validate")))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(
@@ -189,6 +191,41 @@ public class AuthenticationControllerTest {
                         getDocumentResponse(),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )));
+    }
+
+
+    @Test
+    void verifyEmailTest() throws Exception {
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        get("/api/auth/verify")
+                                .param("email", "testEmail@test.com")
+                                .param("code", "testCode")))
+                .andExpect(status().isOk())
+                .andDo(document("auth/verify-email",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestParameters(
+                                parameterWithName("email")
+                                        .description("이메일"),
+                                parameterWithName("code")
+                                        .description("인증코드")
+                        )));
+    }
+
+
+    @Test
+    void verifyEmailRetryTest() throws Exception {
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        get("/api/auth/verify/retry")
+                                .param("email", "testEmail@test.com")))
+                .andExpect(status().isOk())
+                .andDo(document("auth/verify-email-retry",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestParameters(
+                                parameterWithName("email")
+                                        .description("이메일")
                         )));
     }
 }

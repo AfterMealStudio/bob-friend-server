@@ -132,7 +132,7 @@ public class CommentControllerTest {
         when(commentService.getAllCommentByRecruitmentId(any()))
                 .thenReturn(responseList);
 
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         get("/recruitments/{recruitmentId}/comments", 1)))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
@@ -159,7 +159,7 @@ public class CommentControllerTest {
         when(commentService.create(any(), any()))
                 .thenReturn(responseDto);
 
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         post("/recruitments/{recruitmentId}/comments", 1))
                         .content(objectMapper.writeValueAsString(requestDto))
                 )
@@ -181,7 +181,7 @@ public class CommentControllerTest {
 
     @Test
     void reportComment() throws Exception {
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         patch("/recruitments/{recruitmentId}/comments/{commentId}/report",
                                 1, 1)))
                 .andExpect(status().isOk())
@@ -201,7 +201,7 @@ public class CommentControllerTest {
 
     @Test
     void deleteCommentTest() throws Exception {
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         delete("/recruitments/{recruitmentId}" +
                                 "/comments/{commentId}", 1, 1)))
                 .andExpect(status().isOk())
@@ -217,9 +217,6 @@ public class CommentControllerTest {
                         )
                 ));
     }
-
-
-
 
 
 }
