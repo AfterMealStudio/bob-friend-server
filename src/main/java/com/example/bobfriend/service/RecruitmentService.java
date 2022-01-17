@@ -1,6 +1,5 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.Condition;
 import com.example.bobfriend.model.dto.recruitment.*;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
@@ -89,7 +88,6 @@ public class RecruitmentService {
 
         return new DetailResponse(recruitment);
     }
-
 
     public void reportById(Long recruitmentId) {
         Recruitment recruitment = getRecruitment(recruitmentId);
