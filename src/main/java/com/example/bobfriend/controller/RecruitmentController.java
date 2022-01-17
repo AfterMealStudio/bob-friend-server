@@ -50,7 +50,7 @@ public class RecruitmentController {
                         .findAllAvailable(pageable);
                 break;
             case specific: // 특정 위치에 있는
-                responseDtoList = recruitmentService
+                responseDtoList = recruitmentFindService
                         .findAllByRestaurantAddress(address, pageable);
                 break;
             case all: // 전체
@@ -119,7 +119,7 @@ public class RecruitmentController {
             Condition.Search searchCondition,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        Page<DetailResponse> searchResult = null;
+        Page<SimpleResponse> searchResult = null;
         switch (category) {
             case place:
                 searchResult = recruitmentSearchService.searchRestaurant(searchCondition, pageable);

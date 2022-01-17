@@ -1,7 +1,9 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.dto.RecruitmentDto;
+import com.example.bobfriend.model.dto.recruitment.Address;
+import com.example.bobfriend.model.dto.recruitment.Addresses;
+import com.example.bobfriend.model.dto.recruitment.DetailResponse;
+import com.example.bobfriend.model.dto.recruitment.SimpleResponse;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.exception.RecruitmentNotActiveException;
@@ -22,41 +24,41 @@ public class RecruitmentFindService {
     private final MemberService memberService;
 
     @Transactional
-    public RecruitmentDto.Response findById(Long recruitmentId) {
+    public DetailResponse findById(Long recruitmentId) {
         Recruitment recruitment = getRecruitment(recruitmentId);
-        return new RecruitmentDto.Response(recruitment);
+        return new DetailResponse(recruitment);
     }
 
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAll(Pageable pageable) {
+    public Page<SimpleResponse> findAll(Pageable pageable) {
         return recruitmentRepository.findAll(pageable)
-                .map(RecruitmentDto.ResponseList::new);
+                .map(SimpleResponse::new);
     }
 
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllByRestaurant(
-            Condition.Search searchCondition,
+    public Page<SimpleResponse> findAllByRestaurantAddress(
+            String address,
             Pageable pageable) {
         return recruitmentRepository
-                .findAllByRestaurant(searchCondition, pageable)
-                .map(RecruitmentDto.ResponseList::new);
+                .findAllByAddress(address, pageable)
+                .map(SimpleResponse::new);
     }
 
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllAvailable(Pageable pageable) {
+    public Page<SimpleResponse> findAllAvailable(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         return recruitmentRepository
                 .findAllAvailable(currentMember, pageable)
-                .map(RecruitmentDto.ResponseList::new);
+                .map(SimpleResponse::new);
     }
 
 
     @Transactional
-    public RecruitmentDto.AddressCollection findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
-        Map<RecruitmentDto.Address, Integer> addressMap = new HashMap();
+    public Addresses findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
+        Map<Address, Integer> addressMap = new HashMap();
 
         // 0.05가 지도 상에서 대충 500m 정도
         // 줌 레벨이 -2 ~ 12까지의 값을 가짐
@@ -68,32 +70,32 @@ public class RecruitmentFindService {
 
         while (iterator.hasNext()) {
             Recruitment recruitment = iterator.next();
-            RecruitmentDto.Address address =
-                    new RecruitmentDto.Address(recruitment);
+            Address address =
+                    new Address(recruitment);
             addressMap.put(address, addressMap.getOrDefault(address, 0) + 1);
         }
 
-        for (Map.Entry<RecruitmentDto.Address, Integer> entry :
+        for (Map.Entry<Address, Integer> entry :
                 addressMap.entrySet()) {
             entry.getKey().setCount(entry.getValue());
         }
-        return new RecruitmentDto.AddressCollection(new ArrayList<>(addressMap.keySet()));
+        return new Addresses(new ArrayList<>(addressMap.keySet()));
     }
 
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findAllJoined(Pageable pageable) {
+    public Page<SimpleResponse> findAllJoined(Pageable pageable) {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllJoined(author, pageable)
-                .map(RecruitmentDto.ResponseList::new);
+                .map(SimpleResponse::new);
     }
 
 
     @Transactional
-    public Page<RecruitmentDto.ResponseList> findMyRecruitments(Pageable pageable) {
+    public Page<SimpleResponse> findMyRecruitments(Pageable pageable) {
         Member author = memberService.getCurrentMember();
         return recruitmentRepository.findAllByAuthor(author, pageable)
-                .map(RecruitmentDto.ResponseList::new);
+                .map(SimpleResponse::new);
     }
 
 

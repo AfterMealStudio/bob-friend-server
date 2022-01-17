@@ -2,7 +2,10 @@ package com.example.bobfriend.controller;
 
 import com.example.bobfriend.model.dto.recruitment.*;
 import com.example.bobfriend.model.entity.*;
-import com.example.bobfriend.service.*;
+import com.example.bobfriend.service.CommentService;
+import com.example.bobfriend.service.RecruitmentFindService;
+import com.example.bobfriend.service.RecruitmentSearchService;
+import com.example.bobfriend.service.RecruitmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -451,10 +454,10 @@ class RecruitmentControllerTest {
 
     @Test
     void searchRecruitmentTest() throws Exception {
-        DetailResponse detailResponseDto =
-                new DetailResponse(testRecruitment);
+        SimpleResponse detailResponseDto =
+                new SimpleResponse(testRecruitment);
         PageImpl<DetailResponse> responsePage =
-                new PageImpl<>(Arrays.asList(detailResponseDto));
+                new PageImpl(Arrays.asList(detailResponseDto));
         when(recruitmentSearchService.searchTitle(any(), any()))
                 .thenReturn(new PageImpl<>(Arrays.asList(detailResponseDto)));
         mvc.perform(requestBuilderWithAuthorizationHeader(

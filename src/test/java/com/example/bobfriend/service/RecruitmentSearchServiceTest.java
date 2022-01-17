@@ -1,7 +1,7 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.dto.RecruitmentDto;
+import com.example.bobfriend.model.dto.recruitment.SimpleResponse;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.repository.RecruitmentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +37,7 @@ public class RecruitmentSearchServiceTest {
     Member testAuthor;
     private Comment testComment;
     private Reply testReply;
-    
+
     @BeforeEach
     public void setup() {
 
@@ -91,7 +91,7 @@ public class RecruitmentSearchServiceTest {
                 .build();
 
     }
-    
+
     @Test
     void search() {
         List<Recruitment> recruitments = Arrays.asList(testRecruitment);
@@ -99,12 +99,12 @@ public class RecruitmentSearchServiceTest {
                 .thenReturn(new PageImpl<>(recruitments));
         PageRequest pageRequest = PageRequest.of(0, 1);
 
-        List<RecruitmentDto.Response> collect = recruitments.stream()
-                .map(RecruitmentDto.Response::new)
+        List<SimpleResponse> collect = recruitments.stream()
+                .map(SimpleResponse::new)
                 .collect(Collectors.toList());
         Condition.Search search = new Condition.Search();
         search.setKeyword(testRecruitment.getTitle());
-        Page<RecruitmentDto.Response> responsePage =
+        Page<SimpleResponse> responsePage =
                 recruitmentSearchService.searchTitle(search, pageRequest);
 
         assertThat(responsePage, equalTo(new PageImpl<>(collect)));
