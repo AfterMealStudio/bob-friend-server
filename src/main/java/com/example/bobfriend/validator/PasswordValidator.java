@@ -7,20 +7,17 @@ import javax.validation.ConstraintValidatorContext;
 
 @RequiredArgsConstructor
 public class PasswordValidator implements ConstraintValidator<Password, String> {
-    private PasswordValidationStrategy validationStrategy;
-
-    public void setValidationStrategy(PasswordValidationStrategy validationStrategy) {
-        this.validationStrategy = validationStrategy;
-    }
+    private final PasswordValidationStrategy validationStrategy;
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
         if (s == null) return false;
 
+        boolean validationResult = validationStrategy.isValid(s);
         constraintValidatorContext
                 .buildConstraintViolationWithTemplate(validationStrategy.getMessage());
 
-        return validationStrategy.isValid(s);
+        return validationResult;
     }
 
 }
