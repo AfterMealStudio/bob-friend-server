@@ -109,12 +109,12 @@ class MemberControllerTest {
 
     @Test
     public void checkEmail() throws Exception {
-        when(memberService.checkExistByEmail(any()))
-                .thenReturn(new DuplicationCheck(false));
+        when(memberService.existsByEmail(any()))
+                .thenReturn(new Exist(false));
         mvc.perform(get("/api/user/email/{email}", testMember.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(
-                        new DuplicationCheck(false)
+                        new Exist(false)
                 )))
                 .andDo(document("member/check-email",
                         getDocumentRequest(),
@@ -128,15 +128,15 @@ class MemberControllerTest {
 
     @Test
     public void checkNickname() throws Exception {
-        when(memberService.checkExistByNickname(any()))
+        when(memberService.existsByNickname(any()))
                 .thenReturn(
-                        new DuplicationCheck(false)
+                        new Exist(false)
                 );
         mvc.perform(get("/api/user/nickname/{nickname}", testMember.getNickname()))
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json(objectMapper.writeValueAsString(
-                                new DuplicationCheck(false)
+                                new Exist(false)
                         )))
                 .andDo(document("member/check-nickname",
                         getDocumentRequest(),

@@ -86,17 +86,13 @@ public class MemberService {
     }
 
 
-    public boolean isExistByEmail(String email) {
-        return memberRepository.existsMemberByEmail(email);
-    }
-
-    public DuplicationCheck checkExistByEmail(String email) {
-        return new DuplicationCheck(
+    public Exist existsByEmail(String email) {
+        return new Exist(
                 memberRepository.existsMemberByEmail(email));
     }
 
-    public DuplicationCheck checkExistByNickname(String nickname) {
-        return new DuplicationCheck(
+    public Exist existsByNickname(String nickname) {
+        return new Exist(
                 memberRepository.existsMemberByNickname(nickname));
     }
 
