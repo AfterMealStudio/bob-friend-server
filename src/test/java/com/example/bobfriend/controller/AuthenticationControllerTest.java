@@ -114,6 +114,7 @@ public class AuthenticationControllerTest {
                 .sex(Sex.MALE)
                 .agree(true)
                 .build();
+
         Response response = Response.builder()
                 .id(testMember.getId())
                 .email(testMember.getEmail())
