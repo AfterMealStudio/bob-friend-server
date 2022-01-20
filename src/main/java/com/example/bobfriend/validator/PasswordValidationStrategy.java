@@ -9,32 +9,34 @@ public interface PasswordValidationStrategy {
     String DIGITS = "[0-9]";
     String SPECIAL_CHARACTERS = "[!#$%&()*+,./:;<=>?@^_`{|}~]";
 
+    Pattern upperCasePattern = Pattern.compile(UPPER_CASES);
+    Pattern lowerCasePattern = Pattern.compile(LOWER_CASES);
+    Pattern digitsPattern = Pattern.compile(DIGITS);
+    Pattern specialCharacterPattern = Pattern.compile(SPECIAL_CHARACTERS);
+
     boolean isValid(String password);
 
     String getMessage();
 
 
-    default boolean isContainUpperCase(String s) {
-        Pattern pattern = Pattern.compile(UPPER_CASES);
+    default boolean isContainPattern(String s, Pattern pattern) {
         Matcher matcher = pattern.matcher(s);
         return matcher.find();
+    }
+
+    default boolean isContainUpperCase(String s) {
+        return isContainPattern(s, upperCasePattern);
     }
 
     default boolean isContainLowerCase(String s) {
-        Pattern pattern = Pattern.compile(LOWER_CASES);
-        Matcher matcher = pattern.matcher(s);
-        return matcher.find();
+        return isContainPattern(s, lowerCasePattern);
     }
 
     default boolean isContainDigit(String s) {
-        Pattern pattern = Pattern.compile(DIGITS);
-        Matcher matcher = pattern.matcher(s);
-        return matcher.find();
+        return isContainPattern(s, digitsPattern);
     }
 
     default boolean isContainSpecialCharacter(String s) {
-        Pattern pattern = Pattern.compile(SPECIAL_CHARACTERS);
-        Matcher matcher = pattern.matcher(s);
-        return matcher.find();
+        return isContainPattern(s, specialCharacterPattern);
     }
 }

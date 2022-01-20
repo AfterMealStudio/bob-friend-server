@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 public class PasswordValidationStrategySelector implements PasswordValidationStrategy {
     private PasswordValidationStrategy passwordValidationStrategy;
 
+
     @Override
     public boolean isValid(String password) {
         int length = password.length();
