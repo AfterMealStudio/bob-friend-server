@@ -42,7 +42,9 @@ public class RecruitmentService {
     public DetailResponse create(Create recruitmentRequestDto) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
+
         recruitment.setAuthor(currentMember);
+
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
         return new DetailResponse(savedRecruitment);
     }
@@ -53,7 +55,7 @@ public class RecruitmentService {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (currentMember.equals(recruitment.getAuthor())) {
-//            recruitmentMemberRepository.deleteAllByRecruitment(recruitment);
+
             reportRepository.deleteAllByWriting(recruitment);
             recruitmentRepository.delete(recruitment);
         } else

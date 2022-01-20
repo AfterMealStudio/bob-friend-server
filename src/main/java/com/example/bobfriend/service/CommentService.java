@@ -1,6 +1,5 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.*;
 import com.example.bobfriend.model.dto.comment.Create;
 import com.example.bobfriend.model.dto.comment.Response;
 import com.example.bobfriend.model.entity.Comment;
@@ -36,15 +35,16 @@ public class CommentService {
 
     @Transactional
     public Response create(Create commentDto,
-                          Long recruitmentId) {
+                           Long recruitmentId) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
 
         Comment comment = Comment.builder()
                 .content(commentDto.getContent())
-                .author(currentMember)
                 .recruitment(recruitment)
                 .build();
+
+        comment.setAuthor(currentMember);
 
         return new Response(commentRepository.save(comment));
     }
@@ -79,7 +79,6 @@ public class CommentService {
                     throw new CommentNotFoundException(commentId);
                 });
     }
-
 
 
     private Recruitment getRecruitment(Long recruitmentId) {

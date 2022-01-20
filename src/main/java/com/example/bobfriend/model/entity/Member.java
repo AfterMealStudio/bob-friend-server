@@ -100,6 +100,7 @@ public class Member {
         this.reportCount = 0;
         this.accumulatedReports = 0;
         this.active = true;
+
     }
 
     public Integer getAge() {
