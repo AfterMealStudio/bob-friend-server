@@ -2,11 +2,11 @@ package com.example.bobfriend.validator;
 
 import com.example.bobfriend.model.dto.member.Signup;
 import com.example.bobfriend.model.entity.Sex;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
 import javax.validation.Validator;
 import java.time.LocalDate;
 import java.util.Set;
@@ -15,13 +15,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 
+@SpringBootTest
 public class PasswordValidatorTest {
+    @Autowired
     Validator validator;
 
-    @BeforeEach
-    void setup() {
-        validator = Validation.buildDefaultValidatorFactory().getValidator();
-    }
 
     @Test
     void lessThanEightFailTest() {
@@ -37,7 +35,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message}"));
+        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
     }
 
 
@@ -55,7 +53,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message}"));
+        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
     }
 
 
@@ -73,7 +71,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message}"));
+        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
     }
 
 
@@ -91,7 +89,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message}"));
+        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
     }
 
 
@@ -109,7 +107,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message}"));
+        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
     }
 
 
@@ -127,7 +125,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message}"));
+        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
     }
 
 
@@ -145,7 +143,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message}"));
+        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
     }
 
 
@@ -163,7 +161,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message}"));
+        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
     }
 
     @Test
@@ -180,7 +178,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message}"));
+        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
     }
 
 
@@ -198,7 +196,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message}"));
+        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
     }
 
     @Test
