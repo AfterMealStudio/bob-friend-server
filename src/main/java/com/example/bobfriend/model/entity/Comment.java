@@ -20,15 +20,24 @@ import java.util.List;
 @DiscriminatorValue(value = "comment")
 public class Comment extends Writing {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruitment_id")
     private Recruitment recruitment;
 
 
-    @OneToMany(targetEntity = Reply.class)
-    @JoinColumn(name = "comment_id")
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> replies;
 
+
+    public void setRecruitment(Recruitment recruitment) {
+        this.recruitment = recruitment;
+        recruitment.getComments().add(this);
+    }
+
+    public void delete() {
+        this.recruitment.getComments().remove(this);
+        this.recruitment = null;
+    }
 
     public void clear() {
         this.author = null;

@@ -2,7 +2,10 @@ package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.*;
-import com.example.bobfriend.repository.*;
+import com.example.bobfriend.repository.MemberRepository;
+import com.example.bobfriend.repository.RecruitmentMemberRepository;
+import com.example.bobfriend.repository.WritingReportRepository;
+import com.example.bobfriend.repository.WritingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,12 +30,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
     @Mock
-    RecruitmentRepository recruitmentRepository;
-    @Mock
-    CommentRepository commentRepository;
-    @Mock
-    ReplyRepository replyRepository;
-    @Mock
     MemberRepository memberRepository;
     @Mock
     PasswordEncoder passwordEncoder;
@@ -40,13 +37,18 @@ public class MemberServiceTest {
     EmailVerificationService emailService;
     @Mock
     WritingReportRepository reportRepository;
+    @Mock
+    RecruitmentMemberRepository recruitmentMemberRepository;
+    @Mock
+    WritingRepository writingRepository;
+
     @InjectMocks
     MemberService memberService;
-    Member testMember;
+    Member testAuthor;
 
     @BeforeEach
     void setUp() {
-        testMember = Member.builder()
+        testAuthor = Member.builder()
                 .id(0L)
                 .email("testEmail")
                 .nickname("testUser")
@@ -62,18 +64,18 @@ public class MemberServiceTest {
                 .active(true)
                 .build();
 
-
+        testAuthor.setup();
     }
 
     @Test
     @DisplayName("get_member_by_email")
     void getMemberWithAuthoritiesTest() {
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
-                .thenReturn(Optional.ofNullable(testMember));
+                .thenReturn(Optional.ofNullable(testAuthor));
 
-        Response getMember = memberService.getMemberWithAuthorities(testMember.getEmail());
+        Response getMember = memberService.getMemberWithAuthorities(testAuthor.getEmail());
 
-        assertThat(new Response(testMember), equalTo(getMember));
+        assertThat(new Response(testAuthor), equalTo(getMember));
     }
 
 
@@ -88,11 +90,9 @@ public class MemberServiceTest {
 
     @Test
     void deleteMember() {
-        login();
-
         Recruitment recruitment = Recruitment.builder()
                 .id(1L)
-                .author(testMember)
+                .author(testAuthor)
                 .active(true)
                 .appointmentTime(LocalDateTime.now())
                 .totalNumberOfPeople(4)
@@ -112,22 +112,19 @@ public class MemberServiceTest {
                 .content("test content")
                 .recruitment(recruitment)
                 .createdAt(LocalDateTime.now())
-                .author(testMember)
+                .author(testAuthor)
                 .replies(new LinkedList<>())
                 .build();
+        login();
 
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
-                .thenReturn(Optional.ofNullable(testMember));
-        when(recruitmentRepository.findAllByAuthor(any()))
-                .thenReturn(Arrays.asList(recruitment));
-        when(commentRepository.findAllByAuthor(any()))
-                .thenReturn(Arrays.asList(comment));
-
+                .thenReturn(Optional.ofNullable(testAuthor));
+        when(writingRepository.findAllByAuthor(any()))
+                .thenReturn(List.of(recruitment, comment));
         when(passwordEncoder.matches(any(), any()))
                 .thenReturn(true);
-
         Delete delete = new Delete();
-        delete.setPassword(testMember.getPassword());
+        delete.setPassword(testAuthor.getPassword());
         memberService.delete(delete);
 
         assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
@@ -138,22 +135,22 @@ public class MemberServiceTest {
     @Test
     void getCurrentMember() {
         login();
-        when(memberRepository.findMemberWithAuthoritiesByEmail(testMember.getEmail()))
-                .thenReturn(Optional.ofNullable(testMember));
+        when(memberRepository.findMemberWithAuthoritiesByEmail(testAuthor.getEmail()))
+                .thenReturn(Optional.ofNullable(testAuthor));
         Member currentMember = memberService.getCurrentMember();
 
-        assertThat(currentMember, equalTo(testMember));
+        assertThat(currentMember, equalTo(testAuthor));
     }
 
 
     @Test
     void rateMemberTest() {
-        when(memberRepository.findMemberByNickname(testMember.getNickname()))
-                .thenReturn(Optional.ofNullable(testMember));
+        when(memberRepository.findMemberByNickname(testAuthor.getNickname()))
+                .thenReturn(Optional.ofNullable(testAuthor));
         Score rate = new Score();
         rate.setScore(3.0);
         Response response =
-                memberService.rateMember(testMember.getNickname(), rate);
+                memberService.rateMember(testAuthor.getNickname(), rate);
 
         assertThat(response.getRating(), equalTo(rate.getScore()));
     }
@@ -163,7 +160,7 @@ public class MemberServiceTest {
     void updateTest() {
         login();
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
-                .thenReturn(Optional.ofNullable(testMember));
+                .thenReturn(Optional.ofNullable(testAuthor));
         Update incoming = new Update();
         incoming.setNickname("update");
 
@@ -194,8 +191,8 @@ public class MemberServiceTest {
     private void login() {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(
-                        testMember.getEmail(),
-                        testMember.getPassword(),
+                        testAuthor.getEmail(),
+                        testAuthor.getPassword(),
                         Collections.singleton(
                                 new SimpleGrantedAuthority("ROLE_USER"))
                 ));
