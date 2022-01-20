@@ -62,13 +62,16 @@ public class Member {
     private LocalDate reportEnd;
 
     @Column(name = "verified") // 이메일 인증 여부
-    private boolean emailVerified;
+    private boolean verified;
 
     @Column(name = "rating")
     private Double rating;
 
     @Column(name = "number_of_join")
     private Integer numberOfJoin;
+
+    @Column(name = "verification_code")
+    private String verificationCode;
 
 
     @ElementCollection
@@ -144,12 +147,20 @@ public class Member {
                         this.accumulatedReports);
     }
 
-    public boolean isEmailVerified() {
-        return emailVerified;
+    public boolean isVerified() {
+        return verified;
     }
 
-    public void emailVerify() {
-        this.emailVerified = true;
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void verify() {
+        this.verified = true;
     }
 
     public boolean isUnknown() {

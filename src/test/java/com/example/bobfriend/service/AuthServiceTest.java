@@ -33,8 +33,6 @@ public class AuthServiceTest {
     PasswordEncoder passwordEncoder;
     @Mock
     MemberService memberService;
-    @Mock
-    EmailService emailService;
 
     @InjectMocks
     AuthService authService;
@@ -73,8 +71,8 @@ public class AuthServiceTest {
                 .thenReturn(false);
         when(memberRepository.save(any()))
                 .thenReturn(signupTest);
-        when(emailService.makeMailText(any()))
-                .thenReturn("http://localhost:8080/api/?email=qww1552@naver.com&code=-150140394");
+//        when(emailService.makeMailText(any()))
+//                .thenReturn("http://localhost:8080/api/?email=qww1552@naver.com&code=-150140394");
         when(memberService.convertToEntity(any()))
                 .thenReturn(signupTest);
 

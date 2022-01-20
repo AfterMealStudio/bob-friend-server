@@ -1,9 +1,6 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.member.Delete;
-import com.example.bobfriend.model.dto.member.Response;
-import com.example.bobfriend.model.dto.member.Score;
-import com.example.bobfriend.model.dto.member.Update;
+import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.repository.MemberRepository;
 import com.example.bobfriend.repository.RecruitmentMemberRepository;
@@ -38,7 +35,7 @@ public class MemberServiceTest {
     @Mock
     PasswordEncoder passwordEncoder;
     @Mock
-    EmailService emailService;
+    EmailVerificationService emailService;
     @Mock
     WritingReportRepository reportRepository;
     @Mock
@@ -83,13 +80,13 @@ public class MemberServiceTest {
     }
 
 
-    @Test
-    @DisplayName(value = "check_member_with_code")
-    void checkMemberWithCodeTest() {
-        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.ofNullable(testAuthor));
-        memberService.checkMemberWithCode(testAuthor.getEmail(), String.valueOf(testAuthor.hashCode()));
-        assertTrue(testAuthor.isEmailVerified());
-    }
+//    @Test
+//    @DisplayName(value = "check_member_with_code")
+//    void checkMemberWithCodeTest() {
+//        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.ofNullable(testMember));
+//        memberService.checkMemberWithCode(testMember.getEmail(), String.valueOf(testMember.hashCode()));
+//        assertTrue(testMember.isVerified());
+//    }
 
 
     @Test
@@ -171,6 +168,24 @@ public class MemberServiceTest {
         Response updatedMember = memberService.update(incoming);
 
         assertThat(updatedMember.getNickname(), equalTo(incoming.getNickname()));
+    }
+
+
+    @Test
+    void resetPasswordTest() {
+        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(testMember));
+        when(passwordEncoder.encode(any()))
+                .thenReturn("new-password");
+        ResetPassword resetPasswordDto = new ResetPassword();
+        resetPasswordDto.setEmail(testMember.getEmail());
+        resetPasswordDto.setBirth(testMember.getBirth());
+
+        String resetPassword = memberService.resetPassword(resetPasswordDto);
+
+        assertThat(testMember.getPassword(), equalTo(
+                passwordEncoder.encode(resetPassword)
+        ));
     }
 
 

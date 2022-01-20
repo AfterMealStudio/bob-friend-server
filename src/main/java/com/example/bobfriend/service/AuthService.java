@@ -49,9 +49,6 @@ public class AuthService {
         member.setAuthorities(Collections.singleton(authority));
         Member save = memberRepository.save(member);
 
-        emailService.sendMail(save.getEmail(), save.getEmail(),
-                emailService.makeMailText(member));
-
         return new Response(save);
     }
 
@@ -96,6 +93,16 @@ public class AuthService {
         refreshToken.setRefreshToken(token.getRefreshToken());
 
         return token;
+    }
+
+
+    @Transactional
+    public void checkMemberWithCode(String email, String code) {
+        Member member = memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
+        if (Integer.parseInt(code) == (member.hashCode())) {
+            member.verify();
+        }
     }
 
 

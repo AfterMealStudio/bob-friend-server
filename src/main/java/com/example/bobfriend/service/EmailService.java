@@ -1,32 +1,20 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.entity.Member;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RequiredArgsConstructor
 @Service
 public class EmailService {
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
-    public void sendMail(String to, String title, String text) {
+    public void sendMail(String email, String title, String content) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(to);
+        mailMessage.setTo(email);
         mailMessage.setSubject(title);
-        mailMessage.setText(text);
+        mailMessage.setText(content);
         mailSender.send(mailMessage);
-    }
-
-    public String makeMailText(Member member) {
-        String baseUrl =
-                ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-        return baseUrl + "/api/?" + "email=" +
-                member.getEmail() + "&code=" +
-                member.hashCode();
     }
 }

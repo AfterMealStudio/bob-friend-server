@@ -1,5 +1,7 @@
 package com.example.bobfriend.configuration;
 
+import com.example.bobfriend.jwt.JwtAccessDeniedHandler;
+import com.example.bobfriend.jwt.JwtAuthenticationEntryPoint;
 import com.example.bobfriend.jwt.JwtAuthenticationFilter;
 import com.example.bobfriend.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
+    private final JwtAccessDeniedHandler accessDeniedHandler;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -32,14 +37,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
+
+                .and()
                 .authorizeRequests()
-                .antMatchers("/api/signin/**/",
-                        "/api/signup/**/",
-                        "/api/nickname/**/",
-                        "/api/email/**/",
-                        "/api/validate/**/",
-                        "/api/",
-                        "/api/issue",
+                .antMatchers(
+                        "/api/auth/**",
+                        "/api/user/nickname/**/",
+                        "/api/user/email/**/",
+                        "/api/user/password",
                         "/docs/api-doc.html").permitAll()
                 .anyRequest().hasRole("USER")
 
