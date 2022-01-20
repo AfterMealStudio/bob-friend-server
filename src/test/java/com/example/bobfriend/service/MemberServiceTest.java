@@ -173,16 +173,16 @@ public class MemberServiceTest {
     @Test
     void resetPasswordTest() {
         when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
-                .thenReturn(Optional.ofNullable(testMember));
+                .thenReturn(Optional.ofNullable(testAuthor));
         when(passwordEncoder.encode(any()))
                 .thenReturn("new-password");
         ResetPassword resetPasswordDto = new ResetPassword();
-        resetPasswordDto.setEmail(testMember.getEmail());
-        resetPasswordDto.setBirth(testMember.getBirth());
+        resetPasswordDto.setEmail(testAuthor.getEmail());
+        resetPasswordDto.setBirth(testAuthor.getBirth());
 
         String resetPassword = memberService.resetPassword(resetPasswordDto);
 
-        assertThat(testMember.getPassword(), equalTo(
+        assertThat(testAuthor.getPassword(), equalTo(
                 passwordEncoder.encode(resetPassword)
         ));
     }
