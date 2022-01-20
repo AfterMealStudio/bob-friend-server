@@ -427,8 +427,6 @@ request::
 include::{snippets}/member/delete/http-request.adoc[]
 header::
 include::{snippets}/member/delete/request-headers.adoc[]
-path-param::
-include::{snippets}/member/delete/path-parameters.adoc[]
 response::
 include::{snippets}/member/delete/http-response.adoc[]
 
