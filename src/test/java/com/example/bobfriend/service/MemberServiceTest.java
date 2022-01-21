@@ -60,7 +60,6 @@ public class MemberServiceTest {
                 .rating(0.0)
                 .numberOfJoin(0)
                 .authorities(Collections.singleton(Authority.ROLE_USER))
-                .agree(true)
                 .active(true)
                 .build();
 

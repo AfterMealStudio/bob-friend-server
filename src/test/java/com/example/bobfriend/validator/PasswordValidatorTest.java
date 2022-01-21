@@ -29,7 +29,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
@@ -47,7 +46,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
@@ -65,7 +63,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
@@ -83,7 +80,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
@@ -101,7 +97,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
@@ -119,7 +114,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
@@ -137,7 +131,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
@@ -155,7 +148,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
@@ -172,7 +164,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
@@ -190,7 +181,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
@@ -207,7 +197,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenUpperCaseAndLowerCase);
@@ -223,7 +212,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenUpperCaseAndDigit);
@@ -239,7 +227,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenUpperCaseAndSpecialCharacter);
@@ -255,7 +242,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenLowerCaseAndDigit);
@@ -271,7 +257,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenLowerCaseAndSpecialCharacter);
@@ -287,7 +272,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenDigitAndSpecialCharacter);
@@ -302,7 +286,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenDigitAndSpecialCharacter);
@@ -318,7 +301,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenDigitAndSpecialCharacter);
@@ -334,7 +316,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenDigitAndSpecialCharacter);
@@ -350,7 +331,6 @@ public class PasswordValidatorTest {
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
 
         Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenDigitAndSpecialCharacter);

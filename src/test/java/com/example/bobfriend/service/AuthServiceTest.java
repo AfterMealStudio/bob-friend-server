@@ -54,7 +54,6 @@ public class AuthServiceTest {
                 .rating(0.0)
                 .numberOfJoin(0)
                 .authorities(Collections.singleton(Authority.ROLE_USER))
-                .agree(true)
                 .active(true)
                 .build();
 
@@ -64,7 +63,6 @@ public class AuthServiceTest {
                 .password("1234")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.of(2020, 8, 9))
-                .agree(true)
                 .build();
 
         when(memberRepository.existsMemberByEmail(any()))
@@ -91,7 +89,6 @@ public class AuthServiceTest {
                 .password("1234")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.of(2020, 8, 9))
-                .agree(true)
                 .build();
 
         when(memberRepository.existsMemberByEmail(any()))

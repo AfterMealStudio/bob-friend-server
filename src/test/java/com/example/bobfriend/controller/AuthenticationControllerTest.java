@@ -77,7 +77,6 @@ public class AuthenticationControllerTest {
                 .birth(LocalDate.parse("1997-06-04"))
                 .numberOfJoin(0)
                 .rating(0.0)
-                .agree(true)
                 .active(true)
                 .verified(false)
                 .build();
@@ -119,7 +118,6 @@ public class AuthenticationControllerTest {
                 .birth(testMember.getBirth())
                 .password("1234567890!@#$asd")
                 .sex(Sex.MALE)
-                .agree(true)
                 .build();
 
         Response response = Response.builder()
@@ -131,7 +129,7 @@ public class AuthenticationControllerTest {
                 .rating(testMember.getRating())
                 .accumulatedReports(testMember.getAccumulatedReports())
                 .reportCount(testMember.getReportCount())
-                .agree(testMember.getAgree())
+                .agree(testMember.getPrivacyAgreement())
                 .active(testMember.isActive())
                 .build();
 

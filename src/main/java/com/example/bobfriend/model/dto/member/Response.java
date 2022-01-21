@@ -31,7 +31,7 @@ public class Response {
         this.reportCount = member.getReportCount();
         this.accumulatedReports = member.getAccumulatedReports();
         this.rating = member.getRating();
-        this.agree = member.getAgree();
+        this.agree = member.getPrivacyAgreement();
         this.active = member.isActive();
     }
 

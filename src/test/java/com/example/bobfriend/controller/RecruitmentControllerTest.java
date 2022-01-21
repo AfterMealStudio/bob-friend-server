@@ -69,7 +69,6 @@ class RecruitmentControllerTest {
                 .birth(LocalDate.now())
                 .rating(0.0)
                 .numberOfJoin(0)
-                .agree(true)
                 .active(true)
                 .build();
 
@@ -82,7 +81,6 @@ class RecruitmentControllerTest {
                 .birth(LocalDate.now())
                 .rating(0.0)
                 .numberOfJoin(0)
-                .agree(true)
                 .active(true)
                 .build();
 
@@ -395,7 +393,6 @@ class RecruitmentControllerTest {
                 .birth(LocalDate.now())
                 .rating(0.0)
                 .numberOfJoin(0)
-                .agree(true)
                 .active(true)
                 .build();
         testMember2.setup();

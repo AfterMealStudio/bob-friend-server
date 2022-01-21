@@ -58,7 +58,6 @@ class MemberControllerTest {
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
-                .agree(true)
                 .active(true)
                 .verified(false)
                 .rating(0.0)
@@ -191,7 +190,6 @@ class MemberControllerTest {
         update.setNickname("update nickname");
         update.setBirth(LocalDate.now().minusYears(1));
         update.setPassword("update password");
-        update.setAgree(false);
         update.setSex(Sex.NONE);
 
         Member incoming = Member.builder()
@@ -199,7 +197,6 @@ class MemberControllerTest {
                 .birth(update.getBirth())
                 .password(update.getPassword())
                 .sex(update.getSex())
-                .agree(update.getAgree())
                 .build();
         testMember.update(incoming);
         Response response = new Response(testMember);

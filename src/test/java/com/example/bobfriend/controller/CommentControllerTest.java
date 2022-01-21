@@ -69,7 +69,6 @@ public class CommentControllerTest {
                 .birth(LocalDate.now())
                 .rating(0.0)
                 .numberOfJoin(0)
-                .agree(true)
                 .active(true)
                 .build();
 
@@ -82,7 +81,6 @@ public class CommentControllerTest {
                 .birth(LocalDate.now())
                 .rating(0.0)
                 .numberOfJoin(0)
-                .agree(true)
                 .active(true)
                 .build();
 

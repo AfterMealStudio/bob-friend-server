@@ -100,4 +100,4 @@ compileQuerydsl {
 tasks.withType(JavaCompile) {
     options.generatedSourceOutputDirectory = file(querydslDir)
 }
-//compileQuerydsl.doFirst { if (file(querydslDir).exists()) delete(file(querydslDir)) }
+//compileQuerydsl.doLast { if (file(querydslDir).exists()) delete(file(querydslDir)) }

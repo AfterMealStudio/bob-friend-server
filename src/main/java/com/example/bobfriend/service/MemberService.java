@@ -149,7 +149,6 @@ public class MemberService {
                 .password((request.getPassword() == null) ? null : passwordEncoder.encode(request.getPassword()))
                 .birth(request.getBirth())
                 .sex(request.getSex())
-                .agree(request.getAgree())
                 .build();
     }
 
