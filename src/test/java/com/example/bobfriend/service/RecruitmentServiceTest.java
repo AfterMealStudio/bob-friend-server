@@ -141,7 +141,7 @@ class RecruitmentServiceTest {
                 .collect(Collectors.toList());
         Page<SimpleResponse> page = new PageImpl<>(collect);
 
-        given(recruitmentRepository.findAll(pageRequest))
+        given(recruitmentRepository.findAllByActiveTrue(pageRequest))
                 .willReturn(new PageImpl<>(recruitmentList));
         Page<SimpleResponse> responseDtoList = recruitmentService.findAll(pageRequest);
 
