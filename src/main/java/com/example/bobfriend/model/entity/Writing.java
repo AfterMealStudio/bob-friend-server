@@ -1,6 +1,7 @@
 package com.example.bobfriend.model.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -15,8 +16,10 @@ import java.time.LocalDateTime;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "TYPE")
+@EqualsAndHashCode(of = {"id", "createdAt"})
 public abstract class Writing {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
     @ManyToOne
@@ -39,6 +42,9 @@ public abstract class Writing {
         return discriminatorValue.value();
     }
 
+    public void setAuthor(Member author) {
+        this.author = author;
+    }
 
     public Member getAuthor() {
         if (author == null) {

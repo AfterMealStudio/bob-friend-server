@@ -33,7 +33,7 @@ public class RecruitmentService {
 
     @Transactional
     public Page<SimpleResponse> findAll(Pageable pageable) {
-        return recruitmentRepository.findAll(pageable)
+        return recruitmentRepository.findAllByActiveTrue(pageable)
                 .map(SimpleResponse::new);
     }
 
@@ -42,7 +42,9 @@ public class RecruitmentService {
     public DetailResponse create(Create recruitmentRequestDto) {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = recruitmentRequestDto.convertToDomain();
+
         recruitment.setAuthor(currentMember);
+
         Recruitment savedRecruitment = recruitmentRepository.save(recruitment);
         return new DetailResponse(savedRecruitment);
     }
@@ -53,7 +55,7 @@ public class RecruitmentService {
         Member currentMember = memberService.getCurrentMember();
         Recruitment recruitment = getRecruitment(recruitmentId);
         if (currentMember.equals(recruitment.getAuthor())) {
-//            recruitmentMemberRepository.deleteAllByRecruitment(recruitment);
+
             reportRepository.deleteAllByWriting(recruitment);
             recruitmentRepository.delete(recruitment);
         } else
@@ -79,7 +81,7 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public AddressCollection findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
+    public Addresses findAllLocations(Double latitude, Double longitude, Integer zoomLevel) {
         Map<Address, Integer> addressMap = new HashMap();
 
         // 0.05가 지도 상에서 대충 500m 정도
@@ -101,7 +103,7 @@ public class RecruitmentService {
                 addressMap.entrySet()) {
             entry.getKey().setCount(entry.getValue());
         }
-        return new AddressCollection(new ArrayList<>(addressMap.keySet()));
+        return new Addresses(new ArrayList<>(addressMap.keySet()));
     }
 
     @Transactional

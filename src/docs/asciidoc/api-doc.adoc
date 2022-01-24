@@ -45,7 +45,8 @@
 | 요청을 성공적으로 처리함
 
 | `400 Bad Request`
-| 잘못된 요청을 보낸 경우. 응답 본문에 오류에 대한 정보가 담겨있다
+| 잘못된 요청을 보낸 경우.
+응답 본문에 오류에 대한 정보가 담겨있다
 
 | `401 Unauthorized`
 | 사용자가 인증되지 않음
@@ -63,6 +64,7 @@
 
 [[api]]
 == Recruitment
+
 === 생성
 
 [source]
@@ -137,6 +139,7 @@ response::
 include::{snippets}/recruitment/get-all-recruitments-my/http-response.adoc[]
 
 ==== 약속이 있는 위치 전체 조회
+
 request::
 include::{snippets}/recruitment/get-all-recruitments-locations/http-request.adoc[]
 header::
@@ -145,10 +148,13 @@ response::
 include::{snippets}/recruitment/get-all-recruitments-locations/http-response.adoc[]
 
 ==== 주소로 약속 조회
-```
+
+[source]
+----
 아래의 예는 type=specific인 경우를 나타낸다. 파라미터로 address가 추가로 주어져야 한다.
 
-```
+----
+
 request::
 include::{snippets}/recruitment/get-all-recruitments-by-address/http-request.adoc[]
 header::
@@ -181,6 +187,7 @@ include::{snippets}/recruitment/get-all-recruitments-by-address/http-response.ad
 ----
 이미 참여한 멤버가 요청을 보내면 해당 약속에서 제외된다. 약속에는 참여 제한(성별, 연령)이 있을 수 있다. 성별 제한은 sexRestriction 필드에 나타나며 MALE,FEMALE,NONE 의 값을 가질 수 있다. 연령 제한은 ageRestrictionStart, ageRestrictionEnd 필드에 나타나며, 나이가 두 값 사이인 사용자만 약속에 참여할 수 있다. ageRestrictionStart와 ageRestrictionEnd가 null일 경우 연령 제한이 없는 약속이다.
 ----
+
 request::
 include::{snippets}/recruitment/join-recruitment/http-request.adoc[]
 header::
@@ -191,6 +198,7 @@ path-parameter::
 include::{snippets}/recruitment/join-recruitment/path-parameters.adoc[]
 
 === 삭제
+
 request::
 include::{snippets}/recruitment/delete-recruitment/http-request.adoc[]
 header::
@@ -234,7 +242,6 @@ include::{snippets}/recruitment/report-recruitment/path-parameters.adoc[]
 response::
 include::{snippets}/recruitment/report-recruitment/http-response.adoc[]
 
-
 === 마감
 
 [source]
@@ -251,8 +258,8 @@ include::{snippets}/recruitment/close-recruitment/path-parameters.adoc[]
 response::
 include::{snippets}/recruitment/close-recruitment/http-response.adoc[]
 
-
 === 댓글
+
 ==== 댓글 생성
 
 request::
@@ -270,6 +277,7 @@ include::{snippets}/comment/create-comment/http-response.adoc[]
 ----
 대댓글이 달려있는 댓글은 내용과 작성자가 null이 되고, 대댓글이 달려있지 않은 댓글은 바로 삭제된다.
 ----
+
 request::
 include::{snippets}/comment/delete-comment/http-request.adoc[]
 header::
@@ -280,6 +288,7 @@ response::
 include::{snippets}/comment/delete-comment/http-response.adoc[]
 
 ==== 댓글 조회
+
 request::
 include::{snippets}/comment/get-all-comments-by-recruitment/http-request.adoc[]
 header::
@@ -290,6 +299,7 @@ response::
 include::{snippets}/comment/get-all-comments-by-recruitment/http-response.adoc[]
 
 ==== 댓글 신고
+
 request::
 include::{snippets}/comment/report-comment/http-request.adoc[]
 header::
@@ -300,7 +310,9 @@ response::
 include::{snippets}/comment/report-comment/http-response.adoc[]
 
 === 대댓글
+
 ==== 대댓글 생성
+
 request::
 include::{snippets}/comment/reply/create-reply/http-request.adoc[]
 header::
@@ -311,6 +323,7 @@ response::
 include::{snippets}/comment/reply/create-reply/http-response.adoc[]
 
 ==== 대댓글 삭제
+
 request::
 include::{snippets}/comment/reply/delete-reply/http-request.adoc[]
 header::
@@ -321,6 +334,7 @@ response::
 include::{snippets}/comment/reply/delete-reply/http-response.adoc[]
 
 ==== 대댓글 신고
+
 request::
 include::{snippets}/comment/reply/report-reply/http-request.adoc[]
 header::
@@ -330,9 +344,10 @@ include::{snippets}/comment/reply/report-reply/path-parameters.adoc[]
 response::
 include::{snippets}/comment/reply/report-reply/http-response.adoc[]
 
-
 == Auth
+
 === 회원가입
+
 request::
 include::{snippets}/auth/signup/http-request.adoc[]
 response::
@@ -344,6 +359,7 @@ include::{snippets}/auth/signup/http-response.adoc[]
 ----
 인증을 위한 액세스 토큰과 토큰 재발급을 위한 리프레시 토큰을 반환한다.
 ----
+
 request::
 include::{snippets}/auth/signin/http-request.adoc[]
 response::
@@ -368,7 +384,6 @@ include::{snippets}/auth/issue/http-response.adoc[]
 액세스토큰이 만료되었는지를 true/false로 반환한다.
 ----
 
-
 request::
 include::{snippets}/auth/validate/http-request.adoc[]
 header::
@@ -376,9 +391,24 @@ include::{snippets}/auth/validate/request-headers.adoc[]
 response::
 include::{snippets}/auth/validate/http-response.adoc[]
 
+=== 인증 재시도
+
+[source]
+----
+인증 메일을 다시 전송한다.
+----
+
+request::
+include::{snippets}/auth/verify-email-retry/http-request.adoc[]
+parameter::
+include::{snippets}/auth/verify-email-retry/request-parameters.adoc[]
+response::
+include::{snippets}/auth/verify-email-retry/http-response.adoc[]
+
 == Member
 
 === 회원 정보 수정
+
 [source]
 ----
 변경할 필드에 null이 아닌 값을 입력하면 해당하는 유저의 속성이 변경된다. email의 경우 null이 아닌 값을 입력하더라도 변경되지 않는다.
@@ -391,18 +421,17 @@ include::{snippets}/member/update/request-headers.adoc[]
 response::
 include::{snippets}/member/update/http-response.adoc[]
 
-
 === 회원 탈퇴
+
 request::
 include::{snippets}/member/delete/http-request.adoc[]
 header::
 include::{snippets}/member/delete/request-headers.adoc[]
-path-param::
-include::{snippets}/member/delete/path-parameters.adoc[]
 response::
 include::{snippets}/member/delete/http-response.adoc[]
 
 === 유저정보 조회(본인)
+
 request::
 include::{snippets}/member/getMyUserInfo/http-request.adoc[]
 header::
@@ -411,7 +440,6 @@ response::
 include::{snippets}/member/getMyUserInfo/http-response.adoc[]
 
 === 유저정보 조회(타인)
-IMPORTANT: 관리자권한 필요
 
 request::
 include::{snippets}/member/getUserInfo/http-request.adoc[]
@@ -449,7 +477,6 @@ path-param::
 include::{snippets}/member/check-nickname/path-parameters.adoc[]
 response::
 include::{snippets}/member/check-nickname/http-response.adoc[]
-
 
 === 멤버 평점
 

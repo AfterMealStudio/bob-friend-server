@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Getter
 @Entity
@@ -19,22 +18,19 @@ import java.util.Objects;
 @DiscriminatorValue(value = "reply")
 public class Reply extends Writing {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
     private Comment comment;
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Reply reply = (Reply) o;
-        return Objects.equals(id, reply.id);
+    public void setComment(Comment comment) {
+        this.comment = comment;
+        comment.getReplies().add(this);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public void delete() {
+        this.comment.getReplies().remove(this);
+        this.comment = null;
     }
 
     public void report() {

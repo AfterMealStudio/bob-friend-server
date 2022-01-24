@@ -1,12 +1,16 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.member.*;
-import com.example.bobfriend.model.entity.Comment;
 import com.example.bobfriend.model.entity.Member;
-import com.example.bobfriend.model.entity.Recruitment;
+import com.example.bobfriend.model.entity.Writing;
 import com.example.bobfriend.model.exception.MemberDuplicatedException;
-import com.example.bobfriend.repository.*;
+import com.example.bobfriend.model.exception.MemberNotAllowedException;
+import com.example.bobfriend.repository.MemberRepository;
+import com.example.bobfriend.repository.RecruitmentMemberRepository;
+import com.example.bobfriend.repository.WritingReportRepository;
+import com.example.bobfriend.repository.WritingRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -21,12 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final RecruitmentRepository recruitmentRepository;
-    private final ReplyRepository replyRepository;
-    private final CommentRepository commentRepository;
     private final WritingReportRepository reportRepository;
+    private final RecruitmentMemberRepository recruitmentMemberRepository;
+    private final WritingRepository writingRepository;
     private final PasswordEncoder passwordEncoder;
-
 
     @Transactional(readOnly = true)
     public Response getMemberWithAuthorities(String email) {
@@ -44,16 +46,6 @@ public class MemberService {
 
 
     @Transactional
-    public void checkMemberWithCode(String email, String code) {
-        Member member = memberRepository.findMemberByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email));
-        if (Integer.parseInt(code) == (member.hashCode())) {
-            member.emailVerify();
-        }
-    }
-
-
-    @Transactional
     public void delete(Delete delete) {
         Member currentMember = getCurrentMember();
 
@@ -62,23 +54,13 @@ public class MemberService {
             throw new BadCredentialsException("password not correct");
         }
 
+        recruitmentMemberRepository.deleteAllByMember(currentMember);
+
+        for (Writing writing : writingRepository.findAllByAuthor(currentMember)) {
+            writing.setAuthor(null);
+        }
+
         reportRepository.deleteAllByMember(currentMember);
-
-        for (Recruitment recruitment :
-                recruitmentRepository.findAllByAuthor(currentMember)) {
-            recruitment.setAuthor(null);
-        }
-
-        for (Comment comment :
-                commentRepository.findAllByAuthor(currentMember)) {
-            comment.clear();
-        }
-
-//        for (Reply reply:
-//        replyRepository.findAllByAuthor(currentMember)) {
-//            replyRepository.delete(reply);
-//        }
-        replyRepository.deleteAllByAuthor(currentMember);
 
         memberRepository.delete(currentMember);
     }
@@ -94,17 +76,13 @@ public class MemberService {
     }
 
 
-    public boolean isExistByEmail(String email) {
-        return memberRepository.existsMemberByEmail(email);
-    }
-
-    public DuplicationCheck checkExistByEmail(String email) {
-        return new DuplicationCheck(
+    public Exist existsByEmail(String email) {
+        return new Exist(
                 memberRepository.existsMemberByEmail(email));
     }
 
-    public DuplicationCheck checkExistByNickname(String nickname) {
-        return new DuplicationCheck(
+    public Exist existsByNickname(String nickname) {
+        return new Exist(
                 memberRepository.existsMemberByNickname(nickname));
     }
 
@@ -174,5 +152,37 @@ public class MemberService {
                 .agree(request.getAgree())
                 .build();
     }
+
+
+    @Transactional
+    public String resetPassword(ResetPassword resetPassword) {
+        String email = resetPassword.getEmail();
+        Member member = getMember(email);
+        if (!member.getBirth().equals(resetPassword.getBirth()))
+            throw new MemberNotAllowedException(member.getEmail());
+
+        String newPassword = generatePassword();
+
+        Member incoming = convertToEntity(new Request() {
+            @Override
+            public String getPassword() {
+                return newPassword;
+            }
+        });
+
+        member.update(incoming);
+
+        return newPassword;
+    }
+
+
+    private String generatePassword() {
+        return new RandomStringGenerator.Builder()
+                .withinRange('0', 'z')
+                .filteredBy(codePoint -> codePoint != '\\')
+                .build()
+                .generate(10);
+    }
+
 
 }

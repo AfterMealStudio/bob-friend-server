@@ -124,6 +124,8 @@ class RecruitmentControllerTest {
                 .active(true)
                 .reportCount(0)
                 .build();
+        testAuthor.setup();
+        testMember.setup();
         testRecruitment.addMember(testMember);
     }
 
@@ -137,8 +139,8 @@ class RecruitmentControllerTest {
         given(recruitmentService.findAll(any()))
                 .willReturn(responsePage);
 
-        mvc.perform(getRequestBuilder(
-                        get("/recruitments"))
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        get("/api/recruitments"))
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(
@@ -165,8 +167,8 @@ class RecruitmentControllerTest {
         when(recruitmentService.findMyRecruitments(any()))
                 .thenReturn(responsePage);
 
-        mvc.perform(getRequestBuilder(
-                        get("/recruitments"))
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        get("/api/recruitments"))
                         .param("type", "owned")
                 )
                 .andExpect(status().isOk())
@@ -194,9 +196,9 @@ class RecruitmentControllerTest {
                 new PageImpl<>(Arrays.asList(responseDto1));
         given(recruitmentService.findAllByRestaurantAddress(any(), any()))
                 .willReturn(responsePage);
-        mvc.perform(getRequestBuilder(
-                        get("/recruitments"))
-                .param("type","specific")
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        get("/api/recruitments"))
+                        .param("type", "specific")
                         .param("address", testRestaurantAddress))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responsePage)))
@@ -262,12 +264,12 @@ class RecruitmentControllerTest {
 
         addressDto.setCount(1);
 
-        AddressCollection value = new AddressCollection(List.of(addressDto));
+        Addresses value = new Addresses(List.of(addressDto));
         given(recruitmentService.findAllLocations(any(), any(), any()))
                 .willReturn(value);
 
-        mvc.perform(getRequestBuilder(
-                        get("/recruitments/locations"))
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        get("/api/recruitments/locations"))
                         .param("zoom", String.valueOf(3))
                         .param("longitude", String.valueOf(126.56207301534569))
                         .param("latitude", String.valueOf(33.4566084914484))
@@ -298,8 +300,8 @@ class RecruitmentControllerTest {
         given(recruitmentService.findById(any()))
                 .willReturn(detailResponseDto);
 
-        mvc.perform(getRequestBuilder(
-                        get("/recruitments/{recruitmentId}",
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        get("/api/recruitments/{recruitmentId}",
                                 1))
                 )
                 .andExpect(status().isOk())
@@ -347,8 +349,8 @@ class RecruitmentControllerTest {
         given(recruitmentService.create(any()))
                 .willReturn(detailResponseDto);
 
-        mvc.perform(getRequestBuilder(
-                        post("/recruitments"))
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        post("/api/recruitments"))
                         .content(objectMapper.writeValueAsString(requestDto))
                 )
                 .andExpect(status().isOk())
@@ -396,13 +398,14 @@ class RecruitmentControllerTest {
                 .agree(true)
                 .active(true)
                 .build();
+        testMember2.setup();
         testRecruitment.addMember(testMember2);
         DetailResponse detailResponse = new DetailResponse(testRecruitment);
         when(recruitmentService.joinOrUnjoin(any()))
                 .thenReturn(detailResponse);
 
-        mvc.perform(getRequestBuilder(
-                        patch("/recruitments/{recruitmentId}",
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        patch("/api/recruitments/{recruitmentId}",
                                 testRecruitment.getId())
                 ))
                 .andExpect(status().isOk())
@@ -425,8 +428,8 @@ class RecruitmentControllerTest {
 
     @Test
     void deleteRecruitment() throws Exception {
-        mvc.perform(getRequestBuilder(
-                        delete("/recruitments/{recruitmentId}",
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        delete("/api/recruitments/{recruitmentId}",
                                 1))
                 )
                 .andExpect(status().isOk())
@@ -454,8 +457,8 @@ class RecruitmentControllerTest {
                 new PageImpl<>(Arrays.asList(detailResponseDto));
         when(recruitmentService.searchTitle(any(), any()))
                 .thenReturn(new PageImpl<>(Arrays.asList(detailResponseDto)));
-        mvc.perform(getRequestBuilder(
-                        get("/recruitments/search"))
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        get("/api/recruitments/search"))
                         .param("category", "title")
                         .param("keyword", "ti")
                 )
@@ -480,8 +483,8 @@ class RecruitmentControllerTest {
 
     @Test
     void reportRecruitment() throws Exception {
-        mvc.perform(getRequestBuilder(
-                        patch("/recruitments/{recruitmentId}/report",
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        patch("/api/recruitments/{recruitmentId}/report",
                                 1)))
                 .andExpect(status().isOk())
                 .andDo(document("recruitment/report-recruitment",
@@ -498,8 +501,8 @@ class RecruitmentControllerTest {
 
     @Test
     void closeRecruitment() throws Exception {
-        mvc.perform(getRequestBuilder(
-                        patch("/recruitments/{recruitmentId}/close",
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        patch("/api/recruitments/{recruitmentId}/close",
                                 1)))
                 .andExpect(status().isOk())
                 .andDo(document("recruitment/close-recruitment",

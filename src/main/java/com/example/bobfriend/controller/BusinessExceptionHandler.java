@@ -1,7 +1,10 @@
 package com.example.bobfriend.controller;
 
 import com.example.bobfriend.model.dto.ErrorResponse;
-import com.example.bobfriend.model.exception.*;
+import com.example.bobfriend.model.exception.BusinessBadRequestException;
+import com.example.bobfriend.model.exception.BusinessConflictException;
+import com.example.bobfriend.model.exception.BusinessForbiddenException;
+import com.example.bobfriend.model.exception.BusinessNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,11 +68,7 @@ public class BusinessExceptionHandler {
     public ResponseEntity handleArgumentNotValidException(MethodArgumentNotValidException e) {
         StringBuilder message = new StringBuilder();
         for (FieldError error : e.getFieldErrors()) {
-            message.append(error.getField());
-            message.append(" ");
             message.append(error.getDefaultMessage());
-            message.append(", input : ");
-            message.append(error.getRejectedValue());
         }
         ErrorResponse response = ErrorResponse.of(message.toString(), e.getClass());
         return new ResponseEntity(response, HttpStatus.BAD_REQUEST);

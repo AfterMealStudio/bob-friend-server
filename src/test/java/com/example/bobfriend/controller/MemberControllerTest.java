@@ -3,12 +3,11 @@ package com.example.bobfriend.controller;
 import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
-import com.example.bobfriend.service.AuthService;
+import com.example.bobfriend.service.EmailService;
 import com.example.bobfriend.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -43,13 +42,12 @@ class MemberControllerTest {
     @Autowired
     ObjectMapper objectMapper;
     @MockBean
-    AuthService authService;
+    EmailService emailService;
     @MockBean
     MemberService memberService;
 
     Member testMember;
-    @Mock
-    private PasswordEncoder passwordEncoder;
+
 
     @BeforeEach
     public void setup() {
@@ -62,7 +60,7 @@ class MemberControllerTest {
                 .birth(LocalDate.now())
                 .agree(true)
                 .active(true)
-                .emailVerified(false)
+                .verified(false)
                 .rating(0.0)
                 .numberOfJoin(0)
                 .build();
@@ -73,7 +71,7 @@ class MemberControllerTest {
         Response responseDto = new Response(testMember);
         when(memberService.getMyMemberWithAuthorities())
                 .thenReturn(responseDto);
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         get("/api/user"))
                 )
                 .andExpect(status().isOk())
@@ -92,7 +90,7 @@ class MemberControllerTest {
         Response responseDto = new Response(testMember);
         when(memberService.getMemberWithAuthorities(any()))
                 .thenReturn(responseDto);
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         get("/api/user/{email}", testMember.getEmail()))
                 )
                 .andExpect(status().isOk())
@@ -111,12 +109,12 @@ class MemberControllerTest {
 
     @Test
     public void checkEmail() throws Exception {
-        when(memberService.checkExistByEmail(any()))
-                .thenReturn(new DuplicationCheck(false));
-        mvc.perform(get("/api/email/{email}", testMember.getEmail()))
+        when(memberService.existsByEmail(any()))
+                .thenReturn(new Exist(false));
+        mvc.perform(get("/api/user/email/{email}", testMember.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(
-                        new DuplicationCheck(false)
+                        new Exist(false)
                 )))
                 .andDo(document("member/check-email",
                         getDocumentRequest(),
@@ -130,15 +128,15 @@ class MemberControllerTest {
 
     @Test
     public void checkNickname() throws Exception {
-        when(memberService.checkExistByNickname(any()))
+        when(memberService.existsByNickname(any()))
                 .thenReturn(
-                        new DuplicationCheck(false)
+                        new Exist(false)
                 );
-        mvc.perform(get("/api/nickname/{nickname}", testMember.getNickname()))
+        mvc.perform(get("/api/user/nickname/{nickname}", testMember.getNickname()))
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json(objectMapper.writeValueAsString(
-                                new DuplicationCheck(false)
+                                new Exist(false)
                         )))
                 .andDo(document("member/check-nickname",
                         getDocumentRequest(),
@@ -154,7 +152,7 @@ class MemberControllerTest {
     @Test
     void deleteMember() throws Exception {
         Delete delete = new Delete(testMember.getPassword());
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         delete("/api/user"))
                         .content(objectMapper.writeValueAsString(delete)))
                 .andExpect(status().isOk())
@@ -171,7 +169,7 @@ class MemberControllerTest {
     void rateMemberTest() throws Exception {
         Score rate = new Score();
         rate.setScore(3.2);
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         post("/api/user/{nickname}/score", testMember.getNickname()))
                         .content(objectMapper.writeValueAsString(rate)))
                 .andExpect(status().isOk())
@@ -209,7 +207,7 @@ class MemberControllerTest {
         when(memberService.update(any()))
                 .thenReturn(response);
 
-        mvc.perform(getRequestBuilder(
+        mvc.perform(requestBuilderWithAuthorizationHeader(
                         put("/api/user")
                                 .content(
                                         objectMapper.writeValueAsString(update))))
@@ -223,6 +221,26 @@ class MemberControllerTest {
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
                         )));
+    }
+
+
+    @Test
+    void resetPasswordTest() throws Exception {
+        String newPassword = "new-password";
+        when(memberService.resetPassword(any()))
+                .thenReturn(newPassword);
+        ResetPassword resetPassword = new ResetPassword();
+        resetPassword.setEmail(testMember.getEmail());
+        resetPassword.setBirth(testMember.getBirth());
+
+        mvc.perform(put("/api/user/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(resetPassword)))
+                .andExpect(status().isOk())
+                .andDo(document("member/reset-password",
+                        getDocumentRequest(),
+                        getDocumentResponse()));
     }
 
 }

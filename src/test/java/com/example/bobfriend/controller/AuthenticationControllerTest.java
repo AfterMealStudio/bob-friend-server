@@ -9,10 +9,13 @@ import com.example.bobfriend.model.dto.token.Validation;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
+import com.example.bobfriend.service.VerificationService;
+import com.example.bobfriend.validator.PasswordValidationStrategy;
+import com.example.bobfriend.validator.PasswordValidationStrategySelector;
+import com.example.bobfriend.validator.PasswordValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,7 +25,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -33,11 +35,14 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Import({AuthenticationController.class})
+@Import({AuthenticationController.class, PasswordValidator.class, PasswordValidationStrategySelector.class})
 @WebMvcTest(useDefaultFilters = false)
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs
@@ -52,10 +57,14 @@ public class AuthenticationControllerTest {
     MockMvc mvc;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    PasswordValidationStrategy passwordValidationStrategy;
+    @Autowired
+    PasswordValidator passwordValidator;
 
     Member testMember;
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    @MockBean
+    private VerificationService verificationService;
 
     @BeforeEach
     public void setup() {
@@ -70,7 +79,7 @@ public class AuthenticationControllerTest {
                 .rating(0.0)
                 .agree(true)
                 .active(true)
-                .emailVerified(false)
+                .verified(false)
                 .build();
     }
 
@@ -85,7 +94,7 @@ public class AuthenticationControllerTest {
                 .password(testMember.getPassword())
                 .build();
 
-        mvc.perform(post("/api/signin")
+        mvc.perform(post("/api/auth/signin")
                         .content(objectMapper.writeValueAsString(login))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -107,8 +116,8 @@ public class AuthenticationControllerTest {
         Signup signup = Signup.builder()
                 .email(testMember.getEmail())
                 .nickname(testMember.getNickname())
-                .password("1234")
                 .birth(testMember.getBirth())
+                .password("1234567890!@#$asd")
                 .sex(Sex.MALE)
                 .agree(true)
                 .build();
@@ -130,7 +139,7 @@ public class AuthenticationControllerTest {
                 .thenReturn(response);
 
 
-        mvc.perform(post("/api/signup")
+        mvc.perform(post("/api/auth/signup")
                         .content(objectMapper.writeValueAsString(signup))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -147,14 +156,14 @@ public class AuthenticationControllerTest {
 
 
     @Test
-    void reissueTest() throws Exception {
+    void issueTest() throws Exception {
         Token tokenDto = Token.builder()
                 .accessToken("new-access-token-example")
                 .refreshToken("new-refresh-token-example")
                 .build();
         when(authService.issueToken(any()))
                 .thenReturn(tokenDto);
-        mvc.perform(post("/api/issue")
+        mvc.perform(post("/api/auth/issue")
                         .content(objectMapper.writeValueAsString(
                                 Token.builder()
                                         .accessToken("old-access-token")
@@ -177,7 +186,7 @@ public class AuthenticationControllerTest {
         when(tokenProvider.validateAccessToken(any()))
                 .thenReturn(true);
 
-        mvc.perform(getRequestBuilder(get("/api/validate")))
+        mvc.perform(requestBuilderWithAuthorizationHeader(get("/api/auth/validate")))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         objectMapper.writeValueAsString(
@@ -189,6 +198,41 @@ public class AuthenticationControllerTest {
                         getDocumentResponse(),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )));
+    }
+
+
+    @Test
+    void verifyEmailTest() throws Exception {
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        get("/api/auth/verify")
+                                .param("email", "testEmail@test.com")
+                                .param("code", "testCode")))
+                .andExpect(status().isOk())
+                .andDo(document("auth/verify-email",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestParameters(
+                                parameterWithName("email")
+                                        .description("이메일"),
+                                parameterWithName("code")
+                                        .description("인증코드")
+                        )));
+    }
+
+
+    @Test
+    void verifyEmailRetryTest() throws Exception {
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        get("/api/auth/verify/retry")
+                                .param("email", "testEmail@test.com")))
+                .andExpect(status().isOk())
+                .andDo(document("auth/verify-email-retry",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestParameters(
+                                parameterWithName("email")
+                                        .description("이메일")
                         )));
     }
 }
