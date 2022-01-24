@@ -33,7 +33,7 @@ public class RecruitmentService {
 
     @Transactional
     public Page<SimpleResponse> findAll(Pageable pageable) {
-        return recruitmentRepository.findAll(pageable)
+        return recruitmentRepository.findAllByActiveTrue(pageable)
                 .map(SimpleResponse::new);
     }
 
