@@ -70,8 +70,8 @@ public class RecruitmentCustomRepositoryImpl implements RecruitmentCustomReposit
 
     @Override
     public Page<Recruitment> findAllByAuthor(Member author, Pageable pageable) {
-        JPAQuery<Recruitment> query = getFilteringQueryFromPredicates(
-                recruitment.author.eq(author));
+        JPAQuery<Recruitment> query = jpaQueryFactory.selectFrom(recruitment)
+                .where(recruitment.author.eq(author));
         return getPage(pageable, query);
     }
 
