@@ -14,6 +14,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
+    private final String AUTHENTICATION_REQUEST_URL = "/api/auth";
 
 
     @Override
@@ -29,6 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getRequestURI().contains("/api/auth");
+        return request.getRequestURI().contains(AUTHENTICATION_REQUEST_URL);
     }
 }
