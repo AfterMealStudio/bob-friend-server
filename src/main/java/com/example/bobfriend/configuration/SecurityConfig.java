@@ -22,13 +22,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler accessDeniedHandler;
-    private final String[] REQUESTS_WITHOUT_AUTHORIZATION =
+    private static final String[] REQUESTS_WITHOUT_AUTHORIZATION =
             {"/api/auth/**",
                     "/api/user/nickname/**/",
                     "/api/user/email/**/",
                     "/api/user/password",
                     "/docs/api-doc.html"};
-    private final String DEFAULT_USER_PRIVILEGE = "USER";
+    private static final String DEFAULT_USER_PRIVILEGE = "USER";
 
     @Bean
     public PasswordEncoder passwordEncoder() {

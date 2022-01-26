@@ -14,7 +14,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private final String AUTHENTICATION_REQUEST_URL = "/api/auth";
+    private static final String AUTHENTICATION_REQUEST_URL = "/api/auth";
 
 
     @Override
