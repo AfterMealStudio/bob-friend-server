@@ -46,11 +46,6 @@ public class Member {
     @Column(name = "accumulated_reports")
     private Integer accumulatedReports;
 
-    @Column(name = "privacy_agreement") // 약관 동의 여부
-    private Boolean privacyAgreement;
-    @Column(name = "service_agreement") // 약관 동의 여부
-    private Boolean serviceAgreement;
-
     @Column(name = "active")
     private boolean active;
 
@@ -74,7 +69,6 @@ public class Member {
 
     @Column(name = "verification_code")
     private String verificationCode;
-
 
     @ElementCollection
     @JoinColumn(name = "authority")
@@ -102,8 +96,6 @@ public class Member {
         this.reportCount = 0;
         this.accumulatedReports = 0;
         this.active = true;
-        this.privacyAgreement = true;
-        this.serviceAgreement = true;
     }
 
     public Integer getAge() {

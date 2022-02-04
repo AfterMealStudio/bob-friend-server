@@ -9,6 +9,7 @@ import com.example.bobfriend.model.dto.token.Validation;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
+import com.example.bobfriend.service.MemberAgreementService;
 import com.example.bobfriend.service.VerificationService;
 import com.example.bobfriend.validator.PasswordValidationStrategy;
 import com.example.bobfriend.validator.PasswordValidationStrategySelector;
@@ -65,6 +66,8 @@ public class AuthenticationControllerTest {
     Member testMember;
     @MockBean
     private VerificationService verificationService;
+    @MockBean
+    private MemberAgreementService agreementService;
 
     @BeforeEach
     public void setup() {
@@ -117,6 +120,9 @@ public class AuthenticationControllerTest {
                 .nickname(testMember.getNickname())
                 .birth(testMember.getBirth())
                 .password("1234567890!@#$asd")
+                .ageLimitAgreement(true)
+                .serviceAgreement(true)
+                .privacyAgreement(true)
                 .sex(Sex.MALE)
                 .build();
 
@@ -129,7 +135,6 @@ public class AuthenticationControllerTest {
                 .rating(testMember.getRating())
                 .accumulatedReports(testMember.getAccumulatedReports())
                 .reportCount(testMember.getReportCount())
-                .agree(testMember.getPrivacyAgreement())
                 .active(testMember.isActive())
                 .build();
 

@@ -8,6 +8,7 @@ import com.example.bobfriend.model.dto.token.Token;
 import com.example.bobfriend.model.dto.token.Validation;
 import com.example.bobfriend.model.exception.MemberDuplicatedException;
 import com.example.bobfriend.service.AuthService;
+import com.example.bobfriend.service.MemberAgreementService;
 import com.example.bobfriend.service.VerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,10 +27,11 @@ public class AuthenticationController {
     private final JwtTokenProvider tokenProvider;
     private final AuthService authService;
     private final VerificationService verificationService;
-
+    private final MemberAgreementService agreementService;
 
     @PostMapping("/signup")
     public ResponseEntity signup(@Valid @RequestBody Signup signupDto) throws MemberDuplicatedException {
+        agreementService.save(signupDto);
         Response signup = authService.signup(signupDto);
         verificationService.sendVerification(signupDto.getEmail());
         return ResponseEntity.ok(signup);
