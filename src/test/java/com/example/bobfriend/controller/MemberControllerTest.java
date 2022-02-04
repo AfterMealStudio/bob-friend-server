@@ -3,8 +3,11 @@ package com.example.bobfriend.controller;
 import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
+import com.example.bobfriend.repository.MemberRepository;
 import com.example.bobfriend.service.EmailService;
+import com.example.bobfriend.service.MemberDeleteService;
 import com.example.bobfriend.service.MemberService;
+import com.example.bobfriend.validator.PasswordCorrectValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,9 +19,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Optional;
 
 import static com.example.bobfriend.document.ApiDocumentUtils.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,7 +42,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Import(MemberController.class)
+@Import({MemberController.class, PasswordCorrectValidator.class, BCryptPasswordEncoder.class})
 @WebMvcTest(useDefaultFilters = false)
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs
@@ -41,10 +51,18 @@ class MemberControllerTest {
     MockMvc mvc;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    PasswordCorrectValidator passwordCorrectValidator;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+    @MockBean
+    MemberRepository memberRepository;
     @MockBean
     EmailService emailService;
     @MockBean
     MemberService memberService;
+    @MockBean
+    MemberDeleteService deleteService;
 
     Member testMember;
 
@@ -151,6 +169,16 @@ class MemberControllerTest {
 
     @Test
     void deleteMember() throws Exception {
+        when(memberRepository.findMemberByEmail(any()))
+                .thenReturn(Optional.ofNullable(testMember));
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        testMember.getEmail(),
+                        passwordEncoder.encode(testMember.getPassword()),
+                        Collections.singleton(
+                                new SimpleGrantedAuthority("ROLE_USER"))
+                ));
+
         Delete delete = new Delete(testMember.getPassword());
         mvc.perform(requestBuilderWithAuthorizationHeader(
                         delete("/api/user"))
