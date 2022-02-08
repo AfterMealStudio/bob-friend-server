@@ -44,8 +44,8 @@ public class MemberController {
 
     @DeleteMapping
     public ResponseEntity delete(
-            @RequestBody Delete delete) {
-        deleteService.delete(delete);
+            @RequestBody @Valid Delete delete) {
+        deleteService.delete();
         return ResponseEntity.ok().build();
     }
 

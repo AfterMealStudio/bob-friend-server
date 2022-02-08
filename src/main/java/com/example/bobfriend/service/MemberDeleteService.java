@@ -1,6 +1,5 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.member.Delete;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Writing;
 import com.example.bobfriend.repository.MemberRepository;
@@ -10,8 +9,6 @@ import com.example.bobfriend.repository.WritingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @Service
@@ -23,7 +20,7 @@ public class MemberDeleteService {
     private final MemberService memberService;
 
     @Transactional
-    public void delete(@Valid Delete delete) {
+    public void delete() {
         Member currentMember = memberService.getCurrentMember();
 
         recruitmentMemberRepository.deleteAllByMember(currentMember);
