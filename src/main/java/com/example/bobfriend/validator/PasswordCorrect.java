@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordCorrect {
-    String message() default "비밀번호가 틀렸습니다.";
+    String message() default "{custom.validation.constraints.PasswordCorrect.default}";
 
     Class<?>[] groups() default {};
 
