@@ -91,6 +91,9 @@ sourceSets {
         }
     }
 }
+
+compileQuerydsl.doFirst { if (file(querydslDir).exists()) delete(file(querydslDir)) }
+
 configurations {
     querydsl.extendsFrom compileClasspath
 }
@@ -100,4 +103,3 @@ compileQuerydsl {
 tasks.withType(JavaCompile) {
     options.generatedSourceOutputDirectory = file(querydslDir)
 }
-compileQuerydsl.doFirst { if (file(querydslDir).exists()) delete(file(querydslDir)) }
