@@ -1,5 +1,8 @@
 package com.example.bobfriend.validator;
 
+import org.springframework.stereotype.Component;
+
+@Component(value = "shortLengthStrategy")
 public class ShortLengthStrategy implements PasswordValidationStrategy {
     @Override
     public boolean isValid(String password) {
@@ -8,6 +11,6 @@ public class ShortLengthStrategy implements PasswordValidationStrategy {
 
     @Override
     public String getMessage() {
-        return "{password.message.too_short}";
+        return "{custom.validation.constraints.Password.ShortLength}";
     }
 }

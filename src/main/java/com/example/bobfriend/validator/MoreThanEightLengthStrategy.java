@@ -1,5 +1,8 @@
 package com.example.bobfriend.validator;
 
+import org.springframework.stereotype.Component;
+
+@Component(value = "moreThanEightLengthStrategy")
 public class MoreThanEightLengthStrategy implements PasswordValidationStrategy {
     @Override
     public boolean isValid(String password) {
@@ -15,6 +18,6 @@ public class MoreThanEightLengthStrategy implements PasswordValidationStrategy {
 
     @Override
     public String getMessage() {
-        return "{password.message.default}";
+        return "{custom.validation.constraints.Password.MoreThanEightLength}";
     }
 }
