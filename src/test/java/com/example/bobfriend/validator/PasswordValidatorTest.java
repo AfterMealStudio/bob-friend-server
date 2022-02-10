@@ -35,7 +35,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
+        assertThat(violation.getMessage(), equalTo("{custom.validation.constraints.Password.default}"));
     }
 
 
@@ -53,7 +53,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
+        assertThat(violation.getMessage(), equalTo("{custom.validation.constraints.Password.default}"));
     }
 
 
@@ -71,7 +71,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
+        assertThat(violation.getMessage(), equalTo("{custom.validation.constraints.Password.default}"));
     }
 
 
@@ -89,7 +89,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
+        assertThat(violation.getMessage(), equalTo("{custom.validation.constraints.Password.default}"));
     }
 
 
@@ -107,7 +107,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
+        assertThat(violation.getMessage(), equalTo("{custom.validation.constraints.Password.default}"));
     }
 
 
@@ -125,7 +125,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
+        assertThat(violation.getMessage(), equalTo("{custom.validation.constraints.Password.default}"));
     }
 
 
@@ -143,7 +143,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
+        assertThat(violation.getMessage(), equalTo("{custom.validation.constraints.Password.default}"));
     }
 
 
@@ -161,7 +161,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
+        assertThat(violation.getMessage(), equalTo("{custom.validation.constraints.Password.default}"));
     }
 
     @Test
@@ -178,7 +178,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
+        assertThat(violation.getMessage(), equalTo("{custom.validation.constraints.Password.default}"));
     }
 
 
@@ -196,7 +196,7 @@ public class PasswordValidatorTest {
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
-        assertThat(violation.getMessage(), equalTo("{password.message.default}"));
+        assertThat(violation.getMessage(), equalTo("{custom.validation.constraints.Password.default}"));
     }
 
     @Test
