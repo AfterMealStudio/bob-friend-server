@@ -23,12 +23,12 @@ public class MemberController {
 
     @GetMapping("/email/{email}")
     public ResponseEntity checkEmail(@PathVariable String email) {
-        return ResponseEntity.ok(memberService.checkExistByEmail(email));
+        return ResponseEntity.ok(memberService.existsByEmail(email));
     }
 
     @GetMapping("/nickname/{nickname}")
     public ResponseEntity checkNickname(@PathVariable String nickname) {
-        return ResponseEntity.ok(memberService.checkExistByNickname(nickname));
+        return ResponseEntity.ok(memberService.existsByNickname(nickname));
     }
 
     @GetMapping

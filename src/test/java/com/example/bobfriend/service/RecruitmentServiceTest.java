@@ -1,13 +1,14 @@
 package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.Condition;
-import com.example.bobfriend.model.dto.recruitment.*;
 import com.example.bobfriend.model.dto.member.Preview;
+import com.example.bobfriend.model.dto.recruitment.*;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.model.exception.AlreadyJoined;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.model.exception.RecruitmentNotFoundException;
 import com.example.bobfriend.repository.RecruitmentRepository;
+import com.example.bobfriend.repository.WritingReportRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,8 @@ class RecruitmentServiceTest {
     RecruitmentRepository recruitmentRepository;
     @Mock
     MemberService memberService;
+    @Mock
+    WritingReportRepository reportRepository;
     @InjectMocks
     RecruitmentService recruitmentService;
 
@@ -97,6 +100,8 @@ class RecruitmentServiceTest {
                 .active(true)
                 .build();
 
+
+        testAuthor.setup();
     }
 
 
@@ -106,7 +111,7 @@ class RecruitmentServiceTest {
         when(memberService.getCurrentMember()).thenReturn(testAuthor);
         when(recruitmentRepository.save(any()))
                 .thenReturn(testRecruitment);
-
+        when(recruitmentRepository.findById(any())).thenReturn(Optional.ofNullable(testRecruitment));
         Create requestDto = new Create(testRecruitment);
 
         DetailResponse add = recruitmentService.create(requestDto);
@@ -128,6 +133,7 @@ class RecruitmentServiceTest {
                 .rating(0.0)
                 .numberOfJoin(0)
                 .build();
+        testMember.setup();
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
         given(recruitmentRepository.findById(testRecruitment.getId()))
@@ -154,6 +160,7 @@ class RecruitmentServiceTest {
                 .rating(0.0)
                 .numberOfJoin(0)
                 .build();
+        testMember.setup();
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
         given(recruitmentRepository.findById(testRecruitment.getId()))
@@ -169,6 +176,19 @@ class RecruitmentServiceTest {
 
 
 
+    @Test
+    void deleteRecruitment_Success() {
+        when(memberService.getCurrentMember())
+                .thenReturn(testAuthor);
+        when(recruitmentRepository.findById(any()))
+                .thenReturn(Optional.ofNullable(testRecruitment));
+        Member author = testRecruitment.getAuthor();
+
+        recruitmentService.delete(testRecruitment.getId());
+
+//        assertThat(author.getCreatedWritings().size(),
+//                equalTo(0));
+    }
 
     @Test
     void deleteRecruitmentFail_RecruitmentNotFound() {

@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class DuplicationCheck {
-    private Boolean duplicated;
-
+public class Exist {
+    private Boolean exist;
 }
