@@ -5,6 +5,7 @@ import com.example.bobfriend.model.dto.member.ResetPassword;
 import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.dto.member.Update;
 import com.example.bobfriend.service.EmailService;
+import com.example.bobfriend.service.MemberBanService;
 import com.example.bobfriend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ import javax.validation.Valid;
 public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
-
+    private final MemberBanService memberBanService;
 
     @GetMapping("/email/{email}")
     public ResponseEntity checkEmail(@PathVariable String email) {
@@ -72,4 +73,16 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+
+    @PutMapping("/{nickname}/ban")
+    public ResponseEntity ban(@PathVariable String nickname) {
+        memberBanService.ban(nickname);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{nickname}/ban/cancel")
+    public ResponseEntity banCancel(@PathVariable String nickname) {
+        memberBanService.cancel(nickname);
+        return ResponseEntity.ok().build();
+    }
 }

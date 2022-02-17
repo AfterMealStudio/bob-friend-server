@@ -4,6 +4,7 @@ import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.EmailService;
+import com.example.bobfriend.service.MemberBanService;
 import com.example.bobfriend.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +46,8 @@ class MemberControllerTest {
     EmailService emailService;
     @MockBean
     MemberService memberService;
-
+    @MockBean
+    MemberBanService memberBanService;
     Member testMember;
 
 
@@ -243,4 +245,35 @@ class MemberControllerTest {
                         getDocumentResponse()));
     }
 
+
+    @Test
+    void banMember() throws Exception {
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        put("/api/user/{nickname}/ban", testMember.getNickname())
+                ))
+                .andExpect(status().isOk())
+                .andDo(document("member/ban",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
+    }
+
+
+    @Test
+    void cancelBanMember() throws Exception {
+        mvc.perform(requestBuilderWithAuthorizationHeader(
+                        put("/api/user/{nickname}/ban/cancel", testMember.getNickname())
+                ))
+                .andExpect(status().isOk())
+                .andDo(document("member/ban/cancel",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )
+                ));
+    }
 }

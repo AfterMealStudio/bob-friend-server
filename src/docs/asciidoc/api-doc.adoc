@@ -492,3 +492,30 @@ include::{snippets}/member/rate/path-parameters.adoc[]
 response::
 include::{snippets}/member/rate/http-response.adoc[]
 
+=== 차단하기
+
+[source]
+----
+멤버를 차단한다.
+----
+
+request::
+include::{snippets}/member/ban/http-request.adoc[]
+path-param::
+include::{snippets}/member/ban/request-headers.adoc[]
+response::
+include::{snippets}/member/ban/http-response.adoc[]
+
+=== 차단해제하기
+
+[source]
+----
+멤버를 차단해제한다.
+----
+
+request::
+include::{snippets}/member/ban/cancel/http-request.adoc[]
+path-param::
+include::{snippets}/member/ban/cancel/request-headers.adoc[]
+response::
+include::{snippets}/member/ban/cancel/http-response.adoc[]
