@@ -2,6 +2,8 @@ package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.MemberBan;
+import com.example.bobfriend.model.exception.MemberAlreadyBannedException;
+import com.example.bobfriend.model.exception.MemberNotBannedException;
 import com.example.bobfriend.model.exception.MemberNotFoundException;
 import com.example.bobfriend.repository.MemberBanRepository;
 import com.example.bobfriend.repository.MemberRepository;
@@ -23,6 +25,12 @@ public class MemberBanService {
         Member member = memberRepository.findMemberByNickname(nickname)
                 .orElseThrow(() -> new MemberNotFoundException());
 
+        memberBanRepository.findByMemberAndBannedMember(currentMember, member).ifPresent(
+                (memberBan) -> {
+                    throw new MemberAlreadyBannedException();
+                }
+        );
+
         MemberBan memberBan = MemberBan.builder()
                 .member(currentMember)
                 .bannedMember(member)
@@ -38,8 +46,8 @@ public class MemberBanService {
         Member member = memberRepository.findMemberByNickname(nickname)
                 .orElseThrow(() -> new MemberNotFoundException());
 
-        MemberBan memberBan = memberBanRepository.findByMemberAndAndBannedMember(currentMember, member).orElseThrow(
-                () -> new MemberNotFoundException());
+        MemberBan memberBan = memberBanRepository.findByMemberAndBannedMember(currentMember, member)
+                .orElseThrow(() -> new MemberNotBannedException());
 
         memberBanRepository.delete(memberBan);
     }

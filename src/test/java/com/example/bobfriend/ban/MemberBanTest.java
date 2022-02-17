@@ -4,6 +4,9 @@ import com.example.bobfriend.model.entity.Authority;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.MemberBan;
 import com.example.bobfriend.model.entity.Sex;
+import com.example.bobfriend.model.exception.MemberAlreadyBannedException;
+import com.example.bobfriend.model.exception.MemberNotBannedException;
+import com.example.bobfriend.model.exception.MemberNotFoundException;
 import com.example.bobfriend.repository.MemberBanRepository;
 import com.example.bobfriend.repository.MemberRepository;
 import com.example.bobfriend.service.MemberBanService;
@@ -29,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -87,18 +91,14 @@ public class MemberBanTest {
 
         memberRepository.save(member1);
         memberRepository.save(member2);
+
+        setAuthentication();
+
     }
 
     @Test
     @DisplayName("ban 메서드를 호출하면 MemberBan 객체를 저장한다.")
     void banTest() {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        member1.getEmail(),
-                        member1.getPassword(),
-                        Collections.singleton(
-                                new SimpleGrantedAuthority("ROLE_USER"))
-                ));
 
         memberBanService.ban(member2.getNickname());
 
@@ -106,6 +106,24 @@ public class MemberBanTest {
 
         assertThat(byMember.getMember()).isEqualTo(member1);
         assertThat(byMember.getBannedMember()).isEqualTo(member2);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 사용자를 차단하면 예외가 발생한다.")
+    void banNobody() {
+        assertThrows(MemberNotFoundException.class,
+                () -> memberBanService.ban("nobody"));
+    }
+
+    @Test
+    @DisplayName("이미 차단한 사용자를 다시 차단하면 예외가 발생한다.")
+    void banMultipleTimeTest() {
+
+        memberBanService.ban(member2.getNickname());
+
+        assertThrows(MemberAlreadyBannedException.class,
+                () -> memberBanService.ban(member2.getNickname()));
+
     }
 
     @Test
@@ -131,13 +149,6 @@ public class MemberBanTest {
 
         memberRepository.save(member3);
 
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        member1.getEmail(),
-                        member1.getPassword(),
-                        Collections.singleton(
-                                new SimpleGrantedAuthority("ROLE_USER"))
-                ));
 
         memberBanService.ban(member2.getNickname());
         memberBanService.ban(member3.getNickname());
@@ -151,5 +162,41 @@ public class MemberBanTest {
         assertThat(memberBan.getBannedMember()).isEqualTo(member3);
     }
 
+    @Test
+    @DisplayName("차단한 적 없는 사용자에 대해 cancel 메소드를 호출하면 예외가 발생한다.")
+    void cancelBanToUnbanned() {
+        Member member3 = Member.builder()
+                .id(0L)
+                .email("testEmail3")
+                .nickname("testUser3")
+                .password(passwordEncoder.encode("1234"))
+                .birth(LocalDate.now())
+                .sex(Sex.FEMALE)
+                .reportCount(0)
+                .accumulatedReports(0)
+                .rating(0.0)
+                .numberOfJoin(0)
+                .authorities(Collections.singleton(Authority.ROLE_USER))
+                .agree(true)
+                .active(true)
+                .build();
+        member3.setup();
 
+        memberRepository.save(member3);
+        memberBanService.ban(member2.getNickname());
+
+        assertThrows(MemberNotBannedException.class,
+                () -> memberBanService.cancel(member3.getNickname()));
+    }
+
+
+    private void setAuthentication() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        member1.getEmail(),
+                        member1.getPassword(),
+                        Collections.singleton(
+                                new SimpleGrantedAuthority("ROLE_USER"))
+                ));
+    }
 }
