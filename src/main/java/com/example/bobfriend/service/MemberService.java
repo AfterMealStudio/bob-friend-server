@@ -5,10 +5,7 @@ import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Writing;
 import com.example.bobfriend.model.exception.MemberDuplicatedException;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
-import com.example.bobfriend.repository.MemberRepository;
-import com.example.bobfriend.repository.RecruitmentMemberRepository;
-import com.example.bobfriend.repository.WritingReportRepository;
-import com.example.bobfriend.repository.WritingRepository;
+import com.example.bobfriend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,6 +25,7 @@ public class MemberService {
     private final WritingReportRepository reportRepository;
     private final RecruitmentMemberRepository recruitmentMemberRepository;
     private final WritingRepository writingRepository;
+    private final MemberBanRepository memberBanRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
@@ -54,6 +52,9 @@ public class MemberService {
             throw new BadCredentialsException("password not correct");
         }
 
+        memberBanRepository.deleteAllByMember(currentMember);
+        memberBanRepository.deleteAllByBannedMember(currentMember);
+        
         recruitmentMemberRepository.deleteAllByMember(currentMember);
 
         for (Writing writing : writingRepository.findAllByAuthor(currentMember)) {
