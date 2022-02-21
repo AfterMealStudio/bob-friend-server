@@ -5,6 +5,7 @@ import com.example.bobfriend.model.dto.member.ResetPassword;
 import com.example.bobfriend.model.dto.member.Score;
 import com.example.bobfriend.model.dto.member.Update;
 import com.example.bobfriend.service.EmailService;
+import com.example.bobfriend.service.MemberDeleteService;
 import com.example.bobfriend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ import javax.validation.Valid;
 public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
-
+    private final MemberDeleteService deleteService;
 
     @GetMapping("/email/{email}")
     public ResponseEntity checkEmail(@PathVariable String email) {
@@ -43,8 +44,8 @@ public class MemberController {
 
     @DeleteMapping
     public ResponseEntity delete(
-            @Valid @RequestBody Delete delete) {
-        memberService.delete(delete);
+            @RequestBody @Valid Delete delete) {
+        deleteService.delete();
         return ResponseEntity.ok().build();
     }
 
