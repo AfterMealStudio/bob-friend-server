@@ -10,9 +10,10 @@ import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
 import com.example.bobfriend.service.VerificationService;
-import com.example.bobfriend.validator.PasswordValidationStrategy;
-import com.example.bobfriend.validator.PasswordValidationStrategySelector;
+import com.example.bobfriend.validator.MoreThanTenLengthStrategy;
+import com.example.bobfriend.validator.PasswordValidationService;
 import com.example.bobfriend.validator.PasswordValidator;
+import com.example.bobfriend.validator.ShortLengthStrategy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Import({AuthenticationController.class, PasswordValidator.class, PasswordValidationStrategySelector.class})
+@Import({AuthenticationController.class, PasswordValidator.class, PasswordValidationService.class, ShortLengthStrategy.class, MoreThanTenLengthStrategy.class})
 @WebMvcTest(useDefaultFilters = false)
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs
@@ -58,7 +59,9 @@ public class AuthenticationControllerTest {
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
-    PasswordValidationStrategy passwordValidationStrategy;
+    MoreThanTenLengthStrategy passwordValidationStrategy;
+    @Autowired
+    PasswordValidationService passwordValidationService;
     @Autowired
     PasswordValidator passwordValidator;
 
@@ -112,7 +115,6 @@ public class AuthenticationControllerTest {
 
     @Test
     void signup() throws Exception {
-        Token tokenDto = new Token("jwt-access-token-example", "jwt-refresh-token-example");
         Signup signup = Signup.builder()
                 .email(testMember.getEmail())
                 .nickname(testMember.getNickname())
