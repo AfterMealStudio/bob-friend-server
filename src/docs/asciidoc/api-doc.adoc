@@ -421,6 +421,20 @@ include::{snippets}/member/update/request-headers.adoc[]
 response::
 include::{snippets}/member/update/http-response.adoc[]
 
+=== 비밀번호 수정
+
+[source]
+---
+
+---
+
+request::
+include::{snippets}/member/update-password/http-request.adoc[]
+header::
+include::{snippets}/member/update-password/request-headers.adoc[]
+response::
+include::{snippets}/member/update-password/http-response.adoc[]
+
 === 회원 탈퇴
 
 request::

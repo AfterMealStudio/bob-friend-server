@@ -277,17 +277,16 @@ class MemberControllerTest {
     void updatePasswordTest() throws Exception {
         String newPassword = "newPassword!@#";
         UpdatePassword updatePassword = new UpdatePassword(newPassword);
-        updatePassword.setPassword(newPassword);
-        String password = updatePassword.getPassword();
-        mvc.perform(patch("/api/user/password")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updatePassword))
-                )
+
+        mvc.perform(requestBuilderWithAuthorizationHeader(patch("/api/user/password")
+                        .content(objectMapper.writeValueAsString(updatePassword))))
                 .andExpect(status().isOk())
                 .andDo(document("member/update-password",
                         getDocumentRequest(),
-                        getDocumentResponse()));
+                        getDocumentResponse(),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
+                        )));
     }
 
 }
