@@ -15,7 +15,6 @@ import java.time.LocalDate;
 public abstract class Request {
     protected String email;
     protected String nickname;
-    protected String password;
     protected Sex sex;
     protected LocalDate birth;
     protected Boolean agree;

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -174,13 +175,15 @@ public class Member {
     }
 
 
-    public Member update(Member incoming) {
+    public void update(Member incoming) {
         this.nickname = (incoming.getNickname() == null) ? this.nickname : incoming.getNickname();
-        this.password = (incoming.getPassword() == null) ? this.password : incoming.getPassword();
         this.sex = (incoming.getSex() == null) ? this.sex : incoming.getSex();
         this.birth = (incoming.getBirth() == null) ? this.birth : incoming.getBirth();
         this.agree = (incoming.getAgree() == null) ? this.agree : incoming.getAgree();
-        return this;
+    }
+
+    public void setPassword(String password, PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(password);
     }
 
     @Override

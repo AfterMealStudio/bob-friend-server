@@ -20,6 +20,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
-    private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -47,6 +48,7 @@ public class AuthService {
 
         Member member = memberService.convertToEntity(memberSignupDto);
         member.setAuthorities(Collections.singleton(authority));
+        member.setPassword(memberSignupDto.getPassword(), passwordEncoder);
         Member save = memberRepository.save(member);
 
         return new Response(save);
@@ -93,16 +95,6 @@ public class AuthService {
         refreshToken.setRefreshToken(token.getRefreshToken());
 
         return token;
-    }
-
-
-    @Transactional
-    public void checkMemberWithCode(String email, String code) {
-        Member member = memberRepository.findMemberByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email));
-        if (Integer.parseInt(code) == (member.hashCode())) {
-            member.verify();
-        }
     }
 
 

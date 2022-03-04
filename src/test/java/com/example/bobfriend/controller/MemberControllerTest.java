@@ -7,7 +7,10 @@ import com.example.bobfriend.repository.MemberRepository;
 import com.example.bobfriend.service.EmailService;
 import com.example.bobfriend.service.MemberDeleteService;
 import com.example.bobfriend.service.MemberService;
+import com.example.bobfriend.validator.MoreThanTenLengthStrategy;
 import com.example.bobfriend.validator.PasswordCorrectValidator;
+import com.example.bobfriend.validator.PasswordValidationService;
+import com.example.bobfriend.validator.PasswordValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +45,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Import({MemberController.class, PasswordCorrectValidator.class, BCryptPasswordEncoder.class})
+@Import({MemberController.class, PasswordCorrectValidator.class, BCryptPasswordEncoder.class, PasswordValidationService.class, PasswordValidator.class, MoreThanTenLengthStrategy.class})
 @WebMvcTest(useDefaultFilters = false)
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs
@@ -65,6 +68,7 @@ class MemberControllerTest {
     MemberDeleteService deleteService;
 
     Member testMember;
+    String rawPassword = "testPassword!@#1";
 
 
     @BeforeEach
@@ -73,7 +77,7 @@ class MemberControllerTest {
                 .id(1)
                 .email("testMember@test.com")
                 .nickname("testMember")
-                .password("testPassword")
+                .password(passwordEncoder.encode(rawPassword))
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .agree(true)
@@ -174,12 +178,12 @@ class MemberControllerTest {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(
                         testMember.getEmail(),
-                        passwordEncoder.encode(testMember.getPassword()),
+                        testMember.getPassword(),
                         Collections.singleton(
                                 new SimpleGrantedAuthority("ROLE_USER"))
                 ));
 
-        Delete delete = new Delete(testMember.getPassword());
+        Delete delete = new Delete(rawPassword);
         mvc.perform(requestBuilderWithAuthorizationHeader(
                         delete("/api/user"))
                         .content(objectMapper.writeValueAsString(delete)))
@@ -218,14 +222,12 @@ class MemberControllerTest {
         Update update = new Update();
         update.setNickname("update nickname");
         update.setBirth(LocalDate.now().minusYears(1));
-        update.setPassword("update password");
         update.setAgree(false);
         update.setSex(Sex.NONE);
 
         Member incoming = Member.builder()
                 .nickname(update.getNickname())
                 .birth(update.getBirth())
-                .password(update.getPassword())
                 .sex(update.getSex())
                 .agree(update.getAgree())
                 .build();
@@ -261,12 +263,29 @@ class MemberControllerTest {
         resetPassword.setEmail(testMember.getEmail());
         resetPassword.setBirth(testMember.getBirth());
 
-        mvc.perform(put("/api/user/password")
+        mvc.perform(patch("/api/user/password/reset")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(resetPassword)))
                 .andExpect(status().isOk())
                 .andDo(document("member/reset-password",
+                        getDocumentRequest(),
+                        getDocumentResponse()));
+    }
+
+    @Test
+    void updatePasswordTest() throws Exception {
+        String newPassword = "newPassword!@#";
+        UpdatePassword updatePassword = new UpdatePassword(newPassword);
+        updatePassword.setPassword(newPassword);
+        String password = updatePassword.getPassword();
+        mvc.perform(patch("/api/user/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatePassword))
+                )
+                .andExpect(status().isOk())
+                .andDo(document("member/update-password",
                         getDocumentRequest(),
                         getDocumentResponse()));
     }

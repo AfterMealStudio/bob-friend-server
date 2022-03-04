@@ -1,9 +1,6 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.member.ResetPassword;
-import com.example.bobfriend.model.dto.member.Response;
-import com.example.bobfriend.model.dto.member.Score;
-import com.example.bobfriend.model.dto.member.Update;
+import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Authority;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
@@ -84,59 +81,6 @@ public class MemberServiceTest {
     }
 
 
-//    @Test
-//    @DisplayName(value = "check_member_with_code")
-//    void checkMemberWithCodeTest() {
-//        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.ofNullable(testMember));
-//        memberService.checkMemberWithCode(testMember.getEmail(), String.valueOf(testMember.hashCode()));
-//        assertTrue(testMember.isVerified());
-//    }
-
-
-//    @Test
-//    void deleteMember() {
-//        Recruitment recruitment = Recruitment.builder()
-//                .id(1L)
-//                .author(testAuthor)
-//                .active(true)
-//                .appointmentTime(LocalDateTime.now())
-//                .totalNumberOfPeople(4)
-//                .members(new HashSet<>())
-//                .sexRestriction(null)
-//                .latitude(0.0)
-//                .longitude(0.0)
-//                .content("test content1")
-//                .title("test title1")
-//                .restaurantAddress("test address")
-//                .restaurantName("test name")
-//                .createdAt(LocalDateTime.now())
-//                .endAt(LocalDateTime.now().plusDays(1))
-//                .build();
-//        Comment comment = Comment.builder()
-//                .id(1L)
-//                .content("test content")
-//                .recruitment(recruitment)
-//                .createdAt(LocalDateTime.now())
-//                .author(testAuthor)
-//                .replies(new LinkedList<>())
-//                .build();
-//        login();
-//
-//        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
-//                .thenReturn(Optional.ofNullable(testAuthor));
-//        when(writingRepository.findAllByAuthor(any()))
-//                .thenReturn(List.of(recruitment, comment));
-//        when(passwordEncoder.matches(any(), any()))
-//                .thenReturn(true);
-//        Delete delete = new Delete();
-//        delete.setPassword(testAuthor.getPassword());
-//        memberService.delete(delete);
-//
-//        assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
-//        assertThat(comment.getAuthor().getEmail(), equalTo("unknown"));
-//
-//    }
-
     @Test
     void getCurrentMember() {
         login();
@@ -192,6 +136,19 @@ public class MemberServiceTest {
         ));
     }
 
+    @Test
+    void updatePasswordTest() {
+        login();
+        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(testAuthor));
+        String newPassword = "new-password";
+        when(passwordEncoder.encode(any()))
+                .thenReturn(newPassword);
+
+        memberService.updatePassword(new UpdatePassword("test"));
+
+        assertThat(testAuthor.getPassword(), equalTo(newPassword));
+    }
 
     private void login() {
         SecurityContextHolder.getContext().setAuthentication(

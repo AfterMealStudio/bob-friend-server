@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
@@ -13,8 +13,8 @@ import java.time.LocalDate;
 public class ResetPassword {
     @Email
     private String email;
-    
-    @NotBlank
+
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birth;
 }

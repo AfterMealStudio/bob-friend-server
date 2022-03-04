@@ -1,9 +1,6 @@
 package com.example.bobfriend.controller;
 
-import com.example.bobfriend.model.dto.member.Delete;
-import com.example.bobfriend.model.dto.member.ResetPassword;
-import com.example.bobfriend.model.dto.member.Score;
-import com.example.bobfriend.model.dto.member.Update;
+import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.service.EmailService;
 import com.example.bobfriend.service.MemberDeleteService;
 import com.example.bobfriend.service.MemberService;
@@ -66,10 +63,16 @@ public class MemberController {
     }
 
 
-    @PutMapping("/password")
+    @PatchMapping("/password/reset")
     public ResponseEntity resetPassword(@RequestBody @Valid ResetPassword resetPassword) {
         String newPassword = memberService.resetPassword(resetPassword);
         emailService.sendMail(resetPassword.getEmail(), "밥친구함 password 관련 메일", newPassword);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/password")
+    public ResponseEntity updatePassword(@RequestBody @Valid UpdatePassword updatePassword) {
+        memberService.updatePassword(updatePassword);
         return ResponseEntity.ok().build();
     }
 
