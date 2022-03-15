@@ -71,7 +71,6 @@ public class MemberServiceTest {
         assertThat(new Response(testAuthor), equalTo(getMember));
     }
 
-
     @Test
     void getCurrentMember() {
         login();

@@ -9,7 +9,8 @@ import javax.validation.ConstraintValidatorContext;
 
 @RequiredArgsConstructor
 public class PasswordValidator implements ConstraintValidator<Password, String> {
-    private final PasswordValidationStrategy validationStrategy;
+
+    private final PasswordValidationService passwordValidationService;
 
 
     @Override
@@ -20,11 +21,11 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
         if (s == null) return false;
-
-        boolean validationResult = validationStrategy.isValid(s);
         
+        boolean validationResult = passwordValidationService.isValid(s);
+
         constraintValidatorContext
-                .buildConstraintViolationWithTemplate(validationStrategy.getMessage());
+                .buildConstraintViolationWithTemplate(passwordValidationService.getMessage());
 
         return validationResult;
     }

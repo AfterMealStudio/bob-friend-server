@@ -430,6 +430,18 @@ include::{snippets}/member/delete/request-headers.adoc[]
 response::
 include::{snippets}/member/delete/http-response.adoc[]
 
+=== 비밀번호 초기화
+
+[source]
+----
+해당 사용자의 이메일과 생년월일을 통해 본인이 맞는지를 확인하고 초기화된 임시 비밀번호를 해당 이메일로 전송한다. 이메일과 생년월일은 서비스 내에서 노출되지 않으므로 임의의 사용자가 타인의 비밀번호를 재설정할 수 없다.
+----
+
+request::
+include::{snippets}/member/reset-password/http-request.adoc[]
+response::
+include::{snippets}/member/reset-password/http-response.adoc[]
+
 === 유저정보 조회(본인)
 
 request::
@@ -491,4 +503,3 @@ path-param::
 include::{snippets}/member/rate/path-parameters.adoc[]
 response::
 include::{snippets}/member/rate/http-response.adoc[]
-

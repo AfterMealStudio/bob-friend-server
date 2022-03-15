@@ -2,31 +2,23 @@ package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Member;
-import com.example.bobfriend.model.entity.Writing;
 import com.example.bobfriend.model.exception.MemberDuplicatedException;
 import com.example.bobfriend.model.exception.MemberNotAllowedException;
-import com.example.bobfriend.repository.*;
+import com.example.bobfriend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.RandomStringGenerator;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.example.bobfriend.util.AuthenticationUtil.getCurrentUsername;
+
 @RequiredArgsConstructor
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final WritingReportRepository reportRepository;
-    private final RecruitmentMemberRepository recruitmentMemberRepository;
-    private final WritingRepository writingRepository;
     private final PasswordEncoder passwordEncoder;
-    private final MemberAgreementRepository agreementRepository;
 
     @Transactional(readOnly = true)
     public Response getMemberWithAuthorities(String email) {
@@ -40,28 +32,6 @@ public class MemberService {
 
         Member member = getMember(currentUsername);
         return new Response(member);
-    }
-
-
-    @Transactional
-    public void delete(Delete delete) {
-        Member currentMember = getCurrentMember();
-
-        if (!passwordEncoder.matches(delete.getPassword(),
-                currentMember.getPassword())) {
-            throw new BadCredentialsException("password not correct");
-        }
-
-        recruitmentMemberRepository.deleteAllByMember(currentMember);
-        agreementRepository.deleteById(currentMember.getEmail());
-        
-        for (Writing writing : writingRepository.findAllByAuthor(currentMember)) {
-            writing.setAuthor(null);
-        }
-
-        reportRepository.deleteAllByMember(currentMember);
-
-        memberRepository.delete(currentMember);
     }
 
 
@@ -108,28 +78,6 @@ public class MemberService {
                             throw new UsernameNotFoundException(currentUsername);
                         }
                 );
-    }
-
-    private String getCurrentUsername() {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            throw new AuthenticationException("Authentication not found") {
-                @Override
-                public String getMessage() {
-                    return super.getMessage();
-                }
-            };
-        }
-
-        String username = null;
-        if (authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails user = (UserDetails) authentication.getPrincipal();
-            username = user.getUsername();
-        } else if (authentication.getPrincipal() instanceof String) {
-            username = (String) authentication.getPrincipal();
-        }
-
-        return username;
     }
 
 
