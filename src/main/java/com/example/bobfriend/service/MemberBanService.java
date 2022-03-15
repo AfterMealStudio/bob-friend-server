@@ -22,14 +22,13 @@ public class MemberBanService {
     @Transactional
     public void ban(String nickname) {
         Member currentMember = memberService.getCurrentMember();
-        Member member = memberRepository.findMemberByNickname(nickname)
-                .orElseThrow(() -> new MemberNotFoundException());
+        Member member = getMemberOrThrowNotFound(nickname);
 
-        memberBanRepository.findByMemberAndBannedMember(currentMember, member).ifPresent(
-                (memberBan) -> {
-                    throw new MemberAlreadyBannedException();
-                }
-        );
+        memberBanRepository.findByMemberAndBannedMember(currentMember, member)
+                .ifPresent((memberBan) -> {
+                            throw new MemberAlreadyBannedException();
+                        }
+                );
 
         MemberBan memberBan = MemberBan.builder()
                 .member(currentMember)
@@ -43,12 +42,16 @@ public class MemberBanService {
     @Transactional
     public void cancel(String nickname) {
         Member currentMember = memberService.getCurrentMember();
-        Member member = memberRepository.findMemberByNickname(nickname)
-                .orElseThrow(() -> new MemberNotFoundException());
+        Member member = getMemberOrThrowNotFound(nickname);
 
         MemberBan memberBan = memberBanRepository.findByMemberAndBannedMember(currentMember, member)
                 .orElseThrow(() -> new MemberNotBannedException());
 
         memberBanRepository.delete(memberBan);
+    }
+
+    private Member getMemberOrThrowNotFound(String nickname) {
+        return memberRepository.findMemberByNickname(nickname)
+                .orElseThrow(() -> new MemberNotFoundException());
     }
 }
