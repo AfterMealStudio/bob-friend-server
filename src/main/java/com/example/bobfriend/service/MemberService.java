@@ -41,9 +41,15 @@ public class MemberService {
             throw new MemberDuplicatedException(update.getNickname());
         Member currentMember = getCurrentMember();
         Member incoming = convertToEntity(update);
-        return new Response(currentMember.update(incoming));
+        currentMember.update(incoming);
+        return new Response(currentMember);
     }
 
+    @Transactional
+    public void updatePassword(UpdatePassword updatePassword) {
+        Member currentMember = getCurrentMember();
+        currentMember.setPassword(updatePassword.getPassword(), passwordEncoder);
+    }
 
     public Exist existsByEmail(String email) {
         return new Exist(
@@ -93,7 +99,6 @@ public class MemberService {
         return Member.builder()
                 .email(request.getEmail())
                 .nickname(request.getNickname())
-                .password((request.getPassword() == null) ? null : passwordEncoder.encode(request.getPassword()))
                 .birth(request.getBirth())
                 .sex(request.getSex())
                 .build();
@@ -109,14 +114,7 @@ public class MemberService {
 
         String newPassword = generatePassword();
 
-        Member incoming = convertToEntity(new Request() {
-            @Override
-            public String getPassword() {
-                return newPassword;
-            }
-        });
-
-        member.update(incoming);
+        member.setPassword(newPassword, passwordEncoder);
 
         return newPassword;
     }

@@ -1,9 +1,6 @@
 package com.example.bobfriend.service;
 
-import com.example.bobfriend.model.dto.member.ResetPassword;
-import com.example.bobfriend.model.dto.member.Response;
-import com.example.bobfriend.model.dto.member.Score;
-import com.example.bobfriend.model.dto.member.Update;
+import com.example.bobfriend.model.dto.member.*;
 import com.example.bobfriend.model.entity.Authority;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
@@ -126,6 +123,19 @@ public class MemberServiceTest {
         ));
     }
 
+    @Test
+    void updatePasswordTest() {
+        login();
+        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(testAuthor));
+        String newPassword = "new-password";
+        when(passwordEncoder.encode(any()))
+                .thenReturn(newPassword);
+
+        memberService.updatePassword(new UpdatePassword("test"));
+
+        assertThat(testAuthor.getPassword(), equalTo(newPassword));
+    }
 
     private void login() {
         SecurityContextHolder.getContext().setAuthentication(

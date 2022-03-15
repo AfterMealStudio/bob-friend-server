@@ -2,10 +2,7 @@ package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.member.Delete;
 import com.example.bobfriend.model.entity.*;
-import com.example.bobfriend.repository.MemberRepository;
-import com.example.bobfriend.repository.RecruitmentMemberRepository;
-import com.example.bobfriend.repository.WritingReportRepository;
-import com.example.bobfriend.repository.WritingRepository;
+import com.example.bobfriend.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +36,8 @@ public class MemberDeleteTest {
     RecruitmentMemberRepository recruitmentMemberRepository;
     @Mock
     WritingReportRepository reportRepository;
+    @Mock
+    MemberAgreementRepository agreementRepository;
     @InjectMocks
     MemberDeleteService memberDeleteService;
 
