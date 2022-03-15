@@ -31,8 +31,8 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity signup(@Valid @RequestBody Signup signupDto) throws MemberDuplicatedException {
-        agreementService.save(signupDto);
         Response signup = authService.signup(signupDto);
+        agreementService.save(signupDto);
         verificationService.sendVerification(signupDto.getEmail());
         return ResponseEntity.ok(signup);
     }

@@ -73,7 +73,7 @@ class MemberControllerTest {
                 .id(1)
                 .email("testMember@test.com")
                 .nickname("testMember")
-                .password("testPassword")
+                .password(passwordEncoder.encode("testPassword12!"))
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
                 .active(true)
@@ -170,6 +170,8 @@ class MemberControllerTest {
     void deleteMember() throws Exception {
         when(memberRepository.findMemberByEmail(any()))
                 .thenReturn(Optional.ofNullable(testMember));
+        String rawPassword = "testPassword12!";
+
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(
                         testMember.getEmail(),
@@ -178,7 +180,7 @@ class MemberControllerTest {
                                 new SimpleGrantedAuthority("ROLE_USER"))
                 ));
 
-        Delete delete = new Delete(testMember.getPassword());
+        Delete delete = new Delete(rawPassword);
         mvc.perform(requestBuilderWithAuthorizationHeader(
                         delete("/api/user"))
                         .content(objectMapper.writeValueAsString(delete)))

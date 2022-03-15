@@ -3,10 +3,7 @@ package com.example.bobfriend.service;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Writing;
 import com.example.bobfriend.model.exception.MemberNotFoundException;
-import com.example.bobfriend.repository.MemberRepository;
-import com.example.bobfriend.repository.RecruitmentMemberRepository;
-import com.example.bobfriend.repository.WritingReportRepository;
-import com.example.bobfriend.repository.WritingRepository;
+import com.example.bobfriend.repository.*;
 import com.example.bobfriend.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +16,7 @@ public class MemberDeleteService {
     private final WritingReportRepository reportRepository;
     private final RecruitmentMemberRepository recruitmentMemberRepository;
     private final WritingRepository writingRepository;
+    private final MemberAgreementRepository agreementRepository;
 
     @Transactional
     public void delete() {
@@ -27,6 +25,7 @@ public class MemberDeleteService {
                 .orElseThrow(() -> new MemberNotFoundException());
 
         recruitmentMemberRepository.deleteAllByMember(currentMember);
+        agreementRepository.deleteByMember(currentMember);
 
         for (Writing writing : writingRepository.findAllByAuthor(currentMember)) {
             writing.setAuthor(null);
@@ -36,5 +35,4 @@ public class MemberDeleteService {
 
         memberRepository.delete(currentMember);
     }
-
 }

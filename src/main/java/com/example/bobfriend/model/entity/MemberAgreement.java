@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Builder
 @NoArgsConstructor
@@ -17,8 +14,11 @@ import javax.persistence.Table;
 public class MemberAgreement {
 
     @Id
-    @Column(name = "email")
-    private String email;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
+    private Member member;
 
     @Column(name = "privacy_agreement")
     private Boolean privacyAgreement;

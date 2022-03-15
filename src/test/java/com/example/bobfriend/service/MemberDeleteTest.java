@@ -2,7 +2,10 @@ package com.example.bobfriend.service;
 
 import com.example.bobfriend.model.dto.member.Delete;
 import com.example.bobfriend.model.entity.*;
-import com.example.bobfriend.repository.*;
+import com.example.bobfriend.repository.MemberRepository;
+import com.example.bobfriend.repository.RecruitmentMemberRepository;
+import com.example.bobfriend.repository.WritingReportRepository;
+import com.example.bobfriend.repository.WritingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,14 +36,11 @@ public class MemberDeleteTest {
     @Mock
     WritingRepository writingRepository;
     @Mock
-    WritingReportRepository reportRepository;
-    @Mock
     RecruitmentMemberRepository recruitmentMemberRepository;
     @Mock
-    MemberAgreementRepository agreementRepository;
-
+    WritingReportRepository reportRepository;
     @InjectMocks
-    MemberService memberService;
+    MemberDeleteService memberDeleteService;
 
     Member testAuthor;
 
@@ -101,15 +101,14 @@ public class MemberDeleteTest {
                                 new SimpleGrantedAuthority("ROLE_USER"))
                 ));
 
-        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
+        when(memberRepository.findMemberByEmail(any()))
                 .thenReturn(Optional.ofNullable(testAuthor));
         when(writingRepository.findAllByAuthor(any()))
                 .thenReturn(List.of(recruitment, comment));
-        when(passwordEncoder.matches(any(), any()))
-                .thenReturn(true);
+
         Delete delete = new Delete();
         delete.setPassword(testAuthor.getPassword());
-        memberService.delete(delete);
+        memberDeleteService.delete();
 
         assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
         assertThat(comment.getAuthor().getEmail(), equalTo("unknown"));

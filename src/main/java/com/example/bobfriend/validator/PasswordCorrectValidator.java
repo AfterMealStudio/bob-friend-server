@@ -16,7 +16,6 @@ public class PasswordCorrectValidator implements ConstraintValidator<PasswordCor
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
-
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (value == null) return false;
