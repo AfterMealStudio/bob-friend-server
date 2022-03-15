@@ -221,7 +221,6 @@ class MemberControllerTest {
         Update update = new Update();
         update.setNickname("update nickname");
         update.setBirth(LocalDate.now().minusYears(1));
-        update.setAgree(false);
         update.setSex(Sex.NONE);
 
         Member incoming = Member.builder()
