@@ -101,7 +101,6 @@ public class MemberService {
                 .nickname(request.getNickname())
                 .birth(request.getBirth())
                 .sex(request.getSex())
-                .agree(request.getAgree())
                 .build();
     }
 

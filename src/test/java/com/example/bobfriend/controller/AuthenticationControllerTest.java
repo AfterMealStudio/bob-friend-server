@@ -9,6 +9,7 @@ import com.example.bobfriend.model.dto.token.Validation;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.service.AuthService;
+import com.example.bobfriend.service.MemberAgreementService;
 import com.example.bobfriend.service.VerificationService;
 import com.example.bobfriend.validator.MoreThanTenLengthStrategy;
 import com.example.bobfriend.validator.PasswordValidationService;
@@ -68,6 +69,8 @@ public class AuthenticationControllerTest {
     Member testMember;
     @MockBean
     private VerificationService verificationService;
+    @MockBean
+    private MemberAgreementService agreementService;
 
     @BeforeEach
     public void setup() {
@@ -80,7 +83,6 @@ public class AuthenticationControllerTest {
                 .birth(LocalDate.parse("1997-06-04"))
                 .numberOfJoin(0)
                 .rating(0.0)
-                .agree(true)
                 .active(true)
                 .verified(false)
                 .build();
@@ -120,8 +122,10 @@ public class AuthenticationControllerTest {
                 .nickname(testMember.getNickname())
                 .birth(testMember.getBirth())
                 .password("1234567890!@#$asd")
+                .ageLimitAgreement(true)
+                .serviceAgreement(true)
+                .privacyAgreement(true)
                 .sex(Sex.MALE)
-                .agree(true)
                 .build();
 
         Response response = Response.builder()
@@ -133,7 +137,6 @@ public class AuthenticationControllerTest {
                 .rating(testMember.getRating())
                 .accumulatedReports(testMember.getAccumulatedReports())
                 .reportCount(testMember.getReportCount())
-                .agree(testMember.getAgree())
                 .active(testMember.isActive())
                 .build();
 

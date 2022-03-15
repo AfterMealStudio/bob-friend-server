@@ -17,5 +17,4 @@ public abstract class Request {
     protected String nickname;
     protected Sex sex;
     protected LocalDate birth;
-    protected Boolean agree;
 }

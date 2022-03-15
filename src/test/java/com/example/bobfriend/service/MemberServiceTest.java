@@ -5,9 +5,6 @@ import com.example.bobfriend.model.entity.Authority;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.repository.MemberRepository;
-import com.example.bobfriend.repository.RecruitmentMemberRepository;
-import com.example.bobfriend.repository.WritingReportRepository;
-import com.example.bobfriend.repository.WritingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,14 +32,6 @@ public class MemberServiceTest {
     MemberRepository memberRepository;
     @Mock
     PasswordEncoder passwordEncoder;
-    @Mock
-    EmailVerificationService emailService;
-    @Mock
-    WritingReportRepository reportRepository;
-    @Mock
-    RecruitmentMemberRepository recruitmentMemberRepository;
-    @Mock
-    WritingRepository writingRepository;
 
     @InjectMocks
     MemberService memberService;
@@ -62,7 +51,6 @@ public class MemberServiceTest {
                 .rating(0.0)
                 .numberOfJoin(0)
                 .authorities(Collections.singleton(Authority.ROLE_USER))
-                .agree(true)
                 .active(true)
                 .build();
 
@@ -79,7 +67,6 @@ public class MemberServiceTest {
 
         assertThat(new Response(testAuthor), equalTo(getMember));
     }
-
 
     @Test
     void getCurrentMember() {

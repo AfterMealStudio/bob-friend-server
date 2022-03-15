@@ -2,6 +2,7 @@ package com.example.bobfriend.validator;
 
 import com.example.bobfriend.model.dto.member.Signup;
 import com.example.bobfriend.model.entity.Sex;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,19 +20,25 @@ import static org.hamcrest.Matchers.equalTo;
 public class PasswordValidatorTest {
     @Autowired
     Validator validator;
+    Signup signup;
 
-
-    @Test
-    void lessThanEightFailTest() {
-        Signup signup = Signup.builder()
-                .password("1234")
+    @BeforeEach
+    void beforeEach() {
+        signup = Signup.builder()
                 .email("test@test.com")
                 .nickname("testNickName")
                 .birth(LocalDate.now().minusYears(10))
+                .privacyAgreement(true)
+                .serviceAgreement(true)
+                .ageLimitAgreement(true)
                 .sex(Sex.NONE)
-                .agree(true)
                 .build();
+    }
 
+    @Test
+    void lessThanEightFailTest() {
+        String password = "1234";
+        signup.setPassword(password);
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
@@ -41,15 +48,8 @@ public class PasswordValidatorTest {
 
     @Test
     void moreThanEightLowerCaseAndDigitFailTest() {
-        Signup signup = Signup.builder()
-                .password("eight1234")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
-
+        String eight1234 = "eight1234";
+        signup.setPassword(eight1234);
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
@@ -59,15 +59,8 @@ public class PasswordValidatorTest {
 
     @Test
     void moreThanEightLowerCaseAndUpperCaseFailTest() {
-        Signup signup = Signup.builder()
-                .password("eightQWER")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
-
+        String eight1234 = "eightQWER";
+        signup.setPassword(eight1234);
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
@@ -77,15 +70,8 @@ public class PasswordValidatorTest {
 
     @Test
     void moreThanEightLowerCaseAndSpecialCharacterFailTest() {
-        Signup signup = Signup.builder()
-                .password("eight!@#$")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
-
+        String eight1234 = "eight!@#$";
+        signup.setPassword(eight1234);
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
@@ -95,15 +81,8 @@ public class PasswordValidatorTest {
 
     @Test
     void moreThanEightUpperCaseAndDigitFailTest() {
-        Signup signup = Signup.builder()
-                .password("EIGHT1234")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
-
+        String eight1234 = "EIGHT1234";
+        signup.setPassword(eight1234);
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
@@ -113,15 +92,8 @@ public class PasswordValidatorTest {
 
     @Test
     void moreThanEightUpperCaseAndSpecialCharacterFailTest() {
-        Signup signup = Signup.builder()
-                .password("EIGHT!@#$")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
-
+        String eight1234 = "EIGHT!@#$";
+        signup.setPassword(eight1234);
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
@@ -131,15 +103,8 @@ public class PasswordValidatorTest {
 
     @Test
     void moreThanTenUpperCaseFailTest() {
-        Signup signup = Signup.builder()
-                .password("MORETHANTEN")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
-
+        String eight1234 = "MORETHANTEN";
+        signup.setPassword(eight1234);
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
@@ -149,15 +114,8 @@ public class PasswordValidatorTest {
 
     @Test
     void moreThanTenLowerCaseFailTest() {
-        Signup signup = Signup.builder()
-                .password("morethanten")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
-
+        String eight1234 = "morethanten";
+        signup.setPassword(eight1234);
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
@@ -166,15 +124,8 @@ public class PasswordValidatorTest {
 
     @Test
     void moreThanTenDigitFailTest() {
-        Signup signup = Signup.builder()
-                .password("12345678901")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
-
+        String eight1234 = "12345678901";
+        signup.setPassword(eight1234);
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
@@ -184,15 +135,8 @@ public class PasswordValidatorTest {
 
     @Test
     void moreThanTenSpecialCharacterFailTest() {
-        Signup signup = Signup.builder()
-                .password("!@#$%^&&*!@#")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
-
+        String eight1234 = "!@#$%^&&*!@#";
+        signup.setPassword(eight1234);
         Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
 
         ConstraintViolation<Signup> violation = validate.iterator().next();
@@ -201,159 +145,99 @@ public class PasswordValidatorTest {
 
     @Test
     void moreThanTenAndUpperCaseAndLowerCaseSuccessTest() {
-        Signup moreThanTenUpperCaseAndLowerCase = Signup.builder()
-                .password("moreThanTen")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
+        String eight1234 = "moreThanTen";
+        signup.setPassword(eight1234);
 
-        Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenUpperCaseAndLowerCase);
+        Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
         assertThat(validate.size(), equalTo(0));
     }
 
 
     @Test
     void moreThanTenAndUpperCaseAndDigitSuccessTest() {
-        Signup moreThanTenUpperCaseAndDigit = Signup.builder()
-                .password("MORETHANTEN1")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
+        String eight1234 = "MORETHANTEN1";
+        signup.setPassword(eight1234);
 
-        Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenUpperCaseAndDigit);
+        Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
         assertThat(validate.size(), equalTo(0));
     }
 
 
     @Test
     void moreThanTenUpperCaseAndSpecialCharacterSuccessTest() {
-        Signup moreThanTenUpperCaseAndSpecialCharacter = Signup.builder()
-                .password("MORETHANTEN!")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
+        String eight1234 = "MORETHANTEN!";
+        signup.setPassword(eight1234);
 
-        Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenUpperCaseAndSpecialCharacter);
+        Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
         assertThat(validate.size(), equalTo(0));
     }
 
 
     @Test
     void moreThanTenLowerCaseAndDigitSuccessTest() {
-        Signup moreThanTenLowerCaseAndDigit = Signup.builder()
-                .password("morethanten2")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
+        String eight1234 = "morethanten2";
+        signup.setPassword(eight1234);
 
-        Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenLowerCaseAndDigit);
+        Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
         assertThat(validate.size(), equalTo(0));
     }
 
 
     @Test
     void moreThanTenLowerCaseAndSpecialCharacterSuccessTest() {
-        Signup moreThanTenLowerCaseAndSpecialCharacter = Signup.builder()
-                .password("morethanten!")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
+        String eight1234 = "morethanten!";
+        signup.setPassword(eight1234);
 
-        Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenLowerCaseAndSpecialCharacter);
+        Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
         assertThat(validate.size(), equalTo(0));
     }
 
 
     @Test
     void moreThanTenDigitAndSpecialCharacterSuccessTest() {
-        Signup moreThanTenDigitAndSpecialCharacter = Signup.builder()
-                .password("123456789!")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
+        String eight1234 = "123456789!";
+        signup.setPassword(eight1234);
 
-        Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenDigitAndSpecialCharacter);
+        Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
         assertThat(validate.size(), equalTo(0));
     }
 
     @Test
     void moreThanEightUpperCaseAndLowerCaseAndSpecialCharacterSuccessTest() {
-        Signup moreThanTenDigitAndSpecialCharacter = Signup.builder()
-                .password("eightqQ!")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
+        String eight1234 = "eightqQ!";
+        signup.setPassword(eight1234);
 
-        Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenDigitAndSpecialCharacter);
+        Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
         assertThat(validate.size(), equalTo(0));
     }
 
 
     @Test
     void moreThanEightUpperCaseAndLowerCaseAndDigitSuccessTest() {
-        Signup moreThanTenDigitAndSpecialCharacter = Signup.builder()
-                .password("eightqQ1")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
+        String eight1234 = "eightqQ1";
+        signup.setPassword(eight1234);
 
-        Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenDigitAndSpecialCharacter);
+        Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
         assertThat(validate.size(), equalTo(0));
     }
 
 
     @Test
     void moreThanEightUpperCaseAndDigitAndSpecialCaseSuccessTest() {
-        Signup moreThanTenDigitAndSpecialCharacter = Signup.builder()
-                .password("EIGHT12!")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
+        String eight1234 = "EIGHT12!";
+        signup.setPassword(eight1234);
 
-        Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenDigitAndSpecialCharacter);
+        Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
         assertThat(validate.size(), equalTo(0));
     }
 
 
     @Test
     void moreThanEightLowerCaseAndDigitAndSpecialCaseSuccessTest() {
-        Signup moreThanTenDigitAndSpecialCharacter = Signup.builder()
-                .password("eight12!")
-                .email("test@test.com")
-                .nickname("testNickName")
-                .birth(LocalDate.now().minusYears(10))
-                .sex(Sex.NONE)
-                .agree(true)
-                .build();
+        String eight1234 = "eight12!";
+        signup.setPassword(eight1234);
 
-        Set<ConstraintViolation<Signup>> validate = validator.validate(moreThanTenDigitAndSpecialCharacter);
+        Set<ConstraintViolation<Signup>> validate = validator.validate(signup);
         assertThat(validate.size(), equalTo(0));
     }
 }
