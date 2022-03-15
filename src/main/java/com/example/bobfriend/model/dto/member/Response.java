@@ -19,7 +19,6 @@ public class Response {
     private Integer reportCount;
     private Integer accumulatedReports;
     private Double rating;
-    private Boolean agree;
     private Boolean active;
 
     public Response(Member member) {
@@ -31,7 +30,6 @@ public class Response {
         this.reportCount = member.getReportCount();
         this.accumulatedReports = member.getAccumulatedReports();
         this.rating = member.getRating();
-        this.agree = member.getAgree();
         this.active = member.isActive();
     }
 

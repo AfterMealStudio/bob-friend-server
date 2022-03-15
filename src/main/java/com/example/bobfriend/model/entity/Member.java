@@ -46,9 +46,6 @@ public class Member {
     @Column(name = "accumulated_reports")
     private Integer accumulatedReports;
 
-    @Column(name = "agree") // 약관 동의 여부
-    private Boolean agree;
-
     @Column(name = "active")
     private boolean active;
 
@@ -72,7 +69,6 @@ public class Member {
 
     @Column(name = "verification_code")
     private String verificationCode;
-
 
     @ElementCollection
     @JoinColumn(name = "authority")
@@ -100,7 +96,6 @@ public class Member {
         this.reportCount = 0;
         this.accumulatedReports = 0;
         this.active = true;
-
     }
 
     public Integer getAge() {
@@ -179,7 +174,6 @@ public class Member {
         this.password = (incoming.getPassword() == null) ? this.password : incoming.getPassword();
         this.sex = (incoming.getSex() == null) ? this.sex : incoming.getSex();
         this.birth = (incoming.getBirth() == null) ? this.birth : incoming.getBirth();
-        this.agree = (incoming.getAgree() == null) ? this.agree : incoming.getAgree();
         return this;
     }
 

@@ -73,10 +73,9 @@ class MemberControllerTest {
                 .id(1)
                 .email("testMember@test.com")
                 .nickname("testMember")
-                .password("testPassword")
+                .password(passwordEncoder.encode("testPassword12!"))
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.now())
-                .agree(true)
                 .active(true)
                 .verified(false)
                 .rating(0.0)
@@ -171,6 +170,8 @@ class MemberControllerTest {
     void deleteMember() throws Exception {
         when(memberRepository.findMemberByEmail(any()))
                 .thenReturn(Optional.ofNullable(testMember));
+        String rawPassword = "testPassword12!";
+
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(
                         testMember.getEmail(),
@@ -179,7 +180,7 @@ class MemberControllerTest {
                                 new SimpleGrantedAuthority("ROLE_USER"))
                 ));
 
-        Delete delete = new Delete(testMember.getPassword());
+        Delete delete = new Delete(rawPassword);
         mvc.perform(requestBuilderWithAuthorizationHeader(
                         delete("/api/user"))
                         .content(objectMapper.writeValueAsString(delete)))
@@ -219,7 +220,6 @@ class MemberControllerTest {
         update.setNickname("update nickname");
         update.setBirth(LocalDate.now().minusYears(1));
         update.setPassword("update password");
-        update.setAgree(false);
         update.setSex(Sex.NONE);
 
         Member incoming = Member.builder()
@@ -227,7 +227,6 @@ class MemberControllerTest {
                 .birth(update.getBirth())
                 .password(update.getPassword())
                 .sex(update.getSex())
-                .agree(update.getAgree())
                 .build();
         testMember.update(incoming);
         Response response = new Response(testMember);

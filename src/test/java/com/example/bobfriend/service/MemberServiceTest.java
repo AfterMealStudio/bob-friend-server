@@ -8,9 +8,6 @@ import com.example.bobfriend.model.entity.Authority;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.repository.MemberRepository;
-import com.example.bobfriend.repository.RecruitmentMemberRepository;
-import com.example.bobfriend.repository.WritingReportRepository;
-import com.example.bobfriend.repository.WritingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,14 +35,6 @@ public class MemberServiceTest {
     MemberRepository memberRepository;
     @Mock
     PasswordEncoder passwordEncoder;
-    @Mock
-    EmailVerificationService emailService;
-    @Mock
-    WritingReportRepository reportRepository;
-    @Mock
-    RecruitmentMemberRepository recruitmentMemberRepository;
-    @Mock
-    WritingRepository writingRepository;
 
     @InjectMocks
     MemberService memberService;
@@ -65,7 +54,6 @@ public class MemberServiceTest {
                 .rating(0.0)
                 .numberOfJoin(0)
                 .authorities(Collections.singleton(Authority.ROLE_USER))
-                .agree(true)
                 .active(true)
                 .build();
 
@@ -82,60 +70,6 @@ public class MemberServiceTest {
 
         assertThat(new Response(testAuthor), equalTo(getMember));
     }
-
-
-//    @Test
-//    @DisplayName(value = "check_member_with_code")
-//    void checkMemberWithCodeTest() {
-//        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.ofNullable(testMember));
-//        memberService.checkMemberWithCode(testMember.getEmail(), String.valueOf(testMember.hashCode()));
-//        assertTrue(testMember.isVerified());
-//    }
-
-
-//    @Test
-//    void deleteMember() {
-//        Recruitment recruitment = Recruitment.builder()
-//                .id(1L)
-//                .author(testAuthor)
-//                .active(true)
-//                .appointmentTime(LocalDateTime.now())
-//                .totalNumberOfPeople(4)
-//                .members(new HashSet<>())
-//                .sexRestriction(null)
-//                .latitude(0.0)
-//                .longitude(0.0)
-//                .content("test content1")
-//                .title("test title1")
-//                .restaurantAddress("test address")
-//                .restaurantName("test name")
-//                .createdAt(LocalDateTime.now())
-//                .endAt(LocalDateTime.now().plusDays(1))
-//                .build();
-//        Comment comment = Comment.builder()
-//                .id(1L)
-//                .content("test content")
-//                .recruitment(recruitment)
-//                .createdAt(LocalDateTime.now())
-//                .author(testAuthor)
-//                .replies(new LinkedList<>())
-//                .build();
-//        login();
-//
-//        when(memberRepository.findMemberWithAuthoritiesByEmail(any()))
-//                .thenReturn(Optional.ofNullable(testAuthor));
-//        when(writingRepository.findAllByAuthor(any()))
-//                .thenReturn(List.of(recruitment, comment));
-//        when(passwordEncoder.matches(any(), any()))
-//                .thenReturn(true);
-//        Delete delete = new Delete();
-//        delete.setPassword(testAuthor.getPassword());
-//        memberService.delete(delete);
-//
-//        assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
-//        assertThat(comment.getAuthor().getEmail(), equalTo("unknown"));
-//
-//    }
 
     @Test
     void getCurrentMember() {
