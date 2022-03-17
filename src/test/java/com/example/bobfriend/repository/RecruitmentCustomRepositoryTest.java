@@ -4,7 +4,7 @@ import com.example.bobfriend.model.dto.Condition;
 import com.example.bobfriend.model.entity.Member;
 import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.entity.Sex;
-import com.example.bobfriend.testconfig.TestConfig;
+import com.example.bobfriend.testconfig.JpaTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ActiveProfiles("test")
-@Import(TestConfig.class)
+@Import(JpaTestConfig.class)
 //@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class RecruitmentCustomRepositoryTest {
 

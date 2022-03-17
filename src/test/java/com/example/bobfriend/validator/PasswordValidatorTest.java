@@ -2,10 +2,14 @@ package com.example.bobfriend.validator;
 
 import com.example.bobfriend.model.dto.member.Signup;
 import com.example.bobfriend.model.entity.Sex;
+import com.example.bobfriend.testconfig.JpaTestConfig;
+import com.example.bobfriend.testconfig.MailTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -17,6 +21,8 @@ import static org.hamcrest.Matchers.equalTo;
 
 
 @SpringBootTest
+@Import(MailTestConfig.class)
+@ActiveProfiles("test")
 public class PasswordValidatorTest {
     @Autowired
     Validator validator;
