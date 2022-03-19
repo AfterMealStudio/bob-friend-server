@@ -20,45 +20,59 @@ public class TestRecruitmentGenerator {
     }
 
     public Recruitment getTestRecruitmentWithAppointmentTime(LocalDateTime appointmentTime) {
-        return getBaseRecruitmentBuilder()
+        Recruitment recruitment = getBaseRecruitmentBuilder()
                 .appointmentTime(appointmentTime)
                 .build();
+        recruitment.setup();
+        return recruitment;
     }
 
     public Recruitment getTestRecruitmentWithRestaurantAddress(String restaurantAddress) {
-        return getBaseRecruitmentBuilder()
+        Recruitment recruitment = getBaseRecruitmentBuilder()
                 .restaurantAddress(restaurantAddress)
                 .build();
+        recruitment.setup();
+        return recruitment;
     }
 
     public Recruitment getTestRecruitmentWithLocation(double lat, double lon) {
-        return getBaseRecruitmentBuilder()
+        Recruitment recruitment = getBaseRecruitmentBuilder()
                 .latitude(lat)
                 .longitude(lon)
                 .build();
+        recruitment.setup();
+        return recruitment;
     }
 
     public Recruitment getTestRecruitment() {
-        return getBaseRecruitmentBuilder()
+        Recruitment recruitment = getBaseRecruitmentBuilder()
                 .build();
+        recruitment.setup();
+        return recruitment;
     }
 
     public Recruitment getTestRecruitmentWithTitle(String title) {
-        return getBaseRecruitmentBuilder()
+        Recruitment recruitment = getBaseRecruitmentBuilder()
                 .title(title)
                 .build();
+        recruitment.setup();
+        return recruitment;
     }
 
     public Recruitment getTestRecruitmentWithSexRestriction(Sex sex) {
-        return getBaseRecruitmentBuilder()
+        Recruitment recruitment = getBaseRecruitmentBuilder()
                 .sexRestriction(sex)
                 .build();
+        recruitment.setup();
+        return recruitment;
     }
 
     public Recruitment getTestRecruitmentWithRestaurantName(String restaurantName) {
-        return getBaseRecruitmentBuilder()
+        Recruitment recruitment = getBaseRecruitmentBuilder()
                 .restaurantName(restaurantName)
                 .build();
+        recruitment.setup();
+        return recruitment;
     }
 
     private Recruitment.RecruitmentBuilder<?, ?> getBaseRecruitmentBuilder() {

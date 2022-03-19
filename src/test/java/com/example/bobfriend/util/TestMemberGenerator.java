@@ -7,23 +7,27 @@ import java.time.LocalDate;
 
 public class TestMemberGenerator {
     public Member getTestAuthor() {
-        return Member.builder()
+        Member author = Member.builder()
                 .email("testAuthor@test.com")
                 .nickname("testAuthor")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.parse("1997-06-04"))
                 .build();
+        author.setup();
+        return author;
     }
 
     public Member getTestMember() {
-        return Member.builder()
+        Member member = Member.builder()
                 .email("testMember@test.com")
                 .nickname("testMember")
                 .password("testPassword")
                 .sex(Sex.FEMALE)
                 .birth(LocalDate.parse("1997-06-04"))
                 .build();
+        member.setup();
+        return member;
     }
 
 }
