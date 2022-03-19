@@ -9,9 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @SuperBuilder
@@ -140,7 +138,7 @@ public class Recruitment extends Writing {
     public void setup() {
         super.setup();
         comments = new LinkedList<>();
-        members = Set.of(author);
+        members = new HashSet<Member>(Collections.singleton(this.author));
         active = true;
         endAt = getAppointmentTime().plusDays(1);
     }
