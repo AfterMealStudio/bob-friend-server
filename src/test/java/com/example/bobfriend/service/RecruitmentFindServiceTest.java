@@ -4,10 +4,14 @@ import com.example.bobfriend.model.dto.recruitment.Address;
 import com.example.bobfriend.model.dto.recruitment.Addresses;
 import com.example.bobfriend.model.dto.recruitment.DetailResponse;
 import com.example.bobfriend.model.dto.recruitment.SimpleResponse;
-import com.example.bobfriend.model.entity.*;
+import com.example.bobfriend.model.entity.Member;
+import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.exception.RecruitmentNotFoundException;
 import com.example.bobfriend.repository.RecruitmentRepository;
+import com.example.bobfriend.util.TestMemberGenerator;
+import com.example.bobfriend.util.TestRecruitmentGenerator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,16 +21,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,84 +46,38 @@ public class RecruitmentFindServiceTest {
 
     Recruitment testRecruitment;
     Member testAuthor;
-    private Comment testComment;
-    private Reply testReply;
-
+    private PageRequest pageRequest = PageRequest.of(0, 10);
+    private TestRecruitmentGenerator testRecruitmentGenerator = new TestRecruitmentGenerator();
+    private TestMemberGenerator testMemberGenerator = new TestMemberGenerator();
 
     @BeforeEach
     public void setup() {
+        testAuthor = testMemberGenerator.getTestAuthor();
+        testRecruitmentGenerator.setAuthor(testAuthor);
 
-        testAuthor = Member.builder()
-                .id(1)
-                .email("testAuthor@test.com")
-                .nickname("testAuthor")
-                .password("testPassword")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
-                .active(true)
-                .rating(0.0)
-                .numberOfJoin(0)
-                .build();
-
-        testReply = Reply.builder()
-                .id(1L)
-                .author(testAuthor)
-                .comment(testComment)
-                .content("test reply")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        testComment = Comment.builder()
-                .id(1L)
-                .author(testAuthor)
-                .recruitment(testRecruitment)
-                .content("test comment")
-                .replies(List.of(testReply))
-                .createdAt(LocalDateTime.now())
-                .build();
-
-
-        testRecruitment = Recruitment.builder()
-                .id(1L)
-                .title("title")
-                .content("content")
-                .author(testAuthor)
-                .members(new HashSet<>())
-                .comments(List.of(testComment))
-                .totalNumberOfPeople(4)
-                .sexRestriction(Sex.FEMALE)
-                .restaurantName("testRestaurantName")
-                .restaurantAddress("testRestaurantAddress")
-                .latitude(0.0)
-                .longitude(0.0)
-                .createdAt(LocalDateTime.now())
-                .appointmentTime(LocalDateTime.now().plusHours(4))
-                .endAt(LocalDateTime.now().plusDays(1))
-                .active(true)
-                .build();
-
+        testRecruitment = testRecruitmentGenerator.getTestRecruitment();
     }
 
 
     @Test
+    @DisplayName("findById호출 시 DetailResponse가 반환된다.")
     public void findByIdSuccess() {
-        given(recruitmentRepository.findById(testRecruitment.getId()))
-                .willReturn(Optional.ofNullable(testRecruitment));
+        when(recruitmentRepository.findById(testRecruitment.getId()))
+                .thenReturn(Optional.ofNullable(testRecruitment));
 
-        DetailResponse byId = recruitmentFindService
-                .findById(testRecruitment.getId());
+        DetailResponse byId = recruitmentFindService.findById(testRecruitment.getId());
 
-        DetailResponse dtoFromEntity =
-                new DetailResponse(testRecruitment);
+        DetailResponse dtoFromEntity = new DetailResponse(testRecruitment);
 
         assertThat(byId, equalTo(dtoFromEntity));
     }
 
 
     @Test
+    @DisplayName("findById호출 시 해당하는 recruitment가 없을 경우 예외가 발생한다.")
     public void findByIdFail() {
-        given(recruitmentRepository.findById(0L))
-                .willReturn(Optional.empty());
+        when(recruitmentRepository.findById(0L))
+                .thenReturn(Optional.empty());
 
         assertThrows(RecruitmentNotFoundException.class,
                 () -> recruitmentFindService.findById(0L)
@@ -129,61 +87,33 @@ public class RecruitmentFindServiceTest {
 
 
     @Test
+    @DisplayName("findAll호출 시 Page<SimpleResponse>가 반환된다.")
     public void findAll() {
         List<Recruitment> recruitmentList = Arrays.asList(testRecruitment);
-        PageRequest pageRequest = PageRequest.of(0, 1);
+
         List<SimpleResponse> collect = recruitmentList.stream()
                 .map(r -> new SimpleResponse(r))
                 .collect(Collectors.toList());
+
         Page<SimpleResponse> page = new PageImpl<>(collect);
 
-        given(recruitmentRepository.findAll(pageRequest))
-                .willReturn(new PageImpl<>(recruitmentList));
+        when(recruitmentRepository.findAll(pageRequest))
+                .thenReturn(new PageImpl<>(recruitmentList));
+
         Page<SimpleResponse> responseDtoList = recruitmentFindService.findAll(pageRequest);
 
-        assertThat(responseDtoList,
-                equalTo(page));
+        assertThat(responseDtoList, equalTo(page));
     }
 
 
     @Test
+    @DisplayName("현재 사용자가 참여한 recruitment를 Page<SimpleResponse>로 반환한다.")
     public void findAllJoinedRecruitments() {
-        Member testMember = Member.builder()
-                .id(1)
-                .email("testMember@test.com")
-                .nickname("testMember")
-                .password("testPassword")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
-                .active(true)
-                .rating(0.0)
-                .numberOfJoin(0)
-                .build();
-
-        Recruitment recruitment = Recruitment.builder()
-                .id(1000L)
-                .title("addedRecruitment")
-                .content("")
-                .author(testAuthor)
-                .members(new HashSet<>(Arrays.asList(testMember)))
-                .comments(List.of(testComment))
-                .totalNumberOfPeople(3)
-                .restaurantName("testRestaurantName")
-                .restaurantAddress("testRestaurantAddress")
-                .latitude(0.0)
-                .longitude(0.0)
-                .createdAt(LocalDateTime.now())
-                .appointmentTime(LocalDateTime.now().plusHours(4))
-                .endAt(LocalDateTime.now().plusDays(1))
-                .active(true)
-                .build();
-
-        when(memberService.getCurrentMember()).thenReturn(testMember);
-        PageRequest pageRequest = PageRequest.of(0, 1);
-
+        Member testMember = getCurrentMember();
+        Recruitment recruitment = testRecruitmentGenerator.getTestRecruitment();
         List<Recruitment> recruitmentList = Arrays.asList(testRecruitment, recruitment);
-        given(recruitmentRepository.findAllJoined(any(), any()))
-                .willReturn(new PageImpl<>(recruitmentList));
+        when(recruitmentRepository.findAllJoined(testMember, pageRequest))
+                .thenReturn(new PageImpl<>(recruitmentList));
 
         Page<SimpleResponse> responseDtoList =
                 recruitmentFindService.findAllJoined(pageRequest);
@@ -194,42 +124,23 @@ public class RecruitmentFindServiceTest {
                         .collect(Collectors.toList())));
     }
 
+    private Member getCurrentMember() {
+        Member testMember = testMemberGenerator.getTestMember();
+        when(memberService.getCurrentMember()).thenReturn(testMember);
+        return testMember;
+    }
+
 
     @Test
+    @DisplayName("현재 사용자가 참여가능한 recruitment를 Page<SimpleResponse>로 반환한다.")
     public void findAllAvailableRecruitments() {
-        Member testMember = Member.builder()
-                .id(1)
-                .email("testMember@test.com")
-                .nickname("testMember")
-                .password("testPassword")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
-                .active(true)
-                .rating(0.0)
-                .numberOfJoin(0)
-                .build();
-        Recruitment recruitment = Recruitment.builder()
-                .id(1000L)
-                .title("addedRecruitment")
-                .content("")
-                .author(testAuthor)
-                .members(new HashSet<>())
-                .comments(new LinkedList<>())
-                .totalNumberOfPeople(3)
-                .restaurantName("testRestaurantName")
-                .restaurantAddress("testRestaurantAddress")
-                .latitude(0.0)
-                .longitude(0.0)
-                .createdAt(LocalDateTime.now())
-                .appointmentTime(LocalDateTime.now().plusHours(4))
-                .endAt(LocalDateTime.now().plusDays(1))
-                .active(true)
-                .build();
-        when(memberService.getCurrentMember()).thenReturn(testMember);
-        PageRequest pageRequest = PageRequest.of(0, 1);
+        Member testMember = getCurrentMember();
+        Recruitment recruitment = testRecruitmentGenerator.getTestRecruitment();
+
         List<Recruitment> recruitmentList = Arrays.asList(recruitment);
-        given(recruitmentRepository.findAllAvailable(any(), any()))
-                .willReturn(new PageImpl<>(recruitmentList));
+        when(recruitmentRepository.findAllAvailable(testMember, pageRequest))
+                .thenReturn(new PageImpl<>(recruitmentList));
+
         Page<SimpleResponse> responseDtoList =
                 recruitmentFindService.findAllAvailable(pageRequest);
 
@@ -239,42 +150,15 @@ public class RecruitmentFindServiceTest {
 
 
     @Test
+    @DisplayName("현재 사용자가 작성한 recruitment를 Page<SimpleResponse>로 반환한다.")
     public void findMyRecruitments() {
-        Member testMember = Member.builder()
-                .id(1)
-                .email("testMember@test.com")
-                .nickname("testMember")
-                .password("testPassword")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
-                .active(true)
-                .rating(0.0)
-                .numberOfJoin(0)
-                .build();
-        Recruitment recruitment = Recruitment.builder()
-                .id(1000L)
-                .title("addedRecruitment")
-                .content("")
-                .author(testAuthor)
-                .members(new HashSet<>(Arrays.asList(testMember)))
-                .comments(List.of(testComment))
-                .totalNumberOfPeople(3)
-                .restaurantName("testRestaurantName")
-                .restaurantAddress("testRestaurantAddress")
-                .latitude(0.0)
-                .longitude(0.0)
-                .createdAt(LocalDateTime.now())
-                .appointmentTime(LocalDateTime.now().plusHours(4))
-                .endAt(LocalDateTime.now().plusDays(1))
-                .active(true)
-                .build();
-        when(memberService.getCurrentMember()).thenReturn(testMember);
+        Member testMember = getCurrentMember();
 
-        PageRequest pageRequest = PageRequest.of(0, 1);
+        Recruitment recruitment = testRecruitmentGenerator.getTestRecruitment();
 
         List<Recruitment> recruitmentList = Arrays.asList(testRecruitment, recruitment);
-        given(recruitmentRepository.findAllByAuthor(any(), any()))
-                .willReturn(new PageImpl<>(recruitmentList));
+        when(recruitmentRepository.findAllByAuthor(testMember, pageRequest))
+                .thenReturn(new PageImpl<>(recruitmentList));
 
         Page<SimpleResponse> responseDtoList =
                 recruitmentFindService.findMyRecruitments(pageRequest);
@@ -287,13 +171,13 @@ public class RecruitmentFindServiceTest {
 
 
     @Test
+    @DisplayName("recruitment를 식당이름으로 전체조회한다. Page<SimpleResponse>로 반환된다.")
     void findAllByRestaurantAddress() {
-        PageRequest pageRequest = PageRequest.of(0, 1);
-        when(recruitmentRepository.findAllByAddress(
-                any(), any()
-        )).thenReturn(new PageImpl<>(Arrays.asList(testRecruitment)));
-
         String restaurantAddress = "restaurantAddress";
+
+        when(recruitmentRepository.findAllByAddress(restaurantAddress, pageRequest))
+                .thenReturn(new PageImpl<>(Arrays.asList(testRecruitment)));
+
 
         Page<SimpleResponse> restaurantList = recruitmentFindService
                 .findAllByRestaurantAddress(restaurantAddress, pageRequest);
@@ -304,47 +188,18 @@ public class RecruitmentFindServiceTest {
                 )));
     }
 
-//    @Test
-//    void findAllByRestaurantNameAndAddress() {
-//        PageRequest pageRequest = PageRequest.of(0, 1);
-//        when(recruitmentRepository.findAllByRestaurant(
-//                any(), any()
-//        )).thenReturn(new PageImpl<>(Arrays.asList(testRecruitment)));
-//
-//        String restaurantName = "restaurantName";
-//        String restaurantAddress = "restaurantAddress";
-//
-//        Condition.Search searchCondition = new Condition.Search();
-//        searchCondition.setRestaurantName(restaurantName);
-//        searchCondition.setRestaurantAddress(restaurantAddress);
-//        Page<SimpleResponse> restaurantList = recruitmentFindService
-//                .findAllByRestaurant(
-//                        searchCondition,
-//                        pageRequest);
-//
-//        assertThat(restaurantList.toList(),
-//                equalTo(Arrays.asList(
-//                        new SimpleResponse(testRecruitment)
-//                )));
-//    }
-
-
     @Test
+    @DisplayName("위도, 경도, 지도의 줌레벨을 입력하면 일정 범위의 recruitment를 " +
+            "뭉쳐서 반환한다.")
     void findAllLocationsTest() {
         double lat = 33.4566084914484;
         double lon = 126.56207301534569;
+        int zoomLevel = 3;
 
         List<Recruitment> recruitments = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
-            Recruitment recruitment = Recruitment.builder()
-                    .latitude(lat)
-                    .longitude(lon)
-                    .restaurantAddress("test")
-                    .author(testAuthor)
-                    .appointmentTime(LocalDateTime.now())
-                    .sexRestriction(Sex.NONE)
-                    .active(true)
-                    .build();
+            Recruitment recruitment =
+                    testRecruitmentGenerator.getTestRecruitmentWithLocation(lat, lon);
             recruitments.add(recruitment);
         }
         when(recruitmentRepository.findAllByLocation(any(), any(), any()))
@@ -352,7 +207,7 @@ public class RecruitmentFindServiceTest {
 
         Address address = new Address(recruitments.get(0));
         address.setCount(recruitments.size());
-        Addresses allLocations = recruitmentFindService.findAllLocations(lat, lon, 3);
+        Addresses allLocations = recruitmentFindService.findAllLocations(lat, lon, zoomLevel);
 
         assertThat(allLocations.getAddresses(), equalTo(List.of(address)));
     }

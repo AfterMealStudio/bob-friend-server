@@ -38,7 +38,7 @@ public class RecruitmentSearchServiceTest {
 
     Recruitment testRecruitment;
     Member testAuthor;
-
+    private PageRequest pageRequest = PageRequest.of(0, 10);
     private TestRecruitmentGenerator testRecruitmentGenerator = new TestRecruitmentGenerator();
     private TestMemberGenerator testMemberGenerator = new TestMemberGenerator();
 
@@ -56,7 +56,6 @@ public class RecruitmentSearchServiceTest {
         List<Recruitment> recruitments = Arrays.asList(testRecruitment);
         when(recruitmentRepository.searchByTitle(any(), any()))
                 .thenReturn(new PageImpl<>(recruitments));
-        PageRequest pageRequest = PageRequest.of(0, 1);
 
         List<SimpleResponse> collect = recruitments.stream()
                 .map(SimpleResponse::new)
