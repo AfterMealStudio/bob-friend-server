@@ -77,41 +77,41 @@ public class RecruitmentCustomRepositoryTest {
     @Test
     @DisplayName("제목에 해당하는 키워드가 포함된 recruitment를 반환한다.")
     void searchByTitleTest() {
-        String title = "test";
+        String title = "jeju";
         Recruitment recruitment1 = testRecruitmentGenerator.getTestRecruitmentWithTitle(title);
 
         recruitmentRepository.save(recruitment1);
 
         Condition.Search search = new Condition.Search();
-        search.setKeyword("title");
+        search.setKeyword(title);
 
         Page<Recruitment> searchByTitle =
                 recruitmentCustomRepository
                         .searchByTitle(search, pageable);
-        assertThat(searchByTitle.getContent().size(), equalTo(2));
+        assertThat(searchByTitle.getContent().size(), equalTo(1));
     }
 
     @Test
     @DisplayName("내용에 해당하는 키워드가 포함된 recruitment를 반환한다.")
     void searchByContentTest() {
-        String content = "test";
+        String content = "jeju";
         Recruitment recruitment1 = testRecruitmentGenerator.getTestRecruitmentWithContent(content);
 
         recruitmentRepository.save(recruitment1);
 
         Condition.Search search = new Condition.Search();
-        search.setKeyword("content");
+        search.setKeyword(content);
 
         Page<Recruitment> searchByTitle =
                 recruitmentCustomRepository
                         .searchByContent(search, Pageable.ofSize(10));
-        assertThat(searchByTitle.getContent().size(), equalTo(2));
+        assertThat(searchByTitle.getContent().size(), equalTo(1));
     }
 
     @Test
     @DisplayName("식당이름에 해당하는 키워드가 포함된 recruitment를 반환한다.")
     void searchByRestaurantTest() {
-        String restaurantName = "test";
+        String restaurantName = "jeju";
         Recruitment recruitment1 = testRecruitmentGenerator.getTestRecruitmentWithRestaurantName(restaurantName);
 
         recruitmentRepository.save(recruitment1);
@@ -148,18 +148,7 @@ public class RecruitmentCustomRepositoryTest {
     @Test
     @DisplayName("제목, 내용, 식당이름에 해당하는 키워드가 포함된 recruitment를 반환한다.")
     void searchByAllTest() {
-        Recruitment recruitment1 = Recruitment.builder()
-                .title("test")
-                .content("test")
-                .author(testAuthor)
-                .totalNumberOfPeople(4)
-                .sexRestriction(Sex.FEMALE)
-                .restaurantName("test")
-                .restaurantAddress("testRestaurantAddress")
-                .latitude(0.0)
-                .longitude(0.0)
-                .appointmentTime(LocalDateTime.now().plusHours(4))
-                .build();
+        Recruitment recruitment1 = testRecruitmentGenerator.getTestRecruitment();
 
         recruitmentRepository.save(recruitment1);
 
@@ -293,7 +282,6 @@ public class RecruitmentCustomRepositoryTest {
                     current.getCreatedAt().isAfter(
                             prev.getCreatedAt()));
             prev = current;
-
         }
     }
 

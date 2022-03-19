@@ -9,7 +9,10 @@ import com.example.bobfriend.model.exception.MemberNotAllowedException;
 import com.example.bobfriend.model.exception.RecruitmentNotFoundException;
 import com.example.bobfriend.repository.RecruitmentRepository;
 import com.example.bobfriend.repository.WritingReportRepository;
+import com.example.bobfriend.util.TestMemberGenerator;
+import com.example.bobfriend.util.TestRecruitmentGenerator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,70 +46,26 @@ class RecruitmentServiceTest {
 
     Recruitment testRecruitment;
     Member testAuthor;
-    private Comment testComment;
-    private Reply testReply;
 
+    private TestMemberGenerator testMemberGenerator = new TestMemberGenerator();
+    private TestRecruitmentGenerator testRecruitmentGenerator = new TestRecruitmentGenerator();
 
     @BeforeEach
     public void setup() {
+        testAuthor = testMemberGenerator.getTestAuthor();
+        testRecruitmentGenerator.setAuthor(testAuthor);
 
-        testAuthor = Member.builder()
-                .id(1)
-                .email("testAuthor@test.com")
-                .nickname("testAuthor")
-                .password("testPassword")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
-                .active(true)
-                .rating(0.0)
-                .numberOfJoin(0)
-                .build();
+        testRecruitment = testRecruitmentGenerator.getTestRecruitment();
 
-        testReply = Reply.builder()
-                .id(1L)
-                .author(testAuthor)
-                .comment(testComment)
-                .content("test reply")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        testComment = Comment.builder()
-                .id(1L)
-                .author(testAuthor)
-                .recruitment(testRecruitment)
-                .content("test comment")
-                .replies(List.of(testReply))
-                .createdAt(LocalDateTime.now())
-                .build();
-
-
-        testRecruitment = Recruitment.builder()
-                .id(1L)
-                .title("title")
-                .content("content")
-                .author(testAuthor)
-                .members(new HashSet<>())
-                .comments(List.of(testComment))
-                .totalNumberOfPeople(4)
-                .sexRestriction(Sex.FEMALE)
-                .restaurantName("testRestaurantName")
-                .restaurantAddress("testRestaurantAddress")
-                .latitude(0.0)
-                .longitude(0.0)
-                .createdAt(LocalDateTime.now())
-                .appointmentTime(LocalDateTime.now().plusHours(4))
-                .endAt(LocalDateTime.now().plusDays(1))
-                .active(true)
-                .build();
-
-
+        testRecruitment.setup();
         testAuthor.setup();
     }
 
-
     @Test
-    public void create() {
-        when(memberService.getCurrentMember()).thenReturn(testAuthor);
+    @DisplayName("recruitment를 생성하면 작성자에 현재 사용자가 저장된다.")
+    public void createTest() {
+        when(memberService.getCurrentMember())
+                .thenReturn(testAuthor);
         when(recruitmentRepository.save(any()))
                 .thenReturn(testRecruitment);
 
@@ -118,25 +77,16 @@ class RecruitmentServiceTest {
                 equalTo(testRecruitment.getAuthor().getId()));
     }
 
-
     @Test
-    public void join() throws AlreadyJoined {
-        Member testMember = Member.builder()
-                .id(1)
-                .email("testMember@test.com")
-                .password("testPassword")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
-                .active(true)
-                .rating(0.0)
-                .numberOfJoin(0)
-                .build();
+    @DisplayName("join메소드를 호출하면 현재 사용자가 해당 recruitment에 추가된다.")
+    public void joinTest() throws AlreadyJoined {
+        Member testMember = testMemberGenerator.getTestMember();
         testMember.setup();
+
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
-        given(recruitmentRepository.findById(testRecruitment.getId()))
-                .willReturn(Optional.ofNullable(testRecruitment));
-
+        when(recruitmentRepository.findById(testRecruitment.getId()))
+                .thenReturn(Optional.ofNullable(testRecruitment));
 
         DetailResponse recruitmentDetailResponseDto =
                 recruitmentService.joinOrUnjoin(testRecruitment.getId());
@@ -145,20 +95,12 @@ class RecruitmentServiceTest {
         assertTrue(members.contains(new Preview(testMember)));
     }
 
-
     @Test
-    public void unJoin() {
-        Member testMember = Member.builder()
-                .id(1)
-                .email("testMember@test.com")
-                .password("testPassword")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
-                .active(true)
-                .rating(0.0)
-                .numberOfJoin(0)
-                .build();
+    @DisplayName("unjoin메소드를 호출하면 현재 사용자가 해당 recruitment에서 제거된다.")
+    public void unJoinTest() {
+        Member testMember = testMemberGenerator.getTestMember();
         testMember.setup();
+
         when(memberService.getCurrentMember()).thenReturn(testMember); // testMember가 참여를 요청하는 상황
 
         given(recruitmentRepository.findById(testRecruitment.getId()))
@@ -172,44 +114,24 @@ class RecruitmentServiceTest {
         assertFalse(members.contains(new Preview(testMember)));
     }
 
-
     @Test
-    void deleteRecruitment_Success() {
-        when(memberService.getCurrentMember())
-                .thenReturn(testAuthor);
-        when(recruitmentRepository.findById(any()))
-                .thenReturn(Optional.ofNullable(testRecruitment));
-        Member author = testRecruitment.getAuthor();
-
-        recruitmentService.delete(testRecruitment.getId());
-
-//        assertThat(author.getCreatedWritings().size(),
-//                equalTo(0));
-    }
-
-    @Test
-    void deleteRecruitmentFail_RecruitmentNotFound() {
+    @DisplayName("delete를 호출했을 때 해당하는 recruitment가 존재하지 않으면 예외가 발생한다.")
+    void deleteRecruitmentTestFailWithRecruitmentNotFound() {
         when(memberService.getCurrentMember())
                 .thenReturn(testAuthor);
         when(recruitmentRepository.findById(any()))
                 .thenReturn(Optional.empty());
+
         assertThrows(RecruitmentNotFoundException.class, () -> {
             recruitmentService.delete(testRecruitment.getId());
         });
     }
 
     @Test
-    void deleteRecruitmentFail_MemberNotAllowed() {
-        Member testMember = Member.builder()
-                .id(2)
-                .email("testMember@test.com")
-                .nickname("testMember")
-                .password("testPassword")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
-                .active(true)
-                .rating(0.0)
-                .build();
+    @DisplayName("delete를 호출했을 때 현재 사용자가 작성자가 아니면 예외가 발생한다.")
+    void deleteRecruitmentTestFailWithMemberNotAllowed() {
+        Member testMember = testMemberGenerator.getTestMember();
+
         when(memberService.getCurrentMember())
                 .thenReturn(testMember);
         when(recruitmentRepository.findById(any()))
@@ -221,15 +143,30 @@ class RecruitmentServiceTest {
     }
 
     @Test
-    void closeRecruitment() {
+    @DisplayName("close 호출 시 해당 recruitment가 마감된다.")
+    void closeRecruitmentTest() {
         when(recruitmentRepository.findById(any()))
                 .thenReturn(Optional.ofNullable(testRecruitment));
         when(memberService.getCurrentMember())
                 .thenReturn(testAuthor);
+
         recruitmentService.close(testRecruitment.getId());
 
         assertThat(testRecruitment.isActive(), equalTo(false));
     }
 
+    @Test
+    @DisplayName("close를 호출했을 때 현재 사용자가 작성자가 아닐 경우 예외가 발생한다.")
+    void closeRecruitmentTestFail() {
+        when(recruitmentRepository.findById(any()))
+                .thenReturn(Optional.ofNullable(testRecruitment));
+        when(memberService.getCurrentMember())
+                .thenReturn(testMemberGenerator.getTestMember());
 
+        assertThrows(MemberNotAllowedException.class, () -> {
+            recruitmentService.close(testRecruitment.getId());
+        });
+    }
+
+    // FIXME: 2022-03-19 join, unjoin 실패 테스트가 필요함
 }
