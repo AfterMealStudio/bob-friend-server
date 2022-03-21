@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 
+import static com.example.bobfriend.util.TestAuthenticationUtil.setAuthentication;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
@@ -128,13 +129,4 @@ public class MemberServiceTest {
         assertThat(testAuthor.getPassword(), equalTo(newPassword));
     }
 
-    private void setAuthentication(Member member) {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        member.getEmail(),
-                        member.getPassword(),
-                        Collections.singleton(
-                                new SimpleGrantedAuthority("ROLE_USER"))
-                ));
-    }
 }

@@ -28,11 +28,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.example.bobfriend.util.TestAuthenticationUtil.setAuthentication;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
 @DataJpaTest
 @Import({JpaTestConfig.class, BCryptPasswordEncoder.class, MemberDeleteService.class})
 public class MemberDeleteTest {
@@ -175,18 +177,6 @@ public class MemberDeleteTest {
         assertThrows(MemberNotFoundException.class, () -> {
             memberDeleteService.delete();
         });
-    }
-
-
-
-    private void setAuthentication(Member member) {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        member.getEmail(),
-                        member.getPassword(),
-                        Collections.singleton(
-                                new SimpleGrantedAuthority("ROLE_USER"))
-                ));
     }
 
 }
