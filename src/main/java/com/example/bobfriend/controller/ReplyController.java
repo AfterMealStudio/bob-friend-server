@@ -3,6 +3,7 @@ package com.example.bobfriend.controller;
 import com.example.bobfriend.model.dto.reply.Create;
 import com.example.bobfriend.model.dto.reply.Response;
 import com.example.bobfriend.service.ReplyService;
+import com.example.bobfriend.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,9 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/recruitments/{recruitmentId}/comments/{commentId}/replies")
 public class ReplyController {
+
     private final ReplyService replyService;
+    private final ReportService reportService;
 
     @PostMapping()
     public ResponseEntity create(
@@ -34,7 +37,7 @@ public class ReplyController {
 
     @PatchMapping("{replyId}/report")
     public ResponseEntity report(@PathVariable Long replyId) {
-        replyService.report(replyId);
+        reportService.reportWriting(replyId);
         return ResponseEntity.ok().build();
     }
 }

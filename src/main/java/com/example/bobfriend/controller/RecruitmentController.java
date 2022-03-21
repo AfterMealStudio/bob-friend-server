@@ -10,6 +10,7 @@ import com.example.bobfriend.model.exception.RecruitmentNotFoundException;
 import com.example.bobfriend.service.RecruitmentFindService;
 import com.example.bobfriend.service.RecruitmentSearchService;
 import com.example.bobfriend.service.RecruitmentService;
+import com.example.bobfriend.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,10 +25,11 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/recruitments")
 public class RecruitmentController {
+
     private final RecruitmentService recruitmentService;
     private final RecruitmentFindService recruitmentFindService;
     private final RecruitmentSearchService recruitmentSearchService;
-
+    private final ReportService reportService;
 
     @GetMapping()
     public ResponseEntity getAll(
@@ -108,7 +110,7 @@ public class RecruitmentController {
 
     @PatchMapping("/{recruitmentId}/report")
     public ResponseEntity report(@PathVariable Long recruitmentId) {
-        recruitmentService.reportById(recruitmentId);
+        reportService.reportWriting(recruitmentId);
         return ResponseEntity.ok().build();
     }
 

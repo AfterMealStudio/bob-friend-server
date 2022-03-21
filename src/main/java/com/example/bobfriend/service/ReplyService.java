@@ -60,14 +60,6 @@ public class ReplyService {
         }
     }
 
-
-    public void report(Long replyId) {
-        Reply reply = getReply(replyId);
-        Member member = memberService.getCurrentMember();
-        reportService.reportWriting(member, reply);
-    }
-
-
     private Reply getReply(Long replyId) {
         return replyRepository.findById(replyId)
                 .orElseThrow(() -> {

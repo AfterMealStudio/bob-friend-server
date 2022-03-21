@@ -65,14 +65,6 @@ public class CommentService {
         }
     }
 
-
-    public void report(Long commentId) {
-        Comment comment = getComment(commentId);
-        Member member = memberService.getCurrentMember();
-        reportService.reportWriting(member, comment);
-    }
-
-
     private Comment getComment(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> {

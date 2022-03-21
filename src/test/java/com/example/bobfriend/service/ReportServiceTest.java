@@ -6,7 +6,11 @@ import com.example.bobfriend.model.entity.Recruitment;
 import com.example.bobfriend.model.entity.Reply;
 import com.example.bobfriend.model.entity.Sex;
 import com.example.bobfriend.model.exception.AlreadyReportedExeption;
+import com.example.bobfriend.repository.MemberRepository;
 import com.example.bobfriend.repository.WritingReportRepository;
+import com.example.bobfriend.repository.WritingRepository;
+import com.example.bobfriend.util.AuthenticationUtil;
+import com.example.bobfriend.util.TestAuthenticationUtil;
 import com.example.bobfriend.util.TestMemberGenerator;
 import com.example.bobfriend.util.TestRecruitmentGenerator;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +35,10 @@ import static org.mockito.Mockito.when;
 public class ReportServiceTest {
     @Mock
     WritingReportRepository reportRepository;
+    @Mock
+    MemberRepository memberRepository;
+    @Mock
+    WritingRepository writingRepository;
     @InjectMocks
     ReportService reportService;
 
@@ -44,6 +52,12 @@ public class ReportServiceTest {
         testAuthor = testMemberGenerator.getTestAuthor();
         testRecruitmentGenerator.setAuthor(testAuthor);
         testRecruitment = testRecruitmentGenerator.getTestRecruitment();
+        TestAuthenticationUtil.setAuthentication(testAuthor);
+
+        when(memberRepository.findMemberByEmail(testAuthor.getEmail()))
+                .thenReturn(java.util.Optional.ofNullable(testAuthor));
+        when(writingRepository.findById(testRecruitment.getId()))
+                .thenReturn(java.util.Optional.ofNullable(testRecruitment));
     }
 
     @Test
@@ -51,7 +65,7 @@ public class ReportServiceTest {
     void reportOneTime() {
         when(reportRepository.existsByMemberAndWriting(any(), any()))
                 .thenReturn(false);
-        reportService.reportWriting(testRecruitment.getAuthor(), testRecruitment);
+        reportService.reportWriting(testRecruitment.getId());
         assertThat(testRecruitment.getReportCount(), equalTo(1));
     }
 
@@ -60,9 +74,7 @@ public class ReportServiceTest {
     void reportFailWithAlreadyReported() {
         when(reportRepository.existsByMemberAndWriting(any(), any()))
                 .thenReturn(true);
-        assertThrows(AlreadyReportedExeption.class, () -> {
-            reportService.reportWriting(testRecruitment.getAuthor(), testRecruitment);
-        });
+        assertThrows(AlreadyReportedExeption.class, () -> reportService.reportWriting(testRecruitment.getId()));
 
     }
 
@@ -73,7 +85,7 @@ public class ReportServiceTest {
                 .thenReturn(false);
 
         for (int i = 0; i <= Constant.REPORT_LIMIT; i++) {
-            reportService.reportWriting(testRecruitment.getAuthor(), testRecruitment);
+            reportService.reportWriting(testRecruitment.getId());
         }
 
         assertThat(testAuthor.getReportCount(), equalTo(1));
@@ -86,14 +98,14 @@ public class ReportServiceTest {
                 .thenReturn(false);
 
         for (int i = 0; i <= Math.pow(Constant.REPORT_LIMIT + 1, 2); i++) {
-            reportService.reportWriting(testRecruitment.getAuthor(), testRecruitment);
+            reportService.reportWriting(testRecruitment.getId());
         }
 
         LocalDate now = LocalDate.now();
         assertThat(testAuthor.getAccumulatedReports(), equalTo(1));
         assertThat(testAuthor.getReportStart(),equalTo(now));
         assertThat(testAuthor.getReportEnd(), equalTo(now.plusDays(
-                Constant.REPORT_SUSPENSION_PERIOD * testAuthor.getAccumulatedReports())));
+                (long) Constant.REPORT_SUSPENSION_PERIOD * testAuthor.getAccumulatedReports())));
         assertThat(testAuthor.isActive(), equalTo(false));
 
     }
