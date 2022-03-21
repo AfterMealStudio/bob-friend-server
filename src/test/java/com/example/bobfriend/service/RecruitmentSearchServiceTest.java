@@ -4,7 +4,10 @@ import com.example.bobfriend.model.dto.Condition;
 import com.example.bobfriend.model.dto.recruitment.SimpleResponse;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.repository.RecruitmentRepository;
+import com.example.bobfriend.util.TestMemberGenerator;
+import com.example.bobfriend.util.TestRecruitmentGenerator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,78 +38,37 @@ public class RecruitmentSearchServiceTest {
 
     Recruitment testRecruitment;
     Member testAuthor;
-    private Comment testComment;
-    private Reply testReply;
+    private PageRequest pageRequest = PageRequest.of(0, 10);
+    private TestRecruitmentGenerator testRecruitmentGenerator = new TestRecruitmentGenerator();
+    private TestMemberGenerator testMemberGenerator = new TestMemberGenerator();
 
     @BeforeEach
     public void setup() {
+        testAuthor = testMemberGenerator.getTestAuthor();
+        testRecruitmentGenerator.setAuthor(testAuthor);
 
-        testAuthor = Member.builder()
-                .id(1)
-                .email("testAuthor@test.com")
-                .nickname("testAuthor")
-                .password("testPassword")
-                .sex(Sex.FEMALE)
-                .birth(LocalDate.now())
-                .active(true)
-                .rating(0.0)
-                .numberOfJoin(0)
-                .build();
-
-        testReply = Reply.builder()
-                .id(1L)
-                .author(testAuthor)
-                .comment(testComment)
-                .content("test reply")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        testComment = Comment.builder()
-                .id(1L)
-                .author(testAuthor)
-                .recruitment(testRecruitment)
-                .content("test comment")
-                .replies(List.of(testReply))
-                .createdAt(LocalDateTime.now())
-                .build();
-
-
-        testRecruitment = Recruitment.builder()
-                .id(1L)
-                .title("title")
-                .content("content")
-                .author(testAuthor)
-                .members(new HashSet<>())
-                .comments(List.of(testComment))
-                .totalNumberOfPeople(4)
-                .sexRestriction(Sex.FEMALE)
-                .restaurantName("testRestaurantName")
-                .restaurantAddress("testRestaurantAddress")
-                .latitude(0.0)
-                .longitude(0.0)
-                .createdAt(LocalDateTime.now())
-                .appointmentTime(LocalDateTime.now().plusHours(4))
-                .endAt(LocalDateTime.now().plusDays(1))
-                .active(true)
-                .build();
-
+        testRecruitment = testRecruitmentGenerator.getTestRecruitment();
     }
 
     @Test
+    @DisplayName("RecruitmentSearchService의 search메소드를 호출하면 결과가 Page객체로 감싸서 반환된다.")
     void search() {
         List<Recruitment> recruitments = Arrays.asList(testRecruitment);
         when(recruitmentRepository.searchByTitle(any(), any()))
                 .thenReturn(new PageImpl<>(recruitments));
-        PageRequest pageRequest = PageRequest.of(0, 1);
 
         List<SimpleResponse> collect = recruitments.stream()
                 .map(SimpleResponse::new)
                 .collect(Collectors.toList());
+
         Condition.Search search = new Condition.Search();
+
         search.setKeyword(testRecruitment.getTitle());
         Page<SimpleResponse> responsePage =
                 recruitmentSearchService.searchTitle(search, pageRequest);
 
         assertThat(responsePage, equalTo(new PageImpl<>(collect)));
     }
+
+    // FIXME: 2022-03-19
 }

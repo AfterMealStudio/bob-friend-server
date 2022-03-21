@@ -69,6 +69,20 @@ public class MemberService {
         return new Response(member);
     }
 
+    @Transactional
+    public String resetPassword(ResetPassword resetPassword) {
+        String email = resetPassword.getEmail();
+        Member member = getMember(email);
+        if (!member.getBirth().equals(resetPassword.getBirth()))
+            throw new MemberNotAllowedException(member.getEmail());
+
+        String newPassword = generatePassword();
+
+        member.setPassword(newPassword, passwordEncoder);
+
+        return newPassword;
+    }
+
     private Member getMemberByNickname(String nickname) {
         return memberRepository.findMemberByNickname(nickname)
                 .orElseThrow(() -> {
@@ -104,20 +118,6 @@ public class MemberService {
                 .build();
     }
 
-
-    @Transactional
-    public String resetPassword(ResetPassword resetPassword) {
-        String email = resetPassword.getEmail();
-        Member member = getMember(email);
-        if (!member.getBirth().equals(resetPassword.getBirth()))
-            throw new MemberNotAllowedException(member.getEmail());
-
-        String newPassword = generatePassword();
-
-        member.setPassword(newPassword, passwordEncoder);
-
-        return newPassword;
-    }
 
 
     private String generatePassword() {

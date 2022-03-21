@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"nickname", "rating"})
+@EqualsAndHashCode(exclude = {"rating"})
 public class Preview {
     private Long id;
     private String nickname;
