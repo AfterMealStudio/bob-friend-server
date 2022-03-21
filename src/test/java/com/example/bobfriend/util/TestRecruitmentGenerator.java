@@ -7,6 +7,7 @@ import com.example.bobfriend.model.entity.Sex;
 import java.time.LocalDateTime;
 
 public class TestRecruitmentGenerator {
+
     private Member testAuthor;
 
     public void setAuthor(Member member) {

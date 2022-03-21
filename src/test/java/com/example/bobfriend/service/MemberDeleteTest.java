@@ -3,7 +3,11 @@ package com.example.bobfriend.service;
 import com.example.bobfriend.model.dto.member.Delete;
 import com.example.bobfriend.model.entity.*;
 import com.example.bobfriend.repository.*;
+import com.example.bobfriend.util.TestCommentGenerator;
+import com.example.bobfriend.util.TestMemberGenerator;
+import com.example.bobfriend.util.TestRecruitmentGenerator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,76 +46,50 @@ public class MemberDeleteTest {
     MemberDeleteService memberDeleteService;
 
     Member testAuthor;
+    Recruitment testRecruitment;
+
+    private TestMemberGenerator testMemberGenerator = new TestMemberGenerator();
+    private TestRecruitmentGenerator testRecruitmentGenerator = new TestRecruitmentGenerator();
+    private TestCommentGenerator testCommentGenerator = new TestCommentGenerator();
 
     @BeforeEach
     void beforeEach() {
-        testAuthor = Member.builder()
-                .id(0L)
-                .email("testEmail")
-                .nickname("testUser")
-                .password(passwordEncoder.encode("1234"))
-                .birth(LocalDate.now())
-                .sex(Sex.FEMALE)
-                .reportCount(0)
-                .accumulatedReports(0)
-                .rating(0.0)
-                .numberOfJoin(0)
-                .authorities(Collections.singleton(Authority.ROLE_USER))
-                .active(true)
-                .build();
+        testAuthor = testMemberGenerator.getTestAuthor();
+        testRecruitmentGenerator.setAuthor(testAuthor);
+        testRecruitment = testRecruitmentGenerator.getTestRecruitment();
 
-        testAuthor.setup();
+        testCommentGenerator.setTestAuthor(testAuthor);
+        testCommentGenerator.setTestRecruitment(testRecruitment);
     }
 
 
     @Test
+    @DisplayName("회원을 삭제하면 회원이 작성한 게시물의 작성자 필드가 null이 된다.")
     void deleteMember() {
-        Recruitment recruitment = Recruitment.builder()
-                .id(1L)
-                .author(testAuthor)
-                .active(true)
-                .appointmentTime(LocalDateTime.now())
-                .totalNumberOfPeople(4)
-                .members(new HashSet<>())
-                .sexRestriction(null)
-                .latitude(0.0)
-                .longitude(0.0)
-                .content("test content1")
-                .title("test title1")
-                .restaurantAddress("test address")
-                .restaurantName("test name")
-                .createdAt(LocalDateTime.now())
-                .endAt(LocalDateTime.now().plusDays(1))
-                .build();
-        Comment comment = Comment.builder()
-                .id(1L)
-                .content("test content")
-                .recruitment(recruitment)
-                .createdAt(LocalDateTime.now())
-                .author(testAuthor)
-                .replies(new LinkedList<>())
-                .build();
+        Comment testComment = testCommentGenerator.getTestComment();
 
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        testAuthor.getEmail(),
-                        testAuthor.getPassword(),
-                        Collections.singleton(
-                                new SimpleGrantedAuthority("ROLE_USER"))
-                ));
+        setAuthentication(testAuthor);
 
         when(memberRepository.findMemberByEmail(any()))
                 .thenReturn(Optional.ofNullable(testAuthor));
         when(writingRepository.findAllByAuthor(any()))
-                .thenReturn(List.of(recruitment, comment));
+                .thenReturn(List.of(testRecruitment, testComment));
 
-        Delete delete = new Delete();
-        delete.setPassword(testAuthor.getPassword());
         memberDeleteService.delete();
 
-        assertThat(recruitment.getAuthor().getEmail(), equalTo("unknown"));
-        assertThat(comment.getAuthor().getEmail(), equalTo("unknown"));
+        assertThat(testRecruitment.getAuthor().getEmail(), equalTo("unknown"));
+        assertThat(testComment.getAuthor().getEmail(), equalTo("unknown"));
 
+    }
+
+    private void setAuthentication(Member member) {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        member.getEmail(),
+                        member.getPassword(),
+                        Collections.singleton(
+                                new SimpleGrantedAuthority("ROLE_USER"))
+                ));
     }
 
 }

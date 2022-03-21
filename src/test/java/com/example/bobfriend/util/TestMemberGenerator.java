@@ -6,6 +6,7 @@ import com.example.bobfriend.model.entity.Sex;
 import java.time.LocalDate;
 
 public class TestMemberGenerator {
+
     public Member getTestAuthor() {
         Member author = Member.builder()
                 .email("testAuthor@test.com")
