@@ -3,6 +3,7 @@ package com.example.bobfriend.controller;
 import com.example.bobfriend.model.dto.comment.*;
 import com.example.bobfriend.model.dto.comment.Response;
 import com.example.bobfriend.service.CommentService;
+import com.example.bobfriend.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/recruitments/{recruitmentId}/comments")
 public class CommentController {
     private final CommentService commentService;
+    private final ReportService reportService;
 
     @GetMapping()
     public ResponseEntity getAll(@PathVariable Long recruitmentId) {
@@ -43,7 +45,7 @@ public class CommentController {
 
     @PatchMapping("/{commentId}/report")
     public ResponseEntity report(@PathVariable Long commentId) {
-        commentService.report(commentId);
+        reportService.reportWriting(commentId);
         return ResponseEntity.ok().build();
     }
 

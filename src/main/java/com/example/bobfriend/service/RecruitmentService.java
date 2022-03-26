@@ -91,13 +91,6 @@ public class RecruitmentService {
         return new DetailResponse(recruitment);
     }
 
-    public void reportById(Long recruitmentId) {
-        Recruitment recruitment = getRecruitment(recruitmentId);
-        Member member = memberService.getCurrentMember();
-        reportService.reportWriting(member, recruitment);
-    }
-
-
     @Transactional
     public void expire() {
         List<Recruitment> allByActiveTrue = recruitmentRepository.findAllByActiveTrue();
